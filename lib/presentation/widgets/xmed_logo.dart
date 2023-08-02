@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:xmed/logic/bloc/clinic/clinic_bloc.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
 
 class Logo extends StatelessWidget {
   const Logo({
@@ -7,6 +11,11 @@ class Logo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SizedBox(width: 100, height: 100, child: FlutterLogo());
+    return BlocBuilder<ClinicBloc, ClinicState>(
+      builder: (context, state) {
+        if (state is DetailsAvaiableState) {}
+        return SizedBox(width: 100, height: 100, child: FlutterLogo());
+      },
+    );
   }
 }

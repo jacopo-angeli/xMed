@@ -38,13 +38,15 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           passwordErrorMessage = ValidatorMessages.requiredField();
         }
 
-        if (emailErrorMessage.isNotEmpty || passwordErrorMessage.isNotEmpty) {
+        if (emailErrorMessage!.isNotEmpty || passwordErrorMessage!.isNotEmpty) {
           emit(WrongInputState(
               emailError: emailErrorMessage,
-              passwordError: passwordErrorMessage));
+              passwordError: passwordErrorMessage,
+              loginData: event.loginData));
+          await Future.delayed(const Duration(seconds: 1));
+          emit(NotLoggedState());
         } else {
-          // Dati inseriti corretti
-          emit(DisabledCredentialState(loginData: event.loginData));
+          //Check on pushed data
         }
 
         // tento il login usando event.loginData

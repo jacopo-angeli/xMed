@@ -19,10 +19,6 @@ void main() async {
   // Per varaibili in .env files
   await dotenv.load(fileName: ".env.test");
 
-  String PemKey = await services.rootBundle.loadString('assets/private.key');
-  final privateKeydata = PemCodec(PemLabel.privateKey).decode(PemKey);
-  print(privateKeydata);
-
   ClinicRepository repo = ClinicRepository();
   repo.getClinicaDetails(clinicID: "13");
 

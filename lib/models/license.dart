@@ -1,0 +1,3 @@
+class License {
+  //TODO
+}

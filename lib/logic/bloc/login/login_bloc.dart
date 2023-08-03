@@ -4,8 +4,8 @@ import 'package:meta/meta.dart';
 import 'package:xmed/constants/enums/failure_types.dart';
 import 'package:xmed/constants/enums/validator_massages.dart';
 import 'package:xmed/constants/regular_expressions.dart';
-import 'package:xmed/data/model/login.dart';
-import 'package:xmed/data/model/user.dart';
+import 'package:xmed/models/login.dart';
+import 'package:xmed/models/user.dart';
 
 part 'login_event.dart';
 part 'login_state.dart';

@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:xmed/constants/enums/failure_types.dart';
-import 'package:xmed/data/model/clinic_document.dart';
+import 'package:xmed/models/clinic_document.dart';
 
 part 'dossier_event.dart';
 part 'dossier_state.dart';

@@ -1,5 +1,5 @@
 import 'package:bloc/bloc.dart';
-import 'package:xmed/data/model/license.dart';
+import 'package:xmed/models/license.dart';
 
 part 'license_event.dart';
 part 'license_state.dart';

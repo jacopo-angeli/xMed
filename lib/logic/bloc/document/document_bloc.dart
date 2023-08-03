@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:xmed/data/model/document.dart';
+import 'package:xmed/models/document.dart';
 
 part 'document_event.dart';
 part 'document_state.dart';

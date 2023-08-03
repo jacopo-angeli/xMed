@@ -2,7 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 
 import 'package:xmed/constants/enums/failure_types.dart';
-import 'package:xmed/data/model/clinic.dart';
+import 'package:xmed/models/clinic.dart';
 
 part 'clinic_event.dart';
 part 'clinic_state.dart';

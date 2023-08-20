@@ -1,35 +1,48 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:xmed/data/repositories/clinic_repository.dart';
-import 'package:xmed/logic/bloc/clinic/clinic_bloc.dart';
-import 'package:xmed/logic/bloc/login/login_bloc.dart';
-import 'package:xmed/presentation/screens/login_page.dart';
+import 'package:oktoast/oktoast.dart';
 
-void main() async {
-  /*----------------------------Widget Inizialization--------------------------- */
-  // Salvataggio dei dati della clinica in locale
-  await Hive.initFlutter();
-  // Per utilizzare GoogleFonts
+import 'src/config/routers/app_router.dart';
+import 'src/config/themes/app_themes.dart';
+import 'src/presentation/blocs/clinic/clinic_bloc.dart';
+import 'src/presentation/blocs/login/login_bloc.dart';
+import 'src/presentation/cubits/internet/internet.cubit.dart';
+import 'src/utils/costants/constants.dart';
+
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Per varaibili in .env files
-  await dotenv.load(fileName: ".env.test");
+  runApp(const MyApp());
+}
 
-  ClinicRepository repo = ClinicRepository();
-  repo.getClinicaDetails(clinicID: "13");
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
-  runApp(MultiBlocProvider(
-      providers: [
-        BlocProvider<LoginBloc>(
-          create: (context) => LoginBloc(),
-        ),
-        BlocProvider<ClinicBloc>(
-          create: (context) => ClinicBloc(),
-        ),
-      ],
-      child: MaterialApp(
-          home: BlocBuilder<LoginBloc, LoginState>(builder: (context, state) {
-        return LoginPage();
-      }))));
+  @override
+  Widget build(BuildContext context) {
+    /*--------------------- Global BLoC -------------------- */
+    final InternetCubit internetCubit =
+        InternetCubit(connectivity: Connectivity());
+    final ClinicBloc clinicBloc = ClinicBloc();
+    final LoginBloc loginBloc = LoginBloc(clinicBloc: clinicBloc)
+      ..add(AppStartedEvent());
+
+    return OKToast(
+      child: MaterialApp.router(
+        debugShowCheckedModeBanner: false,
+        routerDelegate: appRouter.delegate(),
+        routeInformationParser: appRouter.defaultRouteParser(),
+        title: appTitle,
+        theme: AppTheme.light,
+        builder: (context, child) => MultiBlocProvider(providers: [
+          // Connectivity Cubit
+          BlocProvider(create: (context) => internetCubit),
+          // Login Bloc
+          BlocProvider(create: (context) => loginBloc),
+          // Clinic Bloc
+          BlocProvider(create: (context) => clinicBloc)
+        ], child: child as Widget),
+      ),
+    );
+  }
 }

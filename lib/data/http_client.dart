@@ -57,7 +57,6 @@ class XMedTabletHttpClient {
 
     // Genera la firma digitale per il corpo della richiesta.
     String signature = await SignatureService.generateSignature(body);
-    print("dsdsdas");
     // Configura l'oggetto Dio con le opzioni di base e gli headers necessari.
     client = Dio(BaseOptions(
       connectTimeout: HttpClientCostants.connectionLimitTimeout,

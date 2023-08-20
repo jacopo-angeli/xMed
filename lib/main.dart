@@ -6,9 +6,6 @@ import 'package:xmed/data/repositories/clinic_repository.dart';
 import 'package:xmed/logic/bloc/clinic/clinic_bloc.dart';
 import 'package:xmed/logic/bloc/login/login_bloc.dart';
 import 'package:xmed/presentation/screens/login_page.dart';
-import 'package:pem/pem.dart';
-
-import 'package:flutter/services.dart' as services;
 
 void main() async {
   /*----------------------------Widget Inizialization--------------------------- */

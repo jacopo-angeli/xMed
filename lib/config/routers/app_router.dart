@@ -15,8 +15,7 @@ class AppRouter extends $AppRouter {
   @override
   List<AutoRoute> get routes => [
         // Definizione del percorso iniziale per la pagina di accesso.
-        AutoRoute(page: SplashView.page, initial: true),
-        AutoRoute(page: LoginView.page),
+        AutoRoute(page: LoginView.page, initial: true),
       ];
 }
 

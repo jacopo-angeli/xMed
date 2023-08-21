@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-import '../../../../src/utils/costants/enums/credential_status.dart';
+import '../../../../utils/constants/enums/credential_status.dart';
 
 class User extends Equatable {
   final String username;

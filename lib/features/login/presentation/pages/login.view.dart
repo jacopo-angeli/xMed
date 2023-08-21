@@ -2,10 +2,10 @@ import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:xmed/features/whitelabeling/presentation/cubits/theme/theme_cubit.dart';
 
-import '../../../../src/presentation/blocs/clinic/clinic_bloc.dart';
-import '../../../../src/presentation/blocs/login/login_bloc.dart';
-import '../../../../src/presentation/widgets/xmed_text_form_field.dart';
+import '../blocs/login/login_bloc.dart';
+import '../widgets/xmed_text_form_field.dart';
 
 @RoutePage()
 class LoginView extends StatefulWidget {
@@ -52,22 +52,20 @@ class _LoginPageState extends State<LoginView> {
                       label: "Email",
                       prefixIcon: const Icon(Icons.email_outlined),
                       errorMessage: state.emailError,
-                      prefill: state.credentials.email == null
-                          ? ''
-                          : state.credentials.email as String,
+                      prefill: state.email == null ? '' : state.email as String,
                     );
                     passwordFormField = XmedTextFormField(
                         label: "Password",
                         prefixIcon: const Icon(Icons.lock_outline),
                         obscureText: true,
                         errorMessage: state.passwordError,
-                        prefill: state.credentials.password == null
+                        prefill: state.password == null
                             ? ''
-                            : state.credentials.password as String);
+                            : state.password as String);
                   });
                 }
               }),
-              BlocListener<ClinicBloc, ClinicState>(listener: (context, state) {
+              BlocListener<ThemeCubit, ThemeState>(listener: (context, state) {
                 print(state.runtimeType.toString());
               }),
             ],

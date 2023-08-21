@@ -6,7 +6,8 @@ abstract class LoginEvent {}
 class AppStartedEvent extends LoginEvent {}
 
 class LoginRequestedEvent extends LoginEvent {
-  final LoginData loginData;
+  final String email;
+  final String password;
 
-  LoginRequestedEvent({required this.loginData});
+  LoginRequestedEvent({required this.email, required this.password});
 }

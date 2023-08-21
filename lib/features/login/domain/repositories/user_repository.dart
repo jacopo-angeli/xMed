@@ -1,8 +1,9 @@
 import 'package:dartz/dartz.dart';
 
-import 'package:refactor_xmed/core/error/failures.dart';
-import 'package:refactor_xmed/features/login/domain/entities/user.dart';
+import 'package:xmed/core/error/data_states.dart';
+
+import '../entities/user.dart';
 
 abstract class UserRepository {
-  Future<Either<Failure, User>> login(String username, String password);
+  Future<Either<DataState, User>> login(String username, String password);
 }

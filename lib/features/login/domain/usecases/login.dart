@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 
-import '../../../../core/error/data_states.dart';
+import '../../../../core/netwwork/data_states.dart';
 import '../entities/user.dart';
 import '../repositories/user_repository.dart';
 

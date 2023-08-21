@@ -2,13 +2,13 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:xmed/utils/constants/STRINGS.dart';
 
-import 'src/config/routers/app_router.dart';
-import 'src/config/themes/app_themes.dart';
-import 'src/presentation/blocs/clinic/clinic_bloc.dart';
-import 'src/presentation/blocs/login/login_bloc.dart';
-import 'src/presentation/cubits/internet/internet.cubit.dart';
-import 'src/utils/costants/constants.dart';
+import 'config/routers/app_router.dart';
+import 'config/themes/app_themes.dart';
+import 'features/connection/presentation/cubits/internet/internet_cubit.dart';
+import 'features/login/presentation/blocs/login/login_bloc.dart';
+import 'features/whitelabeling/presentation/blocs/clinic/clinic_bloc.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,8 +24,7 @@ class MyApp extends StatelessWidget {
     final InternetCubit internetCubit =
         InternetCubit(connectivity: Connectivity());
     final ClinicBloc clinicBloc = ClinicBloc();
-    final LoginBloc loginBloc = LoginBloc(clinicBloc: clinicBloc)
-      ..add(AppStartedEvent());
+    final LoginBloc loginBloc = LoginBloc()..add(AppStartedEvent());
 
     return OKToast(
       child: MaterialApp.router(

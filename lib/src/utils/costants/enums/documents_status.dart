@@ -1,1 +1,0 @@
-enum DocumentStatus { ALL, DA_FIRMARE, FIRMATO, SCADUTO, ANNULLATO }

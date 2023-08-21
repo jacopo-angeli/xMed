@@ -2,6 +2,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:xmed/features/whitelabeling/presentation/cubits/theme/theme_cubit.dart';
 import 'package:xmed/utils/constants/STRINGS.dart';
 
 import 'config/routers/app_router.dart';
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
     /*--------------------- Global BLoC -------------------- */
     final InternetCubit internetCubit =
         InternetCubit(connectivity: Connectivity());
-    final ClinicBloc clinicBloc = ClinicBloc();
+    final ThemeCubit themeCubit = ThemeCubit()..appStartedEvent();
     final LoginBloc loginBloc = LoginBloc()..add(AppStartedEvent());
 
     return OKToast(
@@ -39,7 +40,7 @@ class MyApp extends StatelessWidget {
           // Login Bloc
           BlocProvider(create: (context) => loginBloc),
           // Clinic Bloc
-          BlocProvider(create: (context) => clinicBloc)
+          BlocProvider(create: (context) => themeCubit)
         ], child: child as Widget),
       ),
     );

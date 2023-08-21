@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:xmed/logic/bloc/clinic/clinic_bloc.dart';
-import 'package:path_provider/path_provider.dart';
-import 'dart:io';
+import 'package:xmed/features/whitelabeling/presentation/cubits/theme/theme_cubit.dart';
 
 class Logo extends StatelessWidget {
   const Logo({
@@ -11,9 +9,9 @@ class Logo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ClinicBloc, ClinicState>(
+    return BlocBuilder<ThemeCubit, ThemeState>(
       builder: (context, state) {
-        if (state is DetailsAvaiableState) {}
+        // TODO Sistemare la view sulla base dello stato del tema
         return SizedBox(width: 100, height: 100, child: FlutterLogo());
       },
     );

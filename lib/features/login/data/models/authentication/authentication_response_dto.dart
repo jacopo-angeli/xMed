@@ -3,7 +3,7 @@ import 'dart:convert';
 
 import 'package:collection/collection.dart';
 
-import '../../../../../src/utils/costants/enums/credential_status.dart';
+import '../../../../../utils/constants/enums/credential_status.dart';
 import '../../../../../utils/global_data_models/common/message.dart';
 
 class AuthenticationResponseDto {

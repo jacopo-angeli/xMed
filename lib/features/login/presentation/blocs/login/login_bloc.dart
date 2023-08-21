@@ -4,8 +4,8 @@ import 'package:meta/meta.dart';
 import 'package:xmed/utils/constants/enums/failure_types.dart';
 import 'package:xmed/utils/constants/enums/validator_massages.dart';
 import 'package:xmed/utils/constants/regular_expressions.dart';
-import 'package:xmed/models/login.dart';
-import 'package:xmed/models/user.dart';
+
+import '../../../domain/entities/user.dart';
 
 part 'login_event.dart';
 part 'login_state.dart';
@@ -28,22 +28,23 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         // Controllo i dati della form
         String emailErrorMessage = "", passwordErrorMessage = "";
 
-        if (event.loginData.email!.isEmpty) {
+        if (event.email.isEmpty) {
           emailErrorMessage = ValidatorMessages.requiredField();
         } else if (!RegExp(RegularExpressions.emailRegExp())
-            .hasMatch(event.loginData.email.toString())) {
+            .hasMatch(event.email.toString())) {
           emailErrorMessage = ValidatorMessages.badFormat();
         }
 
-        if (event.loginData.password!.isEmpty) {
+        if (event.password.isEmpty) {
           passwordErrorMessage = ValidatorMessages.requiredField();
         }
 
-        if (emailErrorMessage!.isNotEmpty || passwordErrorMessage!.isNotEmpty) {
+        if (emailErrorMessage.isNotEmpty || passwordErrorMessage.isNotEmpty) {
           emit(WrongInputState(
               emailError: emailErrorMessage,
               passwordError: passwordErrorMessage,
-              loginData: event.loginData));
+              email: event.email,
+              password: event.password));
           await Future.delayed(const Duration(seconds: 1));
           emit(NotLoggedState());
         } else {

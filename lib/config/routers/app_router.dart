@@ -22,6 +22,7 @@ class AppRouter extends $AppRouter {
 // Creazione di un'istanza della classe di configurazione dei percorsi.
 final appRouter = AppRouter();
 
+
 /// La classe [AppRouter] gestisce la navigazione e la gestione dei percorsi all'interno dell'app.
 ///
 /// Questa classe estende la classe generata `_$AppRouter`, creata tramite

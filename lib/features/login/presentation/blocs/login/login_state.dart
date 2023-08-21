@@ -16,18 +16,21 @@ class LoggedState extends LoginState {
 class WrongInputState extends LoginState {
   final String emailError;
   final String passwordError;
-  final LoginData loginData;
+  final String? email;
+  final String? password;
 
   WrongInputState(
       {required this.emailError,
       required this.passwordError,
-      required this.loginData});
+      this.email,
+      this.password});
 }
 
 class DisabledCredentialState extends LoginState {
-  final LoginData loginData;
+  final String? email;
+  final String? password;
 
-  DisabledCredentialState({required this.loginData});
+  DisabledCredentialState({this.email, this.password});
 }
 
 class LoginErrorState extends LoginState {

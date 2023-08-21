@@ -1,7 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-import '../../../../../src/utils/costants/enums/documents_status.dart';
+import '../../../../../utils/constants/enums/document_status.dart';
 
 class DocumentSearchRequestDto {
   // Mandatory

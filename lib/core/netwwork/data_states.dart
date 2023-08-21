@@ -16,7 +16,7 @@ abstract class DataState<T> {
   /// [data]: I dati che lo stato di success conterrà.
   /// [error]: L'eccezione che lo stato di fallimento conterrà.
   const DataState({this.data, this.error});
-}
+}a
 
 /// Rappresenta uno stato di successo dei dati.
 ///

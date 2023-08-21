@@ -9,7 +9,6 @@ import 'config/routers/app_router.dart';
 import 'config/themes/app_themes.dart';
 import 'features/connection/presentation/cubits/internet/internet_cubit.dart';
 import 'features/login/presentation/blocs/login/login_bloc.dart';
-import 'features/whitelabeling/presentation/blocs/clinic/clinic_bloc.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

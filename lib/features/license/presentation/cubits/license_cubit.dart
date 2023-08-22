@@ -1,13 +1,18 @@
 import 'package:bloc/bloc.dart';
+import 'package:xmed/features/license/domain/repositories/license_repository.dart';
 
 import '../../domain/entities/license.dart';
+
 part 'license_state.dart';
 
 class LicenseCubit extends Cubit<LicenseState> {
-  LicenseCubit() : super(UnlicensedState());
+  final LicenseRepository repo;
+  LicenseCubit({required this.repo}) : super(UnlicensedState());
 
   void appStarted() {
-    //nel momento in cui avvio l'app verrò segnato come unlicensed per poi modificarlo in seguito
+    // controllo in locale se ho una licenza
+    // in caso la scarico e per attivare la licenza devo interfacciarmi con Namirial
+    // comunicazione di attivazione al backoffice
     emit(LicenseSyncingState());
   }
 
@@ -21,18 +26,24 @@ class LicenseCubit extends Cubit<LicenseState> {
   }
 
   void buyLicense() {
+    //TODO interfacciarsi con Namirial fornendo servizio per comprare una licenza
     emit(LicenseSyncingState());
   }
 
   void licenseExpired(License InsertedLicense) {
-    emit(LicenseSyncingState());
+    // PRE: licenza scaduta
+    emit(LicenseSyncingState()); // emetto il relativo stato
+    //chiamo il metodo per il rinnovamento della licenza
+    this.licenseRenewal(InsertedLicense);
   }
 
   void licenseRenewal(License InsertedLicense) {
+    //TODO interfacciarsi con Namirial fornendo servizio di rinnovo licenza
     emit(LicenseSyncingState());
   }
 
   void licenseFound(License InsertedLicense) {
-    emit(LicensedState(license: InsertedLicense));
+    //PRE: InsertedLicense esiste nel DB ed è valida
+    emit(LicensedState(license: InsertedLicense)); //emetto il relativo segnale
   }
 }

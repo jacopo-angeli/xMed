@@ -1,4 +1,4 @@
-part of 'login_bloc.dart';
+part of 'login_cubit.dart';
 
 @immutable
 abstract class LoginState {}
@@ -34,7 +34,7 @@ class DisabledCredentialState extends LoginState {
 }
 
 class LoginErrorState extends LoginState {
-  final FailureTypes failureType;
+  final FailureEntity failureEntity;
 
-  LoginErrorState({required this.failureType});
+  LoginErrorState({required this.failureEntity});
 }

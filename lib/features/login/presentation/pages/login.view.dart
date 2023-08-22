@@ -2,9 +2,9 @@ import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:xmed/features/login/presentation/cubits/login/login_cubit.dart';
 import 'package:xmed/features/whitelabeling/presentation/cubits/theme/theme_cubit.dart';
 
-import '../blocs/login/login_bloc.dart';
 import '../widgets/xmed_text_form_field.dart';
 
 @RoutePage()
@@ -42,7 +42,7 @@ class _LoginPageState extends State<LoginView> {
         children: [
           MultiBlocListener(
             listeners: [
-              BlocListener<LoginBloc, LoginState>(listener: (context, state) {
+              BlocListener<LoginCubit, LoginState>(listener: (context, state) {
                 // Se è in stato di WrongInputState modifico gli input fields con gli errori dedicati
                 // WrongInputState contiene un campo apposito per l'email e per la password, viene printato il messaggio
                 // contenuto nei due campi solo se è presente
@@ -85,7 +85,7 @@ class _LoginPageState extends State<LoginView> {
                       passwordFormField,
                       const SizedBox(height: 10),
                       Builder(builder: (context) {
-                        return BlocBuilder<LoginBloc, LoginState>(
+                        return BlocBuilder<LoginCubit, LoginState>(
                             builder: (context, state) {
                           if (state is LoggingState) {
                             return const CircularProgressIndicator();
@@ -103,7 +103,8 @@ class _LoginPageState extends State<LoginView> {
                             return ElevatedButton(
                                 onPressed: () {
                                   // triggerare evento login
-                                  // context.read<LoginBloc>().add(
+                                  context.read<LoginCubit>().logInRequest(
+                                      email: "yo", password: "yoyo");
                                   //     LoginAttemptEvent(
                                   //         credentials: Credentials(
                                   //             email:

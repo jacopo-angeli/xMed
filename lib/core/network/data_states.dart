@@ -1,4 +1,4 @@
-import 'package:dio/dio.dart';
+import 'package:xmed/core/error_handling/failures.dart';
 
 /// Rappresenta lo stato dei dati generico.
 ///
@@ -9,14 +9,14 @@ import 'package:dio/dio.dart';
 /// La classe viene templatizzata per l'utilizzo con qualsiasi tipologia di dati.
 abstract class DataState<T> {
   final T? data; // Dati generici di tipo T
-  final DioException? error; // Possibile eccezione di tipo DioException
+  final FailureEntity? error; // Possibile eccezione di tipo DioException
 
   /// Costruttore della classe astratta DataState.
   ///
   /// [data]: I dati che lo stato di success conterrà.
   /// [error]: L'eccezione che lo stato di fallimento conterrà.
   const DataState({this.data, this.error});
-}a
+}
 
 /// Rappresenta uno stato di successo dei dati.
 ///
@@ -36,5 +36,5 @@ class DataFailed<T> extends DataState<T> {
   /// Costruttore per uno stato di fallimento.
   ///
   /// [error]: L'eccezione associata a questo stato di fallimento.
-  const DataFailed(DioException error) : super(error: error);
+  const DataFailed(FailureEntity error) : super(error: error);
 }

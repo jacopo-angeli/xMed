@@ -1,11 +1,12 @@
 import 'package:dartz/dartz.dart';
 import '../../presentation/cubits/license_cubit.dart';
 import '../entities/license.dart';
+import '../../../../core/network/data_states.dart';
 
 abstract class LicenseRepository {
-  Future<Either<LicenseState, License>> licenseActivate(
+  Future<Either<DataState, License>> licenseActivate(
       String idClinica, String IdPromoCode, String institute);
-  Future<Either<LicenseState, License>> licenseDownload(
+  Future<Either<DataState, License>> licenseDownload(
       String idClinica, String institute);
 }
 

@@ -39,3 +39,8 @@ class LicenseParsingException extends Equatable implements Exception {
   @override
   List<Object?> get props => [];
 }
+
+class LicenseActivationException extends Equatable implements Exception {
+  @override
+  List<Object?> get props => [];
+}

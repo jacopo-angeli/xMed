@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 
-import '../../../../core/network/data_states.dart';
+import '../../../../core/error_handling/failures.dart';
 import '../entities/user.dart';
 import '../repositories/user_repository.dart';
 
@@ -9,7 +9,7 @@ class LogOutUseCase {
 
   LogOutUseCase({required this.userRepository});
 
-  Future<Either<DataState, User>> execute(
+  Future<Either<FailureEntity, User>> execute(
       {required String username, required String password}) async {
     return await userRepository.logout();
   }

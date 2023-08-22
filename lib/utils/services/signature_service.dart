@@ -18,7 +18,6 @@ class SignatureService {
       throw Exception("File della chiave privata mancante");
     }
 
-    //TODO : fix decryptPrivateKey
     String privateKey =
         await RSA.decryptPrivateKey(encryptedPrivateKey, "Cambiami2013!");
     return privateKey;

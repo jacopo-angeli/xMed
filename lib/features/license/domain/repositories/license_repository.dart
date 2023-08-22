@@ -1,13 +1,19 @@
 import 'package:dartz/dartz.dart';
 import '../../presentation/cubits/license_cubit.dart';
 import '../entities/license.dart';
-import '../../../../core/network/data_states.dart';
+import '../../../../core/error_handling/failures.dart';
 
 abstract class LicenseRepository {
-  Future<Either<DataState, License>> licenseActivate(
-      String idClinica, String IdPromoCode, String institute);
-  Future<Either<DataState, License>> licenseDownload(
-      String idClinica, String institute);
+  // RICHIEDE L'ATTIVAZIONE DI UNA LICENZA
+  Future<Either<FailureEntity, void>> licenseActivate(
+      {required String idClinica, required String idPromoCode});
+
+  // SCARICA UNA LICENZA DAL BACKOFFICE DI CWBI
+  Future<Either<FailureEntity, License>> licenseDownload(
+      {required String idClinica});
+
+  // RICERCA UNA LICENZA IN LOCALE E LA RITORNA SE LA TROVA INTERFACCIANDOSI CON NAMIRIAL SDK
+  Either<void, Map<String, dynamic>> retrieveLicense();
 }
 
 //TODO azioni da rendere disponibili (API)

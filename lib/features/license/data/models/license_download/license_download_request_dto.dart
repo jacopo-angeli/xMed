@@ -3,10 +3,10 @@ import 'dart:convert';
 
 class LicenseDownloadRequestDto {
   final int idClinica;
+  final int institute = 2272;
   LicenseDownloadRequestDto({
     required this.idClinica,
   });
-  final int institute = 2272;
 
   LicenseDownloadRequestDto copyWith({
     int? idClinica,
@@ -18,13 +18,16 @@ class LicenseDownloadRequestDto {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'idClinica': idClinica,
+      'input': <String, dynamic>{
+        'idClinica': idClinica,
+      }
     };
   }
 
+  // TODO
   factory LicenseDownloadRequestDto.fromMap(Map<String, dynamic> map) {
     return LicenseDownloadRequestDto(
-      idClinica: map['idClinica'] as int,
+      idClinica: map['input']['idClinica'] as int,
     );
   }
 
@@ -35,7 +38,8 @@ class LicenseDownloadRequestDto {
           json.decode(source) as Map<String, dynamic>);
 
   @override
-  String toString() => 'LicenseDownloadRequestDto(idClinica: $idClinica)';
+  String toString() =>
+      'LicenseDownloadRequestDto(input: {idClinica: $idClinica})';
 
   @override
   bool operator ==(covariant LicenseDownloadRequestDto other) {

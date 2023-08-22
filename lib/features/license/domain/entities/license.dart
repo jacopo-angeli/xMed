@@ -16,7 +16,6 @@ class License extends Equatable {
     required this.content,
     required this.status,
   });
-
   License copyWith({
     int? idClinica,
     int? IdPromoCode,

@@ -13,7 +13,7 @@ abstract class LicenseRepository {
       {required String idClinica});
 
   // RICERCA UNA LICENZA IN LOCALE E LA RITORNA SE LA TROVA INTERFACCIANDOSI CON NAMIRIAL SDK
-  Either<void, Map<String, dynamic>> retrieveLicense();
+  Future<Either<FailureEntity, String>> retrieveLicense();
 }
 
 //TODO azioni da rendere disponibili (API)

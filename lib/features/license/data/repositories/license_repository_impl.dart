@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
 import '../../../../core/error_handling/failures.dart';
 import 'package:xmed/core/network/http_custom_client.dart';
 import 'package:xmed/features/license/data/models/license_download/license_download_request_dto.dart';
@@ -93,9 +96,31 @@ class LicenseRepositoryImpl implements LicenseRepository {
         status: 'content'));
   }
 
+  // La funzione controlla se \e presente nel dispositivo una licenza
+  // Se la licenza viene trovata allora viene ritornata
+  // Se il recupero della licenza non va a buon fine viene ritornato una FailureEntity dedicata
+  // Se la licenza non viene trovata allora viene ritornata una FailureEntity dedicata
   @override
-  Either<void, Map<String, dynamic>> retrieveLicense() {
-    // TODO: implement retrieveLicense
-    throw UnimplementedError();
+  Future<Either<FailureEntity, String>> retrieveLicense() async {
+    // Recupero il path della cartella documents dove viene salvata la licenza
+    final Directory appData = await getApplicationDocumentsDirectory();
+
+    // Cerco il file nella cartella assets di flutter
+    late File file;
+    try {
+      // Carico il file dalla cartella assets
+      final license = await rootBundle.load('assets/license.afgclic');
+      file = await File('${appData.path}/license.afgclic').writeAsBytes(
+        license.buffer
+            .asUint8List(license.offsetInBytes, license.lengthInBytes),
+      );
+    } catch (e) {
+      print('Debug license file not found');
+      // Errore durante il recupero del file, file non presente
+      return const Left(LicenseRetrieveFailure());
+    }
+
+    // ? File trovato ???
+    return Right(file.path);
   }
 }

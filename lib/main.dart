@@ -2,6 +2,8 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:xmed/features/license/data/repositories/license_repository_impl.dart';
+import 'package:xmed/features/license/domain/repositories/license_repository.dart';
 import 'package:xmed/features/login/data/repositories/user_repository_impl.dart';
 import 'package:xmed/features/login/domain/usecases/login.dart';
 import 'package:xmed/features/login/domain/usecases/logout.dart';
@@ -16,12 +18,16 @@ import 'features/connection/presentation/cubits/internet/internet_cubit.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  final LicenseRepository licenseRepository = LicenseRepositoryImpl();
+  await licenseRepository.retrieveLicense();
+
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   // REPOSITORIES DECLARATION
   late final UserRepositoryImpl userRepository;
+  late final LicenseRepository licenseRepository;
 
   // USECASES DECLARATION
   late final LogInUseCase logInUseCase;
@@ -39,6 +45,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     // REPOSITORIES INSTANTIALIZATION
     userRepository = UserRepositoryImpl();
+    licenseRepository = LicenseRepositoryImpl();
 
     // USECASE INITIALIZATION AND DEPENDENCY INJECTION
     logInUseCase = LogInUseCase(userRepository: userRepository);

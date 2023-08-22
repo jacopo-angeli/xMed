@@ -14,14 +14,12 @@ class AppRouter extends $AppRouter {
 
   @override
   List<AutoRoute> get routes => [
-        // Definizione del percorso iniziale per la pagina di accesso.
         AutoRoute(page: LoginView.page, initial: true),
       ];
 }
 
 // Creazione di un'istanza della classe di configurazione dei percorsi.
 final appRouter = AppRouter();
-
 
 /// La classe [AppRouter] gestisce la navigazione e la gestione dei percorsi all'interno dell'app.
 ///
@@ -44,5 +42,5 @@ final appRouter = AppRouter();
 /// aggiungere ulteriori percorsi secondo necessità.
 
 /// L'istanza [appRouter] fornisce un accesso singleton all'[AppRouter].
-///  
+///
 /// (AI generated)

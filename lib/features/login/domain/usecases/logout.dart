@@ -4,13 +4,13 @@ import '../../../../core/network/data_states.dart';
 import '../entities/user.dart';
 import '../repositories/user_repository.dart';
 
-class LogInUseCase {
+class LogOutUseCase {
   final UserRepository userRepository;
 
-  LogInUseCase({required this.userRepository});
+  LogOutUseCase({required this.userRepository});
 
   Future<Either<DataState, User>> execute(
-      {required String email, required String password}) async {
-    return await userRepository.login(email, password);
+      {required String username, required String password}) async {
+    return await userRepository.logout();
   }
 }

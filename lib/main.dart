@@ -2,13 +2,14 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:xmed/features/login/data/repositories/user_repository_impl.dart';
+import 'package:xmed/features/login/presentation/cubits/login/login_cubit.dart';
 import 'package:xmed/features/whitelabeling/presentation/cubits/theme/theme_cubit.dart';
 import 'package:xmed/utils/constants/STRINGS.dart';
 
 import 'config/routers/app_router.dart';
 import 'config/themes/app_themes.dart';
 import 'features/connection/presentation/cubits/internet/internet_cubit.dart';
-import 'features/login/presentation/blocs/login/login_bloc.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,7 +25,8 @@ class MyApp extends StatelessWidget {
     final InternetCubit internetCubit =
         InternetCubit(connectivity: Connectivity());
     final ThemeCubit themeCubit = ThemeCubit()..appStartedEvent();
-    final LoginBloc loginBloc = LoginBloc()..add(AppStartedEvent());
+    final LoginCubit loginCubit =
+        LoginCubit(userRepository: UserRepositoryImpl())..appStartedEvent();
 
     return OKToast(
       child: MaterialApp.router(
@@ -37,7 +39,7 @@ class MyApp extends StatelessWidget {
           // Connectivity Cubit
           BlocProvider(create: (context) => internetCubit),
           // Login Bloc
-          BlocProvider(create: (context) => loginBloc),
+          BlocProvider(create: (context) => loginCubit),
           // Clinic Bloc
           BlocProvider(create: (context) => themeCubit)
         ], child: child as Widget),

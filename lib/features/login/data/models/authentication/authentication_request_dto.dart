@@ -4,11 +4,11 @@ import 'dart:convert';
 class AuthenticationRequestDto {
   final String username;
   final String password;
-  AuthenticationRequestDto({
-    required this.username,
-    required this.password,
-  });
-  final int institute = 2272;
+  final int institute;
+  AuthenticationRequestDto(
+      {required this.username,
+      required this.password,
+      required this.institute});
 
   AuthenticationRequestDto copyWith({
     String? username,
@@ -17,6 +17,7 @@ class AuthenticationRequestDto {
     return AuthenticationRequestDto(
       username: username ?? this.username,
       password: password ?? this.password,
+      institute: 2272,
     );
   }
 
@@ -29,6 +30,7 @@ class AuthenticationRequestDto {
 
   factory AuthenticationRequestDto.fromMap(Map<String, dynamic> map) {
     return AuthenticationRequestDto(
+      institute: 2272,
       username: map['username'] as String,
       password: map['password'] as String,
     );
@@ -48,9 +50,12 @@ class AuthenticationRequestDto {
   bool operator ==(covariant AuthenticationRequestDto other) {
     if (identical(this, other)) return true;
 
-    return other.username == username && other.password == password;
+    return other.username == username &&
+        other.password == password &&
+        other.institute == institute;
   }
 
   @override
-  int get hashCode => username.hashCode ^ password.hashCode;
+  int get hashCode =>
+      username.hashCode ^ password.hashCode ^ institute.hashCode;
 }

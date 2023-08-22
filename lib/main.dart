@@ -18,9 +18,6 @@ import 'features/connection/presentation/cubits/internet/internet_cubit.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  final LicenseRepository licenseRepository = LicenseRepositoryImpl();
-  await licenseRepository.retrieveLicense();
-
   runApp(MyApp());
 }
 

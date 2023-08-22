@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 
-import '../../../../core/network/data_states.dart';
+import '../../../../core/error_handling/failures.dart';
 import '../entities/user.dart';
 import '../repositories/user_repository.dart';
 
@@ -9,8 +9,8 @@ class LogInUseCase {
 
   LogInUseCase({required this.userRepository});
 
-  Future<Either<DataState, User>> execute(
+  Future<Either<FailureEntity, User>> execute(
       {required String email, required String password}) async {
-    return await userRepository.login(email, password);
+    return await userRepository.login(email: email, password: password);
   }
 }

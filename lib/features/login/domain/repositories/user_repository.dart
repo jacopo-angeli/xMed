@@ -1,9 +1,10 @@
 import 'package:dartz/dartz.dart';
 
-import '../../../../core/network/data_states.dart';
+import '../../../../core/error_handling/failures.dart';
 import '../entities/user.dart';
 
 abstract class UserRepository {
-  Future<Either<DataState, User>> login(String email, String password);
-  Future<Either<DataState, User>> logout();
+  Future<Either<FailureEntity, User>> login(
+      {required String email, required String password});
+  Future<Either<FailureEntity, User>> logout();
 }

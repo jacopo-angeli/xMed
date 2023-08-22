@@ -2,7 +2,6 @@ import 'package:bloc/bloc.dart';
 import 'package:dartz/dartz.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:xmed/core/error_handling/failures.dart';
-import 'package:xmed/features/login/data/repositories/user_repository_impl.dart';
 import 'package:xmed/features/login/domain/usecases/login.dart';
 import 'package:xmed/features/login/domain/usecases/logout.dart';
 
@@ -11,15 +10,12 @@ import '../../../domain/entities/user.dart';
 part 'login_state.dart';
 
 class LoginCubit extends Cubit<LoginState> {
-  /* REPOSITORY AND USE CASES */
-  final UserRepositoryImpl userRepository;
-  late final LogInUseCase loginUseCase;
-  late final LogOutUseCase logOutUseCase;
+  // USE CASES DECLARATION
+  final LogInUseCase loginUseCase;
+  final LogOutUseCase logOutUseCase;
 
-  LoginCubit({required this.userRepository}) : super(NotLoggedState()) {
-    loginUseCase = LogInUseCase(userRepository: userRepository);
-    logOutUseCase = LogOutUseCase(userRepository: userRepository);
-  }
+  LoginCubit({required this.loginUseCase, required this.logOutUseCase})
+      : super(NotLoggedState());
 
   void appStartedEvent() async {
     // Controllo eventuali username e password salvati nel secure storage

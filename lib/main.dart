@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:xmed/features/login/data/repositories/user_repository_impl.dart';
+import 'package:xmed/features/login/domain/usecases/login.dart';
+import 'package:xmed/features/login/domain/usecases/logout.dart';
 import 'package:xmed/features/login/presentation/cubits/login/login_cubit.dart';
 import 'package:xmed/features/whitelabeling/presentation/cubits/theme/theme_cubit.dart';
 import 'package:xmed/utils/constants/STRINGS.dart';
@@ -13,36 +15,61 @@ import 'features/connection/presentation/cubits/internet/internet_cubit.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const MyApp());
+
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  // REPOSITORIES DECLARATION
+  late final UserRepositoryImpl userRepository;
+
+  // USECASES DECLARATION
+  late final LogInUseCase logInUseCase;
+  late final LogOutUseCase logOutUseCase;
+
+  // BLOCS DECLARATION
+  late final LoginCubit loginCubit;
+  late final InternetCubit internetCubit;
+  late final ThemeCubit themeCubit;
+
+  // ignore: prefer_const_constructors_in_immutables
+  MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    /*--------------------- Global BLoC -------------------- */
-    final InternetCubit internetCubit =
-        InternetCubit(connectivity: Connectivity());
-    final ThemeCubit themeCubit = ThemeCubit()..appStartedEvent();
-    final LoginCubit loginCubit =
-        LoginCubit(userRepository: UserRepositoryImpl())..appStartedEvent();
+    // REPOSITORIES INSTANTIALIZATION
+    userRepository = UserRepositoryImpl();
 
-    return OKToast(
-      child: MaterialApp.router(
-        debugShowCheckedModeBanner: false,
-        routerDelegate: appRouter.delegate(),
-        routeInformationParser: appRouter.defaultRouteParser(),
-        title: appTitle,
-        theme: AppTheme.light,
-        builder: (context, child) => MultiBlocProvider(providers: [
-          // Connectivity Cubit
-          BlocProvider(create: (context) => internetCubit),
-          // Login Bloc
-          BlocProvider(create: (context) => loginCubit),
-          // Clinic Bloc
-          BlocProvider(create: (context) => themeCubit)
-        ], child: child as Widget),
+    // USECASE INITIALIZATION AND DEPENDENCY INJECTION
+    logInUseCase = LogInUseCase(userRepository: userRepository);
+    logOutUseCase = LogOutUseCase(
+        userRepository: userRepository); // ? UserRepository Necessary ?
+
+    // BLOC INITIALIZATION AND DEPENDENCY INJECTION
+    internetCubit = InternetCubit(connectivity: Connectivity());
+    themeCubit = ThemeCubit();
+    loginCubit =
+        LoginCubit(loginUseCase: logInUseCase, logOutUseCase: logOutUseCase);
+
+    // TRIGGER APPSTARTED EVENT
+    themeCubit.appStartedEvent();
+    loginCubit.appStartedEvent();
+
+    // WIDGET BUILD
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => internetCubit),
+        BlocProvider(create: (context) => loginCubit),
+        BlocProvider(create: (context) => themeCubit)
+      ],
+      child: OKToast(
+        child: MaterialApp.router(
+          debugShowCheckedModeBanner: false,
+          routerDelegate: appRouter.delegate(),
+          routeInformationParser: appRouter.defaultRouteParser(),
+          title: appTitle,
+          theme: AppTheme.light,
+        ),
       ),
     );
   }

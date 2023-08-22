@@ -6,3 +6,4 @@ const String baseUrl =
 
 const String passwordToDecryptEncryptedPrivateKey = "Cambiami2013!";
 const String clinicDetailsEndPoint = "/clinicaDetails";
+const String authenticationEndPoint = "/loginVerify";

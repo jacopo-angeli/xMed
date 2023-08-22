@@ -7,15 +7,14 @@ import 'package:xmed/features/login/domain/entities/user.dart';
 import 'package:xmed/features/login/domain/repositories/user_repository.dart';
 
 import '../../../../core/error_handling/failures.dart';
+import '../../../../utils/constants/strings.dart';
 import '../models/authentication/authentication_response_dto.dart';
 
 class UserRepositoryImpl implements UserRepository {
-  User currentUser = User.defaultUser();
-
   @override
   Future<Either<FailureEntity, User>> logout() async {
-    currentUser = User.defaultUser();
-    return Right(currentUser);
+    // Delete dei dati dell'salvati in locale per evitare autologin
+    return Right(User.defaultUser());
   }
 
   @override
@@ -25,10 +24,8 @@ class UserRepositoryImpl implements UserRepository {
     // Gestisce la risposta del backoffice
 
     // Definizione della request body
-    final requestBody = AuthenticationRequestDto.fromMap(<String, dynamic>{
-      'username': email,
-      'password': password,
-    });
+    final requestBody =
+        AuthenticationRequestDto(email: email, password: password);
 
     final client = HttpCustomClient();
     await client.initialize(requestBody.toMap());
@@ -36,7 +33,7 @@ class UserRepositoryImpl implements UserRepository {
     late Response response;
 
     try {
-      response = await client.post('/loginVerify');
+      response = await client.post(authenticationEndPoint);
     } on Exception {
       return const Left((LoginFailure()));
     }
@@ -66,7 +63,6 @@ class UserRepositoryImpl implements UserRepository {
       ..write(key: 'username', value: email)
       ..write(key: 'password', value: password);
 
-    currentUser = user;
-    return Right(currentUser);
+    return Right(user);
   }
 }

@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:xmed/features/documents_managment/presentation/pages/documents_list_page.dart';
 
 import 'app_router.gr.dart';
 
@@ -15,13 +16,14 @@ class AppRouter extends $AppRouter {
   @override
   List<AutoRoute> get routes => [
         AutoRoute(page: LoginView.page, initial: true),
+        AutoRoute(page: DocumentsListRoute.page),
       ];
 }
 
 // Creazione di un'istanza della classe di configurazione dei percorsi.
 final appRouter = AppRouter();
 
-/// La classe [AppRouter] gestisce la navigazione e la gestione dei percorsi all'interno dell'app.
+/// La classe [AppRouter] gestisce la navigazione e la gestione dei percorsi all2'interno dell'app.
 ///
 /// Questa classe estende la classe generata `_$AppRouter`, creata tramite
 /// il processo di generazione del codice AutoRoute. Configura il comportamento

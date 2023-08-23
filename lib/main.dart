@@ -13,6 +13,8 @@ import 'package:xmed/utils/constants/STRINGS.dart';
 import 'config/routers/app_router.dart';
 import 'config/themes/app_themes.dart';
 import 'features/connection/presentation/cubits/internet/internet_cubit.dart';
+import 'features/license/data/repositories/license_repository_impl.dart';
+import 'features/license/domain/repositories/license_repository.dart';
 import 'utils/services/signature_service.dart';
 
 Future<void> main() async {
@@ -30,6 +32,7 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   // REPOSITORIES DECLARATION
   late final UserRepositoryImpl userRepository;
+  late final LicenseRepository licenseRepository;
 
   // USECASES DECLARATION
   late final LogInUseCase logInUseCase;
@@ -47,6 +50,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     // REPOSITORIES INSTANTIALIZATION
     userRepository = UserRepositoryImpl();
+    licenseRepository = LicenseRepositoryImpl();
 
     // USECASE INITIALIZATION AND DEPENDENCY INJECTION
     logInUseCase = LogInUseCase(userRepository: userRepository);

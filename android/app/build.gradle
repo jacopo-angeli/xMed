@@ -69,4 +69,7 @@ flutter {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    
+    //Namirial FEA GUI
+    implementation 'com.namirial.android:namirialfeagui:5.3.4'
 }

@@ -27,7 +27,7 @@ class UserRepositoryImpl implements UserRepository {
     final requestBody =
         AuthenticationRequestDto(username: email, password: password);
 
-    final client = HttpCustomClient();
+    HttpCustomClient client = HttpCustomClient();
     await client.initialize(requestBody.toMap());
 
     late Response response;

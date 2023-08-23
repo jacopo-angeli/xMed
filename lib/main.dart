@@ -2,6 +2,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:xmed/features/login/data/models/authentication/authentication_request_dto.dart';
 import 'package:xmed/features/login/data/repositories/user_repository_impl.dart';
 import 'package:xmed/features/login/domain/usecases/login.dart';
 import 'package:xmed/features/login/domain/usecases/logout.dart';
@@ -12,9 +13,16 @@ import 'package:xmed/utils/constants/STRINGS.dart';
 import 'config/routers/app_router.dart';
 import 'config/themes/app_themes.dart';
 import 'features/connection/presentation/cubits/internet/internet_cubit.dart';
+import 'utils/services/signature_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  final test = AuthenticationRequestDto(
+      username: 'mario@clinica01.it', password: '123123123');
+  print(test.toJson());
+  print(await SignatureService.generateSignature(
+      '{"input":{"institute":2272,"password":"123123123","username":"mario@clinica01.it"}}'));
 
   runApp(MyApp());
 }

@@ -36,7 +36,7 @@ class HttpCustomClient {
   /// della richiesta o dell'impronta digitale nell'ambito del processo di creazione dell'header.
   Future<void> initialize(Map<String, dynamic> mapRequestBody) async {
     // Inizializza il corpo della richiesta.
-    body = jsonEncode({'input': mapRequestBody});
+    body = jsonEncode(mapRequestBody);
 
     // Recupera firma e thumbprint
     String signature = await SignatureService.generateSignature(body);
@@ -47,11 +47,11 @@ class HttpCustomClient {
       receiveTimeout: 60000,
       baseUrl: baseUrl,
       headers: <String, String>{
-        'Content-Type': 'application/json',
-        'X-Signature-Type': 'SHA256withRSA',
-        'X-Signature': signature,
-        'X-Thumbprint': thumbprint,
-        'X-Institute': '2272',
+        'content-type': 'application/json',
+        'x-signature-type': 'SHA256withRSA',
+        'x-signature': signature,
+        'x-thumbprint': thumbprint,
+        'x-institute': '2272',
       },
     ));
 

@@ -35,17 +35,17 @@ class UserRepositoryImpl implements UserRepository {
     try {
       response = await client.post(authenticationEndPoint);
     } on Exception {
-      return const Left((LoginFailure()));
+      return const Left((DBFailure()));
     }
 
     if (response.statusCode != 200) {
-      return const Left((LoginFailure()));
+      return const Left((DBFailure()));
     }
 
     late AuthenticationResponseDto data;
 
     try {
-      data = AuthenticationResponseDto.fromJson(response.data);
+      data = AuthenticationResponseDto.fromJson(response.data.toString());
     } on Exception {
       return const Left((DataParsingFailure()));
     }

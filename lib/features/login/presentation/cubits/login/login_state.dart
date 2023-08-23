@@ -35,6 +35,11 @@ class DisabledCredentialState extends LoginState {
 
 class LoginErrorState extends LoginState {
   final FailureEntity failureEntity;
+  final String email;
+  final String password;
 
-  LoginErrorState({required this.failureEntity});
+  LoginErrorState(
+      {required this.email,
+      required this.password,
+      required this.failureEntity});
 }

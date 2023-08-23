@@ -11,7 +11,9 @@ class XmedLoginButton extends StatelessWidget {
   final LoginCubit loginCubit;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+    BuildContext context,
+  ) {
     return ElevatedButton(
         onPressed: () {
           // TRIGGER EVENTO LOGIN

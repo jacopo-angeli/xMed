@@ -21,9 +21,9 @@ class AuthenticationRequestDto {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'input': <String, dynamic>{
-        'username': username,
+        'institute': institute,
         'password': password,
-        'institute': institute
+        'username': username,
       }
     };
   }

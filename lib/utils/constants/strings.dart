@@ -7,3 +7,9 @@ const String baseUrl =
 const String passwordToDecryptEncryptedPrivateKey = "Cambiami2013!";
 const String clinicDetailsEndPoint = "/clinicaDetails";
 const String authenticationEndPoint = "/loginVerify";
+
+const String wrongCredentialErrorMessage = "Credenziali errate.";
+const String wrongEmailInput = "Inserisci una mail valida.";
+const String emptyFieldError = "Il campo non può essere vuoto.";
+const String backofficeConnectionError =
+    "Il servizio è momentaneamente non disponibile.";

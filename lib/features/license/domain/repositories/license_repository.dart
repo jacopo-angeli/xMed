@@ -1,5 +1,4 @@
 import 'package:dartz/dartz.dart';
-import '../../presentation/cubits/license_cubit.dart';
 import '../entities/license.dart';
 import '../../../../core/error_handling/failures.dart';
 

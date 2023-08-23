@@ -22,7 +22,7 @@ class LoginCubit extends Cubit<LoginState> {
     // Tento il login
     // Gestisco il ritorno
     await Future.delayed(const Duration(seconds: 3));
-    emit(LoggedState(user: User.defaultUser()));
+    emit(NotLoggedState());
   }
 
   void logInRequest({required String email, required String password}) async {

@@ -1,12 +1,13 @@
 import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:xmed/config/routers/app_router.dart';
 import 'package:xmed/config/routers/app_router.gr.dart';
 import 'package:xmed/features/login/presentation/cubits/login/login_cubit.dart';
-import 'package:xmed/features/whitelabeling/presentation/cubits/theme/theme_cubit.dart';
+import 'package:xmed/features/login/presentation/widgets/xmed_disbled_credential_button.dart';
 
+import '../../../whitelabeling/presentation/widgets/xmed_logo.dart';
+import '../widgets/xmed_login_button.dart';
 import '../widgets/xmed_text_form_field.dart';
 
 // Prima pagina dell' applicazione
@@ -38,9 +39,11 @@ class _LoginPageState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
+    // BLOC LISTENER MANAGING LOGIN EVENT
     return BlocListener<LoginCubit, LoginState>(
         listener: (context, state) {
-          if (context.read<LoginCubit>().state.runtimeType == LoggedState) {
+          if (context.read<LoginCubit>().state is LoggedState) {
+            // WHEN LOGGED NAVIGATE TO DOCUMENTS VIEW PAGE
             appRouter.replace(const DocumentsListRoute());
           }
         },
@@ -55,9 +58,9 @@ class _LoginPageState extends State<LoginView> {
                   listeners: [
                     BlocListener<LoginCubit, LoginState>(
                         listener: (context, state) {
-                      // Se è in stato di WrongInputState modifico gli input fields con gli errori dedicati
-                      // WrongInputState contiene un campo apposito per l'email e per la password, viene printato il messaggio
-                      // contenuto nei due campi solo se è presente
+                      // SE È IN STATO DI WRONGINPUTSTATE MODIFICO GLI INPUT FIELDS CON GLI ERRORI DEDICATI
+                      // WRONGINPUTSTATE CONTIENE UN CAMPO APPOSITO PER L'EMAIL E PER LA PASSWORD,
+                      // VIENE PRINTATO IL MESSAGGIO CONTENUTO NEI DUE CAMPI SOLO SE È PRESENTE
                       if (state is WrongInputState) {
                         setState(() {
                           emailFormField = XmedTextFormField(
@@ -79,11 +82,8 @@ class _LoginPageState extends State<LoginView> {
                         });
                       }
                     }),
-                    BlocListener<ThemeCubit, ThemeState>(
-                        listener: (context, state) {
-                      print(state.runtimeType.toString());
-                    }),
                   ],
+                  // MAIN CONTENT DELLA PAGINA
                   child: Form(
                     key: formKey,
                     child: ConstrainedBox(
@@ -93,53 +93,41 @@ class _LoginPageState extends State<LoginView> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            const FlutterLogo(),
+                            // WHITE LABEL LOGO DINAMICO SULLA BASE DELLO STATO DEL THEME CUBIT
+                            const WhiteLabelLogo(),
                             const SizedBox(height: 10),
+
+                            // EMAIL CUSTOM INPUT FIELD
                             emailFormField,
                             const SizedBox(height: 10),
+
+                            // PASSWORD CUSTOM INPUT FIELD
                             passwordFormField,
                             const SizedBox(height: 10),
+
+                            // GESTIONE LOGINCUBIT STATE
                             Builder(builder: (context) {
                               return BlocBuilder<LoginCubit, LoginState>(
                                   builder: (context, state) {
-                                if (state is LoggingState) {
-                                  return const CircularProgressIndicator();
-                                } else if (state is DisabledCredentialState) {
-                                  return TextButton(
-                                      onPressed: () {
-                                        // TBD
-                                      },
-                                      child: const Text(
-                                          "Richiedi Abilitazione delle credenziali.",
-                                          style: TextStyle(fontSize: 12))
-                                      //invio email al supporto tecnico   ,
-                                      );
-                                } else {
-                                  return ElevatedButton(
-                                      onPressed: () {
-                                        // triggerare evento login
-                                        context.read<LoginCubit>().logInRequest(
-                                            email: "yo", password: "yoyo");
-                                        //     LoginAttemptEvent(
-                                        //         credentials: Credentials(
-                                        //             email:
-                                        //                 emailFormField.getContent(),
-                                        //             password: passwordFormField
-                                        //                 .getContent())));
-                                      },
-                                      style: const ButtonStyle(
-                                          padding: MaterialStatePropertyAll(
-                                              EdgeInsets.only(
-                                                  left: 30,
-                                                  right: 30,
-                                                  top: 20,
-                                                  bottom: 20))),
-                                      child: Text(
-                                        "ACCEDI",
-                                        style: GoogleFonts.chewy(
-                                            textStyle:
-                                                const TextStyle(fontSize: 30)),
-                                      ));
+                                // RECUPERO ISTANZA DEL CUBIT
+                                final loginCubit = context.read<LoginCubit>();
+
+                                // GESTIONE STATO DEL CUBIT
+                                switch (state.runtimeType) {
+                                  // LOGGING STATE
+                                  case LoggingState:
+                                    return const CircularProgressIndicator();
+
+                                  // DISABLED CREDENTIAL STATE
+                                  case DisabledCredentialState:
+                                    return const XmedDisabledCredentialButton();
+
+                                  // NOTLOGGEDSTATE
+                                  // WRONGINPUTSTATE
+                                  // WRONGCREDENTIALSSTATE
+                                  default:
+                                    return XmedLoginButton(
+                                        loginCubit: loginCubit);
                                 }
                               });
                             })

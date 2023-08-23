@@ -2,31 +2,35 @@
 import 'dart:convert';
 
 class AuthenticationRequestDto {
-  final String email;
+  // ! è una email
+  final String username;
   final String password;
   final int institute = 2272;
-  AuthenticationRequestDto({required this.email, required this.password});
+  AuthenticationRequestDto({required this.username, required this.password});
 
   AuthenticationRequestDto copyWith({
-    String? email,
+    String? username,
     String? password,
   }) {
     return AuthenticationRequestDto(
-      email: email ?? this.email,
+      username: username ?? this.username,
       password: password ?? this.password,
     );
   }
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'email': email,
-      'password': password,
+      'input': <String, dynamic>{
+        'username': username,
+        'password': password,
+        'institute': institute
+      }
     };
   }
 
   factory AuthenticationRequestDto.fromMap(Map<String, dynamic> map) {
     return AuthenticationRequestDto(
-      email: map['email'] as String,
+      username: map['username'] as String,
       password: map['password'] as String,
     );
   }
@@ -39,17 +43,18 @@ class AuthenticationRequestDto {
 
   @override
   String toString() =>
-      'AuthenticationRequestDto(email: $email, password: $password)';
+      'AuthenticationRequestDto(username: $username, password: $password)';
 
   @override
   bool operator ==(covariant AuthenticationRequestDto other) {
     if (identical(this, other)) return true;
 
-    return other.email == email &&
+    return other.username == username &&
         other.password == password &&
         other.institute == institute;
   }
 
   @override
-  int get hashCode => email.hashCode ^ password.hashCode ^ institute.hashCode;
+  int get hashCode =>
+      username.hashCode ^ password.hashCode ^ institute.hashCode;
 }

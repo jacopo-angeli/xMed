@@ -9,7 +9,7 @@ import 'package:xmed/features/login/domain/usecases/login.dart';
 import 'package:xmed/features/login/domain/usecases/logout.dart';
 import 'package:xmed/features/login/presentation/cubits/login/login_cubit.dart';
 import 'package:xmed/features/whitelabeling/presentation/cubits/theme/theme_cubit.dart';
-import 'package:xmed/utils/constants/STRINGS.dart';
+import 'package:xmed/utils/constants/strings.dart';
 
 import 'config/routers/app_router.dart';
 import 'config/themes/app_themes.dart';

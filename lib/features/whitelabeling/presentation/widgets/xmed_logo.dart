@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:xmed/features/whitelabeling/presentation/cubits/theme/theme_cubit.dart';
 
-class Logo extends StatelessWidget {
-  const Logo({
+class WhiteLabelLogo extends StatelessWidget {
+  const WhiteLabelLogo({
     super.key,
   });
 

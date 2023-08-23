@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:js_interop';
-
 import 'package:dio/dio.dart';
 import 'package:dio_logging_interceptor/dio_logging_interceptor.dart';
 import 'package:xmed/utils/services/crypto_service.dart';
@@ -47,7 +45,7 @@ class HttpCustomClient {
       receiveTimeout: 60000,
       baseUrl: baseUrl,
       headers: <String, String>{
-        'Content-Type': 'application/json',
+        'content-type': 'application/json',
         'X-Signature-Type': 'SHA256withRSA',
         'X-Signature': signature,
         'X-Thumbprint': thumbprint,
@@ -62,7 +60,7 @@ class HttpCustomClient {
   /// Perform POST request and then autodispose
   Future<Response<dynamic>> post(path) async {
     // Chiamata prima dell'inizializzazione lancia eccezione
-    if (client.options.baseUrl.isNull) {
+    if (client.options.baseUrl.isEmpty) {
       throw Exception("Client not initialized.");
     }
     final response = await client.post(path, data: body);

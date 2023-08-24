@@ -3,7 +3,11 @@ part of 'login_cubit.dart';
 @immutable
 abstract class LoginState {}
 
-class NotLoggedState extends LoginState {}
+class NotLoggedState extends LoginState {
+  final String? username;
+
+  NotLoggedState({this.username});
+}
 
 class LoggingState extends LoginState {}
 

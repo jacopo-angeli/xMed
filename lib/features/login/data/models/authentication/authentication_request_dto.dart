@@ -1,13 +1,26 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+/// Classe per rappresentare i dati di richiesta di autenticazione.
 class AuthenticationRequestDto {
-  // ! è una email
+  ///  L'indirizzo email dell'utente.
   final String username;
-  final String password;
-  final int institute = 2272;
-  AuthenticationRequestDto({required this.username, required this.password});
 
+  /// La password dell'utente.
+  final String password;
+
+  /// L'ID dell'istituto di default.
+  final int institute = 2272;
+
+  /// Costruttore della classe [AuthenticationRequestDto].
+  ///
+  /// Richiede l'indirizzo email ([username]) e la password ([password]) dell'utente.
+  AuthenticationRequestDto({
+    required this.username,
+    required this.password,
+  });
+
+  /// Metodo per creare una copia dell'oggetto con alcuni valori modificati.
   AuthenticationRequestDto copyWith({
     String? username,
     String? password,
@@ -18,6 +31,7 @@ class AuthenticationRequestDto {
     );
   }
 
+  /// Converte l'oggetto in una mappa (Map) di chiavi e valori.
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'input': <String, dynamic>{
@@ -28,6 +42,7 @@ class AuthenticationRequestDto {
     };
   }
 
+  /// Costruttore per creare un oggetto dalla rappresentazione JSON.
   factory AuthenticationRequestDto.fromMap(Map<String, dynamic> map) {
     return AuthenticationRequestDto(
       username: map['username'] as String,
@@ -35,8 +50,10 @@ class AuthenticationRequestDto {
     );
   }
 
+  /// Converte l'oggetto in una rappresentazione JSON.
   String toJson() => json.encode(toMap());
 
+  /// Costruttore per creare un oggetto dalla rappresentazione JSON.
   factory AuthenticationRequestDto.fromJson(String source) =>
       AuthenticationRequestDto.fromMap(
           json.decode(source) as Map<String, dynamic>);

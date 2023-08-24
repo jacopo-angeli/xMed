@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:dartz/dartz.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:xmed/core/error_handling/failures.dart';
 import 'package:xmed/features/login/domain/usecases/login.dart';
@@ -20,12 +21,29 @@ class LoginCubit extends Cubit<LoginState> {
       : super(NotLoggedState());
 
   void appStartedEvent() async {
-    // Controllo eventuali username e password salvati nel secure storage
-    // Se li trovo tento il login
-    // Gestisco il ritorno nel caso le credenziali siano state disattivate,
-    // Gestisco il ritorno nel caso le credenziali siano state modificate
-    await Future.delayed(const Duration(seconds: 3));
-    emit(LoggedState(user: User.defaultUser()));
+    emit(LoggingState());
+    // RECUPERO username E password DAL SECURE STORAGE
+    const storage = FlutterSecureStorage();
+    Map<String, String> secureStorageContent = await storage.readAll();
+    final String? password = secureStorageContent['password'];
+    final String? username = secureStorageContent['username'];
+
+    // AUTOLOGIN
+    if (password != null) {
+      if (username != null) {
+        // TENTATIVO DI LOGIN
+        Either<FailureEntity, User> result =
+            await loginUseCase.execute(email: username, password: password);
+
+        // GESTIONE DEL RISULTATO
+        _loginResultHandler(result, username, password);
+      }
+    } else {
+      // NOTLOGGED STATE CON CAMPO USERNAME, SE UN UTENTE EFFETTUA
+      // IL LOGOUT IL CAMPO PASSWORD VIENE ELIMINATO DAL SECURE STORAGE
+      // OBBLIGANDO L'UTENTE A REINSERIRLA
+      emit(NotLoggedState(username: username));
+    }
   }
 
   void logInRequest({required String email, required String password}) async {
@@ -46,28 +64,36 @@ class LoginCubit extends Cubit<LoginState> {
           await loginUseCase.execute(email: email, password: password);
 
       // GESTIONE DEL RISULTATO
-      // ! CREDENZIALI ERRATE E ERRORE CON IL DATABASE TORNANO 500
-      result.fold((l) {
-        print(l.runtimeType);
-        switch (l.runtimeType) {
-          case (DBFailure):
-          case (LoginFailure):
-            emit(WrongInputState(
-                email: email,
-                password: password,
-                emailError: wrongCredentialErrorMessage,
-                passwordError: wrongCredentialErrorMessage));
-            break;
-          default:
-            break;
-        }
-      }, (r) {
-        emit(LoggedState(user: r));
-      });
+      _loginResultHandler(result, email, password);
     }
   }
 
-  void logOutRequest() {
-    // Effettuo il logout e gestisco il ritorno
+  //HANDLER RISULTATO CHIAMATA DI LOGIN
+  void _loginResultHandler(
+      Either<FailureEntity, User> result, String email, String password) {
+    result.fold((l) {
+      switch (l.runtimeType) {
+        case (DBFailure):
+        case (LoginFailure):
+          emit(WrongInputState(
+              email: email,
+              password: password,
+              emailError: wrongCredentialErrorMessage,
+              passwordError: wrongCredentialErrorMessage));
+          break;
+        default:
+          break;
+      }
+    }, (r) {
+      emit(LoggedState(user: r));
+    });
+  }
+
+  void logOutRequest() async {
+    // ELIMINO DAL SECURE STORAGE password
+    // EMETTO LO STATO DI NOTLOGGED
+    const storage = FlutterSecureStorage();
+    await storage.delete(key: 'password');
+    emit(NotLoggedState(username: await storage.read(key: 'username')));
   }
 }

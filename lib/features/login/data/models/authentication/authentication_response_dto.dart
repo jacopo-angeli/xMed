@@ -1,136 +1,88 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-import 'package:collection/collection.dart';
-
-import '../../../../../utils/constants/enums/credential_status.dart';
-import '../../../../../utils/global_data_models/common/message.dart';
-
+/// Classe per rappresentare il DTO (Data Transfer Object) di una risposta di autenticazione.
 class AuthenticationResponseDto {
-  final Output output;
+  final Body body; // Contenuto della risposta
+
+  /// Estrae l'ID della clinica dalla risposta.
+  int get getIdClinica => body.idClinica;
+
+  /// Estrae lo stato dalla risposta.
+  String get getStatus => body.status;
+
+  /// Estrae il flag di licenza obbligatoria dalla risposta.
+  String get getFlagLicenzaObbligatoria => body.flagLicenzaObbligatoria;
+
+  /// Costruttore della classe.
   AuthenticationResponseDto({
-    required this.output,
+    required this.body,
   });
 
+  /// Metodo per creare una copia dell'oggetto con alcuni valori modificati.
   AuthenticationResponseDto copyWith({
-    Output? output,
+    Body? body,
   }) {
     return AuthenticationResponseDto(
-      output: output ?? this.output,
+      body: body ?? this.body,
     );
   }
 
+  /// Converte l'oggetto in una mappa (Map) di chiavi e valori.
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'output': output.toMap(),
+      'body': body.toMap(),
     };
   }
 
+  /// Costruttore per creare un oggetto dalla rappresentazione JSON.
   factory AuthenticationResponseDto.fromMap(Map<String, dynamic> map) {
     return AuthenticationResponseDto(
-      output: Output.fromMap(map['output'] as Map<String, dynamic>),
+      body: Body.fromMap(map['output']['body'] as Map<String, dynamic>),
     );
   }
 
+  /// Converte l'oggetto in una rappresentazione JSON.
   String toJson() => json.encode(toMap());
 
-  factory AuthenticationResponseDto.fromJson(String source) =>
-      AuthenticationResponseDto.fromMap(
-          json.decode(source) as Map<String, dynamic>);
+  /// Costruttore per creare un oggetto dalla rappresentazione JSON.
+  factory AuthenticationResponseDto.fromJson(String source) {
+    return AuthenticationResponseDto.fromMap(
+        json.decode(source) as Map<String, dynamic>);
+  }
 
   @override
-  String toString() => 'AuthenticationResponseDto(output: $output)';
+  String toString() => 'AuthenticationResponseDto(body: $body)';
 
   @override
   bool operator ==(covariant AuthenticationResponseDto other) {
     if (identical(this, other)) return true;
 
-    return other.output == output;
+    return other.body == body;
   }
 
   @override
-  int get hashCode => output.hashCode;
+  int get hashCode => body.hashCode;
 }
 
-class Output {
-  final Body body;
-  final List<Message> messages;
-  final String result;
-  Output({
-    required this.body,
-    required this.messages,
-    required this.result,
-  });
-
-  Output copyWith({
-    Body? body,
-    List<Message>? messages,
-    String? result,
-  }) {
-    return Output(
-      body: body ?? this.body,
-      messages: messages ?? this.messages,
-      result: result ?? this.result,
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'body': body.toMap(),
-      'messages': messages.map((x) => x.toMap()).toList(),
-      'result': result,
-    };
-  }
-
-  factory Output.fromMap(Map<String, dynamic> map) {
-    return Output(
-      body: Body.fromMap(map['body'] as Map<String, dynamic>),
-      messages: List<Message>.from(
-        (map['messages'] as List<int>).map<Message>(
-          (x) => Message.fromMap(x as Map<String, dynamic>),
-        ),
-      ),
-      result: map['result'] as String,
-    );
-  }
-
-  String toJson() => json.encode(toMap());
-
-  factory Output.fromJson(String source) =>
-      Output.fromMap(json.decode(source) as Map<String, dynamic>);
-
-  @override
-  String toString() =>
-      'Output(body: $body, messages: $messages, result: $result)';
-
-  @override
-  bool operator ==(covariant Output other) {
-    if (identical(this, other)) return true;
-    final listEquals = const DeepCollectionEquality().equals;
-
-    return other.body == body &&
-        listEquals(other.messages, messages) &&
-        other.result == result;
-  }
-
-  @override
-  int get hashCode => body.hashCode ^ messages.hashCode ^ result.hashCode;
-}
-
+/// Classe per rappresentare il corpo (body) di una risposta di autenticazione.
 class Body {
-  final String flagLicenzaObbligatoria;
-  final int idClinica;
-  final CredentialStatus status;
+  final String flagLicenzaObbligatoria; // Flag di licenza obbligatoria
+  final int idClinica; // ID della clinica
+  final String status; // Stato
+
+  /// Costruttore della classe.
   Body({
     required this.flagLicenzaObbligatoria,
     required this.idClinica,
     required this.status,
   });
 
+  /// Metodo per creare una copia dell'oggetto con alcuni valori modificati.
   Body copyWith({
     String? flagLicenzaObbligatoria,
     int? idClinica,
-    CredentialStatus? status,
+    String? status,
   }) {
     return Body(
       flagLicenzaObbligatoria:
@@ -140,6 +92,7 @@ class Body {
     );
   }
 
+  /// Converte l'oggetto in una mappa (Map) di chiavi e valori.
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'flagLicenzaObbligatoria': flagLicenzaObbligatoria,
@@ -148,16 +101,19 @@ class Body {
     };
   }
 
+  /// Costruttore per creare un oggetto dalla rappresentazione JSON.
   factory Body.fromMap(Map<String, dynamic> map) {
     return Body(
-      flagLicenzaObbligatoria: map['flagLicenzaObbligatoria'] as String,
-      idClinica: map['idClinica'] as int,
+      flagLicenzaObbligatoria: map['flagLicenzaObbligatoria'],
+      idClinica: map['idClinica'],
       status: map['status'],
     );
   }
 
+  /// Converte l'oggetto in una rappresentazione JSON.
   String toJson() => json.encode(toMap());
 
+  /// Costruttore per creare un oggetto dalla rappresentazione JSON.
   factory Body.fromJson(String source) =>
       Body.fromMap(json.decode(source) as Map<String, dynamic>);
 

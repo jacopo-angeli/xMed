@@ -23,18 +23,18 @@ class DocumentsListWidget extends StatelessWidget {
               children: [
                 Column(
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
-                    SizedBox(
-                      child: WhiteLabelLogo(),
+                    const SizedBox(
                       height: 60,
                       width: 60,
+                      child: WhiteLabelLogo(),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     Text("DOCUMENTI SCARICATI",
                         style: GoogleFonts.luckiestGuy(
-                            textStyle: TextStyle(
+                            textStyle: const TextStyle(
                                 color: Colors.black,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 32)))
@@ -62,17 +62,21 @@ class DocumentsListWidget extends StatelessWidget {
             } else {
               final List<Document> listaDocumenti =
                   context.read<DocumentsListCubit>().state.documentList;
-              return ListView(children: [
-                for (var doc in listaDocumenti)
-                  Card(
-                      child: ListTile(
-                    leading: Icon(Icons.auto_stories_rounded),
-                    title: Text(doc.nome),
-                    subtitle: Text(doc.descrizione),
-                    isThreeLine: true,
-                    trailing: Text(doc.status),
-                  ))
-              ]);
+              Widget widget = Expanded(
+                child: ListView(
+                  children: [
+                    for (var doc in listaDocumenti)
+                      ListTile(
+                        leading: Icon(Icons.auto_stories_rounded),
+                        title: Text(doc.nome),
+                        subtitle: Text(doc.descrizione),
+                        isThreeLine: true,
+                        trailing: Text(doc.status),
+                      )
+                  ],
+                ),
+              );
+              return widget;
             }
           },
         )

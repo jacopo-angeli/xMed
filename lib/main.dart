@@ -3,9 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:oktoast/oktoast.dart';
-import 'package:xmed/features/login/data/models/authentication/authentication_request_dto.dart';
-import 'package:xmed/features/login/data/repositories/user_repository_impl.dart';
-import 'package:xmed/features/login/domain/usecases/login.dart';
+import 'features/login/data/repositories/user_repository_impl.dart';
+import 'features/login/domain/usecases/login.dart';
 import 'package:xmed/features/login/domain/usecases/logout.dart';
 import 'package:xmed/features/login/presentation/cubits/login/login_cubit.dart';
 import 'package:xmed/features/whitelabeling/presentation/cubits/theme/theme_cubit.dart';
@@ -16,13 +15,13 @@ import 'config/themes/app_themes.dart';
 import 'features/connection/presentation/cubits/internet/internet_cubit.dart';
 import 'features/license/data/repositories/license_repository_impl.dart';
 import 'features/license/domain/repositories/license_repository.dart';
-import 'utils/services/signature_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    statusBarColor: Colors.transparent,
-  ));
+      systemNavigationBarColor: Colors.white,
+      statusBarColor: Colors.white,
+      statusBarIconBrightness: Brightness.dark));
 
   runApp(MyApp());
 }

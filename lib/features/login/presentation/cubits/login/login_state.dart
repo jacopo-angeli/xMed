@@ -1,49 +1,47 @@
 part of 'login_cubit.dart';
 
 @immutable
-abstract class LoginState {}
-
-class NotLoggedState extends LoginState {
+abstract class LoginState {
   final String? username;
+  final String? password;
 
-  NotLoggedState({this.username});
+  const LoginState({this.username, this.password});
 }
 
-class LoggingState extends LoginState {}
+class NotLoggedState extends LoginState {
+  const NotLoggedState({super.username});
+}
+
+class LoggingState extends LoginState {
+  const LoggingState({super.username, super.password});
+}
 
 class LoggedState extends LoginState {
   final User user;
 
-  LoggedState({required this.user});
+  const LoggedState({required this.user});
 }
 
 class WrongInputState extends LoginState {
   final String emailError;
   final String passwordError;
-  final String? email;
-  final String? password;
 
   WrongInputState(
       {required this.emailError,
       required this.passwordError,
-      this.email,
-      this.password});
+      super.username,
+      super.password});
 }
 
 class DisabledCredentialState extends LoginState {
-  final String? email;
-  final String? password;
-
-  DisabledCredentialState({this.email, this.password});
+  const DisabledCredentialState({super.username, super.password});
 }
 
 class LoginErrorState extends LoginState {
   final FailureEntity failureEntity;
-  final String email;
-  final String password;
 
-  LoginErrorState(
-      {required this.email,
-      required this.password,
+  const LoginErrorState(
+      {required super.username,
+      required super.password,
       required this.failureEntity});
 }

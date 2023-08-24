@@ -1,11 +1,10 @@
-import 'dart:html';
-
 import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:side_navigation/side_navigation.dart';
 import 'package:xmed/features/documents_managment/presentation/cubits/documents/documents_cubit.dart';
+import 'package:xmed/features/whitelabeling/presentation/widgets/xmed_logo.dart';
 
 import '../../domain/enitites/Document.dart';
 
@@ -22,13 +21,21 @@ int selectedIndex = 0;
 class _DocumentsListPageState extends State<DocumentsListPage> {
   List<Widget> views = [
     Scaffold(
-      appBar: AppBar(
-          backgroundColor: Colors.lightBlue,
-          title: Center(
-              child: Text("DOCUMENTI SCARICATI",
-                  style: GoogleFonts.catamaran(
-                      textStyle: TextStyle(
-                          color: Colors.black, fontWeight: FontWeight.bold))))),
+      backgroundColor: Colors.white,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(300),
+        child: AppBar(
+            title: Center(
+                child: Column(
+          children: [
+            SizedBox(height: 60, width: 60, child: WhiteLabelLogo()),
+            Text("DOCUMENTI SCARICATI",
+                style: GoogleFonts.luckiestGuy(
+                    textStyle: TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.bold))),
+          ],
+        ))),
+      ),
       body: BlocBuilder<DocumentsListCubit, DocumentsListState>(
         builder: (context, state) {
           if (state is EmptyDocumentsListState) {
@@ -79,46 +86,82 @@ class _DocumentsListPageState extends State<DocumentsListPage> {
       child: Text('Impostazioni'),
     ),
   ];
+
+  int _selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => DocumentsListCubit()..sync([]),
-      child: Scaffold(
-        body: Row(
-          children: [
-            SideNavigationBar(
-              theme: SideNavigationBarTheme(
-                  backgroundColor: Colors.grey.shade800,
-                  itemTheme: SideNavigationBarItemTheme(
-                    unselectedBackgroundColor: Colors.grey.shade800,
-                    selectedBackgroundColor: Colors.grey,
-                    selectedItemColor: Colors.white,
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: BlocProvider(
+        create: (context) => DocumentsListCubit()..sync([]),
+        child: SafeArea(
+          child: Row(
+            children: <Widget>[
+              NavigationRail(
+                selectedIndex: _selectedIndex,
+                groupAlignment: 0,
+                onDestinationSelected: (int index) {
+                  setState(() {
+                    _selectedIndex = index;
+                  });
+                },
+                labelType: NavigationRailLabelType.all,
+                destinations: const <NavigationRailDestination>[
+                  NavigationRailDestination(
+                    icon: Icon(Icons.document_scanner_outlined),
+                    selectedIcon: Icon(Icons.document_scanner),
+                    label: Text('First'),
                   ),
-                  togglerTheme: SideNavigationBarTogglerTheme.standard(),
-                  dividerTheme: SideNavigationBarDividerTheme.standard()),
-              selectedIndex: selectedIndex,
-              items: [
-                SideNavigationBarItem(
-                  icon: Icons.edit_document,
-                  label: 'Documenti Scaricati',
-                ),
-                SideNavigationBarItem(
-                  icon: Icons.settings,
-                  label: 'Impostazioni',
-                ),
-              ],
-              onTap: (index) {
-                setState(() {
-                  selectedIndex = index;
-                });
-              },
-            ),
-            Expanded(
-              child: views.elementAt(selectedIndex),
-            ),
-          ],
+                  NavigationRailDestination(
+                    icon: Icon(Icons.bookmark_border),
+                    selectedIcon: Icon(Icons.book),
+                    label: Text('Second'),
+                  ),
+                ],
+              ),
+              const VerticalDivider(thickness: 1, width: 1),
+              // This is the main content.
+              Expanded(child: views[_selectedIndex]),
+            ],
+          ),
         ),
       ),
     );
+    // child: Scaffold(
+    //   body: Row(
+    //     children: [
+    //       SideNavigationBar(
+    //         theme: SideNavigationBarTheme(
+    //             backgroundColor: Colors.grey.shade800,
+    //             itemTheme: SideNavigationBarItemTheme(
+    //               unselectedBackgroundColor: Colors.grey.shade800,
+    //               selectedBackgroundColor: Colors.grey,
+    //               selectedItemColor: Colors.white,
+    //             ),
+    //             togglerTheme: SideNavigationBarTogglerTheme.standard(),
+    //             dividerTheme: SideNavigationBarDividerTheme.standard()),
+    //         selectedIndex: selectedIndex,
+    //         items: const [
+    //           SideNavigationBarItem(
+    //             icon: Icons.edit_document,
+    //             label: 'Documenti Scaricati',
+    //           ),
+    //           SideNavigationBarItem(
+    //             icon: Icons.settings,
+    //             label: 'Impostazioni',
+    //           ),
+    //         ],
+    //         onTap: (index) {
+    //           setState(() {
+    //             selectedIndex = index;
+    //           });
+    //         },
+    //       ),
+    //       Expanded(
+    //         child: views.elementAt(selectedIndex),
+    //       ),
+    //     ],
+    //   ),
+    // ),
   }
 }

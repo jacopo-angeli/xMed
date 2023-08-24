@@ -45,6 +45,7 @@ class _LoginPageState extends State<LoginView> {
     // BLOC LISTENER MANAGING LOGIN EVENT
     return BlocListener<LoginCubit, LoginState>(
         listener: (context, state) {
+          print("okay");
           final loginCubitState = context.read<LoginCubit>().state;
           if (loginCubitState is LoggedState) {
             // WHEN LOGGED NAVIGATE TO DOCUMENTS VIEW PAGE

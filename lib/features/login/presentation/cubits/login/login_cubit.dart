@@ -21,10 +21,11 @@ class LoginCubit extends Cubit<LoginState> {
 
   void appStartedEvent() async {
     // Controllo eventuali username e password salvati nel secure storage
-    // Tento il login
-    // Gestisco il ritorno
+    // Se li trovo tento il login
+    // Gestisco il ritorno nel caso le credenziali siano state disattivate,
+    // Gestisco il ritorno nel caso le credenziali siano state modificate
     await Future.delayed(const Duration(seconds: 3));
-    emit(NotLoggedState());
+    emit(LoggedState(user: User.defaultUser()));
   }
 
   void logInRequest({required String email, required String password}) async {
@@ -45,12 +46,11 @@ class LoginCubit extends Cubit<LoginState> {
           await loginUseCase.execute(email: email, password: password);
 
       // GESTIONE DEL RISULTATO
+      // ! CREDENZIALI ERRATE E ERRORE CON IL DATABASE TORNANO 500
       result.fold((l) {
+        print(l.runtimeType);
         switch (l.runtimeType) {
           case (DBFailure):
-            emit(LoginErrorState(
-                email: email, password: password, failureEntity: l));
-            break;
           case (LoginFailure):
             emit(WrongInputState(
                 email: email,
@@ -61,7 +61,9 @@ class LoginCubit extends Cubit<LoginState> {
           default:
             break;
         }
-      }, (r) => null);
+      }, (r) {
+        emit(LoggedState(user: r));
+      });
     }
   }
 

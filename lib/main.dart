@@ -1,5 +1,6 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:xmed/features/login/data/models/authentication/authentication_request_dto.dart';
@@ -19,17 +20,14 @@ import 'utils/services/signature_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  final test = AuthenticationRequestDto(
-      username: 'mario@clinica01.it', password: '123123123');
-  print(test.toJson());
-  print(await SignatureService.generateSignature(
-      '{"input":{"institute":2272,"password":"123123123","username":"mario@clinica01.it"}}'));
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+  ));
 
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   // REPOSITORIES DECLARATION
   late final UserRepositoryImpl userRepository;
   late final LicenseRepository licenseRepository;
@@ -43,36 +41,40 @@ class MyApp extends StatelessWidget {
   late final InternetCubit internetCubit;
   late final ThemeCubit themeCubit;
 
-  // ignore: prefer_const_constructors_in_immutables
   MyApp({super.key});
 
   @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
   Widget build(BuildContext context) {
     // REPOSITORIES INSTANTIALIZATION
-    userRepository = UserRepositoryImpl();
-    licenseRepository = LicenseRepositoryImpl();
+    widget.userRepository = UserRepositoryImpl();
+    widget.licenseRepository = LicenseRepositoryImpl();
 
     // USECASE INITIALIZATION AND DEPENDENCY INJECTION
-    logInUseCase = LogInUseCase(userRepository: userRepository);
-    logOutUseCase = LogOutUseCase(
-        userRepository: userRepository); // ? UserRepository Necessary ?
+    widget.logInUseCase = LogInUseCase(userRepository: widget.userRepository);
+    widget.logOutUseCase = LogOutUseCase(
+        userRepository: widget.userRepository); // ? UserRepository Necessary ?
 
     // BLOC INITIALIZATION AND DEPENDENCY INJECTION
-    internetCubit = InternetCubit(connectivity: Connectivity());
-    themeCubit = ThemeCubit();
-    loginCubit =
-        LoginCubit(loginUseCase: logInUseCase, logOutUseCase: logOutUseCase);
+    widget.internetCubit = InternetCubit(connectivity: Connectivity());
+    widget.themeCubit = ThemeCubit();
+    widget.loginCubit = LoginCubit(
+        loginUseCase: widget.logInUseCase, logOutUseCase: widget.logOutUseCase);
 
     // TRIGGER APPSTARTED EVENT
-    themeCubit.appStartedEvent();
-    loginCubit.appStartedEvent();
+    widget.themeCubit.appStartedEvent();
+    widget.loginCubit.appStartedEvent();
 
     // WIDGET BUILD
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => internetCubit),
-        BlocProvider(create: (context) => loginCubit),
-        BlocProvider(create: (context) => themeCubit)
+        BlocProvider(create: (context) => widget.internetCubit),
+        BlocProvider(create: (context) => widget.loginCubit),
+        BlocProvider(create: (context) => widget.themeCubit)
       ],
       child: OKToast(
         child: MaterialApp.router(
@@ -84,5 +86,13 @@ class MyApp extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    widget.internetCubit.close();
+    widget.themeCubit.close();
+    widget.loginCubit.close();
+    super.dispose();
   }
 }

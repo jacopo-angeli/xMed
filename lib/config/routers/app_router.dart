@@ -7,11 +7,7 @@ import 'app_router.gr.dart';
 @AutoRouterConfig() // Utilizzo di AutoRoute.
 class AppRouter extends $AppRouter {
   @override
-  RouteType get defaultRouteType => const RouteType.custom(
-        transitionsBuilder: TransitionsBuilders.zoomIn,
-        durationInMilliseconds: 400,
-        reverseDurationInMilliseconds: 200,
-      );
+  RouteType get defaultRouteType => const RouteType.cupertino();
 
   @override
   List<AutoRoute> get routes => [

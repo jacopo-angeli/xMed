@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 
-import '../../../domain/enitites/Document.dart';
+import '../../../domain/entities/Document.dart';
 
 part 'documents_state.dart';
 

@@ -46,7 +46,7 @@ class LicenseRepositoryImpl implements LicenseRepository {
     } on Exception {
       return const Left((DataParsingFailure()));
     }
-
+    //TODO capire come creare una licenza con Namirial SDK
     return const Right(null);
   }
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:xmed/features/documents_managment/domain/enitites/Document.dart';
+import 'package:xmed/features/documents_managment/domain/entities/Document.dart';
 
 import '../../../whitelabeling/presentation/widgets/xmed_logo.dart';
 import '../cubits/documents/documents_cubit.dart';

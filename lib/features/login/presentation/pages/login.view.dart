@@ -10,7 +10,6 @@ import 'package:xmed/features/login/presentation/widgets/xmed_disbled_credential
 
 import '../../../../utils/constants/strings.dart';
 import '../../../whitelabeling/presentation/widgets/xmed_logo.dart';
-import '../widgets/xmed_login_button.dart';
 import '../widgets/xmed_text_form_field.dart';
 
 // Prima pagina dell' applicazione

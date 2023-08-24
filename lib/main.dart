@@ -49,26 +49,30 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   @override
-  Widget build(BuildContext context) {
-    // REPOSITORIES INSTANTIALIZATION
+  void initState() {
+    // REPOSITORY INSTANTIALIZATION
     widget.userRepository = UserRepositoryImpl();
     widget.licenseRepository = LicenseRepositoryImpl();
 
-    // USECASE INITIALIZATION AND DEPENDENCY INJECTION
+    // USECASES INSTANTIALIZATION
     widget.logInUseCase = LogInUseCase(userRepository: widget.userRepository);
-    widget.logOutUseCase = LogOutUseCase(
-        userRepository: widget.userRepository); // ? UserRepository Necessary ?
+    widget.logOutUseCase = LogOutUseCase(userRepository: widget.userRepository);
 
     // BLOC INITIALIZATION AND DEPENDENCY INJECTION
-    widget.internetCubit = InternetCubit(connectivity: Connectivity());
-    widget.themeCubit = ThemeCubit();
     widget.loginCubit = LoginCubit(
         loginUseCase: widget.logInUseCase, logOutUseCase: widget.logOutUseCase);
+    widget.internetCubit = InternetCubit(connectivity: Connectivity());
+    widget.themeCubit = ThemeCubit();
 
     // TRIGGER APPSTARTED EVENT
     widget.themeCubit.appStartedEvent();
     widget.loginCubit.appStartedEvent();
 
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     // WIDGET BUILD
     return MultiBlocProvider(
       providers: [

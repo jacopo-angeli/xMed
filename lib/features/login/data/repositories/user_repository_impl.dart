@@ -23,41 +23,55 @@ class UserRepositoryImpl implements UserRepository {
     // Contatta il back-office con una coppia username e password
     // Gestisce la risposta del backoffice
 
-    // Definizione della request body
+    // DEFINIZIONE DELLA REQUEST BODY
     final requestBody =
         AuthenticationRequestDto(username: email, password: password);
 
+    // DICHIARAZIONE DEL CLIENT + SUA INIZIALIZZAZIONE
     HttpCustomClient client = HttpCustomClient();
     await client.initialize(requestBody.toMap());
 
+    // DICHIARAZIONE VARIABILE RESPONSE
     late Response response;
 
+    // TENTO IL LOGIN
     try {
       response = await client.post(authenticationEndPoint);
     } on Exception {
       return const Left((LoginFailure()));
     }
 
+    // RESPONSE STATUS CODE MAP
+    // 200
+    //    CAMPO username VUOTO
+    //    CAMPO password VUOTO
+    //    CREDENZIALI CORRETTE
+    // 500
+    //    CREDENZIALI ERRATE
+    //    ERRORE DI CONNESSIONE CON IL SERVER
     if (response.statusCode != 200) {
       return const Left((LoginFailure()));
     }
 
+    // DICHIARAZIONE DTO
     late AuthenticationResponseDto data;
 
+    // CREAZIONE DTO DELLA RISPOSTA DAL RISULTATO DELLA CHIAMATA
+    // response.data è DI TIPO Map<string, dynamic>
     try {
-      data = AuthenticationResponseDto.fromJson(response.data);
+      data = AuthenticationResponseDto.fromMap(response.data);
     } on Exception {
       return const Left((DataParsingFailure()));
     }
 
-    if (data.output.messages.isNotEmpty) {
-      if (data.output.messages[0].code == 'password' ||
-          data.output.messages[0].code == 'username') {
+    if (response.data['output']['messages'].isNotEmpty) {
+      if (response.data.output.messages[0].code == 'password' ||
+          response.data.output.messages[0].code == 'username') {
         return const Left((LoginFailure()));
       }
     }
 
-    final User user = User.fromMap(data.toMap());
+    final User user = User.fromDto(data);
 
     const FlutterSecureStorage()
       ..write(key: 'username', value: email)

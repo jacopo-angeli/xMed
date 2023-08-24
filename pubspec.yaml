@@ -60,6 +60,7 @@ dependencies:
   flutter_secure_storage: ^8.0.0
   http: ^1.1.0
   side_navigation: ^1.0.4
+  settings_ui: ^2.0.2
 
 dev_dependencies:
   flutter_test:

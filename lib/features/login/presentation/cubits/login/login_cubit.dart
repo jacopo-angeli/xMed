@@ -95,6 +95,7 @@ class LoginCubit extends Cubit<LoginState> {
     // EMETTO LO STATO DI NOTLOGGED
     const storage = FlutterSecureStorage();
     await storage.delete(key: 'password');
+    print("puzzapalle");
     emit(NotLoggedState(username: await storage.read(key: 'username')));
   }
 }

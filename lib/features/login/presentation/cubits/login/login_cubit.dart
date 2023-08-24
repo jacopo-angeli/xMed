@@ -47,6 +47,7 @@ class LoginCubit extends Cubit<LoginState> {
   }
 
   void logInRequest({required String email, required String password}) async {
+    emit(LoggingState());
     // SANITY CHECK DI email E password
     final emailError =
         ValidatorService.emailValidation(email: email) ? "" : wrongEmailInput;

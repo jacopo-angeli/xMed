@@ -92,7 +92,7 @@ class _LoginPageState extends State<LoginView> {
                           emailFormField = XmedTextFormField(
                             label: "Email",
                             prefixIcon: const Icon(Icons.email_outlined),
-                            prefill: state.username != null
+                            prefill: state.username == null
                                 ? ''
                                 : state.username as String,
                           );
@@ -100,7 +100,7 @@ class _LoginPageState extends State<LoginView> {
                               label: "Password",
                               prefixIcon: const Icon(Icons.lock_outline),
                               obscureText: true,
-                              prefill: state.password != null
+                              prefill: state.password == null
                                   ? ''
                                   : state.password as String);
                         });

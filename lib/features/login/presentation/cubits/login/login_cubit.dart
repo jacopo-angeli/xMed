@@ -3,6 +3,7 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:xmed/core/error_handling/failures.dart';
+import 'package:xmed/features/connection/presentation/cubits/internet/internet_cubit.dart';
 import 'package:xmed/features/login/domain/usecases/login.dart';
 import 'package:xmed/features/login/domain/usecases/logout.dart';
 import 'package:xmed/utils/services/validator_service.dart';
@@ -13,15 +14,20 @@ import '../../../domain/entities/user.dart';
 part 'login_state.dart';
 
 class LoginCubit extends Cubit<LoginState> {
+  // INTERNET CUBIT LOGIN
+  final InternetCubit internetCubit;
   // USE CASES DECLARATION
   final LogInUseCase loginUseCase;
   final LogOutUseCase logOutUseCase;
 
-  LoginCubit({required this.loginUseCase, required this.logOutUseCase})
+  LoginCubit(
+      {required this.internetCubit,
+      required this.loginUseCase,
+      required this.logOutUseCase})
       : super(NotLoggedState());
 
   void appStartedEvent() async {
-    emit(LoggingState());
+    emit(const LoggingState());
     // RECUPERO username E password DAL SECURE STORAGE
     const storage = FlutterSecureStorage();
     Map<String, String> secureStorageContent = await storage.readAll();
@@ -46,38 +52,40 @@ class LoginCubit extends Cubit<LoginState> {
     }
   }
 
-  void logInRequest({required String email, required String password}) async {
-    emit(LoggingState());
-    // SANITY CHECK DI email E password
-    final emailError =
-        ValidatorService.emailValidation(email: email) ? "" : wrongEmailInput;
+  void logInRequest(
+      {required String username, required String password}) async {
+    emit(LoggingState(username: username, password: password));
+    // SANITY CHECK DI username E password
+    final emailError = ValidatorService.emailValidation(email: username)
+        ? ""
+        : wrongEmailInput;
     final String passwordError = password.isEmpty ? emptyFieldError : "";
     if (emailError.isNotEmpty || passwordError.isNotEmpty) {
-      // ALMENO email O password CONTENGONO UN ERRORE
+      // ALMENO username O password CONTENGONO UN ERRORE
       emit(WrongInputState(
-          email: email,
+          username: username,
           password: password,
           emailError: emailError,
           passwordError: passwordError));
     } else {
       // TENTATIVO DI LOGIN
       Either<FailureEntity, User> result =
-          await loginUseCase.execute(email: email, password: password);
+          await loginUseCase.execute(email: username, password: password);
 
       // GESTIONE DEL RISULTATO
-      _loginResultHandler(result, email, password);
+      _loginResultHandler(result, username, password);
     }
   }
 
   //HANDLER RISULTATO CHIAMATA DI LOGIN
   void _loginResultHandler(
-      Either<FailureEntity, User> result, String email, String password) {
+      Either<FailureEntity, User> result, String username, String password) {
     result.fold((l) {
       switch (l.runtimeType) {
         case (DBFailure):
         case (LoginFailure):
           emit(WrongInputState(
-              email: email,
+              username: username,
               password: password,
               emailError: wrongCredentialErrorMessage,
               passwordError: wrongCredentialErrorMessage));

@@ -59,9 +59,11 @@ class _MyAppState extends State<MyApp> {
     widget.logOutUseCase = LogOutUseCase(userRepository: widget.userRepository);
 
     // BLOC INITIALIZATION AND DEPENDENCY INJECTION
-    widget.loginCubit = LoginCubit(
-        loginUseCase: widget.logInUseCase, logOutUseCase: widget.logOutUseCase);
     widget.internetCubit = InternetCubit(connectivity: Connectivity());
+    widget.loginCubit = LoginCubit(
+        internetCubit: widget.internetCubit,
+        loginUseCase: widget.logInUseCase,
+        logOutUseCase: widget.logOutUseCase);
     widget.themeCubit = ThemeCubit();
 
     // TRIGGER APPSTARTED EVENT

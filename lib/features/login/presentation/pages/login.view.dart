@@ -73,9 +73,9 @@ class _LoginPageState extends State<LoginView> {
                             label: "Email",
                             prefixIcon: const Icon(Icons.email_outlined),
                             errorMessage: state.emailError,
-                            prefill: state.email == null
+                            prefill: state.username == null
                                 ? ''
-                                : state.email as String,
+                                : state.username as String,
                           );
                           passwordFormField = XmedTextFormField(
                               label: "Password",
@@ -86,19 +86,23 @@ class _LoginPageState extends State<LoginView> {
                                   ? ''
                                   : state.password as String);
                         });
-                      } else if (state is LoginErrorState) {
+                      } else if (state is LoginErrorState ||
+                          state is LoggingState) {
                         setState(() {
                           emailFormField = XmedTextFormField(
                             label: "Email",
                             prefixIcon: const Icon(Icons.email_outlined),
-                            prefill: state.email.isEmpty ? '' : state.email,
+                            prefill: state.username != null
+                                ? ''
+                                : state.username as String,
                           );
                           passwordFormField = XmedTextFormField(
                               label: "Password",
                               prefixIcon: const Icon(Icons.lock_outline),
                               obscureText: true,
-                              prefill:
-                                  state.password.isEmpty ? '' : state.password);
+                              prefill: state.password != null
+                                  ? ''
+                                  : state.password as String);
                         });
                       } else {
                         setState(() {
@@ -160,7 +164,7 @@ class _LoginPageState extends State<LoginView> {
                                         onPressed: () {
                                           // TRIGGER EVENTO LOGIN
                                           loginCubit.logInRequest(
-                                              email:
+                                              username:
                                                   emailFormField.getContent(),
                                               password: passwordFormField
                                                   .getContent());

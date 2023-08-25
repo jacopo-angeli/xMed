@@ -15,37 +15,37 @@ class ThemeCubit extends Cubit<ThemeState> {
 
   void synch({required XmedTheme currentTheme}) async {
     emit(ThemeSyncingState(currentTheme: currentTheme));
-    // print('TENTATIVO DI RECUPERO DEL TEMA LOCALE')
+    print('TENTATIVO DI RECUPERO DEL TEMA LOCALE')
     final Either<FailureEntity, XmedTheme> localThemeRetrieveAttempt =
         await themeRepository.getLocalClinicTheme();
 
-    // print('GESTIONE RISULTATO DEL TENTATIVO')
+    print('GESTIONE RISULTATO DEL TENTATIVO')
     localThemeRetrieveAttempt.fold((failure) {
-      // print('FALLIMENTO NEL RECUPERO DEL TEMA DA LOCALE');
-      // print('SALVATAGGIO DEL TEMA DI DEFAULT IN LOCALE');
+      print('FALLIMENTO NEL RECUPERO DEL TEMA DA LOCALE');
+      print('SALVATAGGIO DEL TEMA DI DEFAULT IN LOCALE');
       themeRepository.writeLocalClinicTheme(XmedTheme.defaultTheme());
-      // print('STATO CORRENTE ThemeSynched()');
+      print('STATO CORRENTE ThemeSynched()');
       emit(ThemeSynched(theme: XmedTheme.defaultTheme()));
     }, (localTheme) async {
-      // print('TEMA RECUPERATO CON SUCCESSO');
+      print('TEMA RECUPERATO CON SUCCESSO');
 
-      // print('TENTATIVO DI RECUPERO TEMA DA REMOTO');
+      print('TENTATIVO DI RECUPERO TEMA DA REMOTO');
       final Either<FailureEntity, XmedTheme> remoteThemeRetrieveAttempt =
           await themeRepository.getRemoteClinicTheme(
               idClinica: localTheme.clinicID);
 
-      // print('GESTISCO IL RISULTATO DEL TENTATIVO');
+      print('GESTISCO IL RISULTATO DEL TENTATIVO');
       remoteThemeRetrieveAttempt.fold((failure) {
-        // print('TENTATIVO FALLITO');
+        print('TENTATIVO FALLITO');
         emit(ThemeSynched(theme: localTheme));
       }, (remoteTheme) async {
-        // print('TENTATIVO DI SUCCESSO');
-        // print('CONFRONTO TEMA LOCALE E REMOTO');
+        print('TENTATIVO DI SUCCESSO');
+        print('CONFRONTO TEMA LOCALE E REMOTO');
         if (localTheme != remoteTheme) {
-          // print('TEMA REMOTO PIù RECENTE');
+          print('TEMA REMOTO PIù RECENTE');
           await themeRepository.writeLocalClinicTheme(remoteTheme);
         }
-        // print('RITONRO TEMA PIù AGGIORNATO (sempre remoto)');
+        print('RITONRO TEMA PIù AGGIORNATO (sempre remoto)');
         emit(ThemeSynched(theme: remoteTheme));
       });
     });

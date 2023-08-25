@@ -15,11 +15,11 @@ class ThemeCubit extends Cubit<ThemeState> {
 
   void synch({required XmedTheme currentTheme}) async {
     emit(ThemeSyncingState(currentTheme: currentTheme));
-    print('TENTATIVO DI RECUPERO DEL TEMA LOCALE')
+    print('TENTATIVO DI RECUPERO DEL TEMA LOCALE');
     final Either<FailureEntity, XmedTheme> localThemeRetrieveAttempt =
         await themeRepository.getLocalClinicTheme();
 
-    print('GESTIONE RISULTATO DEL TENTATIVO')
+    print('GESTIONE RISULTATO DEL TENTATIVO');
     localThemeRetrieveAttempt.fold((failure) {
       print('FALLIMENTO NEL RECUPERO DEL TEMA DA LOCALE');
       print('SALVATAGGIO DEL TEMA DI DEFAULT IN LOCALE');

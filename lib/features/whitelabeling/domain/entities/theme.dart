@@ -3,7 +3,7 @@ import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
 
-class Theme extends Equatable {
+class XmedTheme extends Equatable {
   final String status;
   final String clinicID;
   final String name;
@@ -14,7 +14,7 @@ class Theme extends Equatable {
   final String colorPrimary;
   final String colorAccent;
   final String colorBackground;
-  const Theme({
+  const XmedTheme({
     required this.status,
     required this.clinicID,
     required this.name,
@@ -27,7 +27,7 @@ class Theme extends Equatable {
     required this.colorBackground,
   });
 
-  factory Theme.defaultTheme() => const Theme(
+  factory XmedTheme.defaultTheme() => const XmedTheme(
       status: "status",
       clinicID: "clinicID",
       name: "name",
@@ -39,7 +39,7 @@ class Theme extends Equatable {
       colorAccent: "colorAccent",
       colorBackground: "colorBackground");
 
-  Theme copyWith({
+  XmedTheme copyWith({
     String? status,
     String? clinicID,
     String? name,
@@ -51,7 +51,7 @@ class Theme extends Equatable {
     String? colorAccent,
     String? colorBackground,
   }) {
-    return Theme(
+    return XmedTheme(
       status: status ?? this.status,
       clinicID: clinicID ?? this.clinicID,
       name: name ?? this.name,
@@ -80,8 +80,8 @@ class Theme extends Equatable {
     };
   }
 
-  factory Theme.fromMap(Map<String, dynamic> map) {
-    return Theme(
+  factory XmedTheme.fromMap(Map<String, dynamic> map) {
+    return XmedTheme(
       status: map['status'] as String,
       clinicID: map['clinicID'] as String,
       name: map['name'] as String,
@@ -97,8 +97,8 @@ class Theme extends Equatable {
 
   String toJson() => json.encode(toMap());
 
-  factory Theme.fromJson(String source) =>
-      Theme.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory XmedTheme.fromJson(String source) =>
+      XmedTheme.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   bool get stringify => true;

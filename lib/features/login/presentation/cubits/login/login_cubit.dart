@@ -4,6 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:xmed/core/error_handling/failures.dart';
 import 'package:xmed/features/connection/presentation/cubits/internet/internet_cubit.dart';
+import 'package:xmed/features/login/domain/repositories/user_repository.dart';
 import 'package:xmed/features/login/domain/usecases/login.dart';
 import 'package:xmed/features/login/domain/usecases/logout.dart';
 import 'package:xmed/utils/services/validator_service.dart';
@@ -16,15 +17,17 @@ part 'login_state.dart';
 class LoginCubit extends Cubit<LoginState> {
   // INTERNET CUBIT LOGIN
   final InternetCubit internetCubit;
+  // REPOSITORY DECLARATION
+  final UserRepository userRepository;
   // USE CASES DECLARATION
-  final LogInUseCase loginUseCase;
-  final LogOutUseCase logOutUseCase;
+  late final LogInUseCase loginUseCase;
+  late final LogOutUseCase logOutUseCase;
 
-  LoginCubit(
-      {required this.internetCubit,
-      required this.loginUseCase,
-      required this.logOutUseCase})
-      : super(NotLoggedState());
+  LoginCubit({required this.internetCubit, required this.userRepository})
+      : super(const NotLoggedState()) {
+    loginUseCase = LogInUseCase(userRepository: userRepository);
+    logOutUseCase = LogOutUseCase(userRepository: userRepository);
+  }
 
   void appStartedEvent() async {
     emit(const LoggingState());

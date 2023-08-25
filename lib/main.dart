@@ -3,11 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:oktoast/oktoast.dart';
-import 'package:xmed/features/login/data/models/authentication/authentication_request_dto.dart';
 import 'package:xmed/features/login/data/repositories/user_repository_impl.dart';
-import 'package:xmed/features/login/domain/usecases/login.dart';
-import 'package:xmed/features/login/domain/usecases/logout.dart';
 import 'package:xmed/features/login/presentation/cubits/login/login_cubit.dart';
+import 'package:xmed/features/whitelabeling/domain/repositories/theme_repository.dart';
 import 'package:xmed/features/whitelabeling/presentation/cubits/theme/theme_cubit.dart';
 import 'package:xmed/utils/constants/strings.dart';
 
@@ -16,7 +14,7 @@ import 'config/themes/app_themes.dart';
 import 'features/connection/presentation/cubits/internet/internet_cubit.dart';
 import 'features/license/data/repositories/license_repository_impl.dart';
 import 'features/license/domain/repositories/license_repository.dart';
-import 'utils/services/signature_service.dart';
+import 'features/whitelabeling/domain/entities/theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,10 +29,7 @@ class MyApp extends StatefulWidget {
   // REPOSITORIES DECLARATION
   late final UserRepositoryImpl userRepository;
   late final LicenseRepository licenseRepository;
-
-  // USECASES DECLARATION
-  late final LogInUseCase logInUseCase;
-  late final LogOutUseCase logOutUseCase;
+  late final ThemeRepository themeRepository;
 
   // BLOCS DECLARATION
   late final LoginCubit loginCubit;
@@ -53,21 +48,19 @@ class _MyAppState extends State<MyApp> {
     // REPOSITORY INSTANTIALIZATION
     widget.userRepository = UserRepositoryImpl();
     widget.licenseRepository = LicenseRepositoryImpl();
-
-    // USECASES INSTANTIALIZATION
-    widget.logInUseCase = LogInUseCase(userRepository: widget.userRepository);
-    widget.logOutUseCase = LogOutUseCase(userRepository: widget.userRepository);
+    widget.licenseRepository = LicenseRepositoryImpl();
 
     // BLOC INITIALIZATION AND DEPENDENCY INJECTION
     widget.internetCubit = InternetCubit(connectivity: Connectivity());
     widget.loginCubit = LoginCubit(
         internetCubit: widget.internetCubit,
-        loginUseCase: widget.logInUseCase,
-        logOutUseCase: widget.logOutUseCase);
-    widget.themeCubit = ThemeCubit();
+        userRepository: widget.userRepository);
+    widget.themeCubit = ThemeCubit(themeRepository: widget.themeRepository);
 
-    // TRIGGER APPSTARTED EVENT
-    widget.themeCubit.appStartedEvent();
+    // TRIGGER APPSTARTED EVENT (TEMA DI DEFAULT VISUALIZZATO)
+    widget.themeCubit.synch(currentTheme: Theme.defaultTheme());
+    // ? PROBABILEMENTE FAR TERMINARE IL CARICAMENTO INIZIALE QUI
+    widget.loginCubit.appStartedEvent();
     widget.loginCubit.appStartedEvent();
 
     super.initState();

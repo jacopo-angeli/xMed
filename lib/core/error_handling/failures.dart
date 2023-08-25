@@ -14,6 +14,10 @@ class ValidationFailure extends FailureEntity {
   const ValidationFailure();
 }
 
+class ThemeRetrieveFailure extends FailureEntity {
+  const ThemeRetrieveFailure();
+}
+
 class DBFailure extends FailureEntity {
   const DBFailure();
 }

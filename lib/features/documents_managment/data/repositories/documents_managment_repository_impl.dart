@@ -1,3 +1,5 @@
+import 'dart:js_interop';
+
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 
@@ -39,8 +41,10 @@ class DocumentsManagmentRepositoryImpl implements DocumentsManagmentRepository {
       return const Left(ServerFailure());
     }
     //CASO IN CUI DEVO COMPORRE LA LISTA DI DOCUMENTI
-    //TODO capire come costruire lista ritorno
-    return const Right([]);
+
+    final List<Document> documents = List.empty();
+    documents.add(Document.fromMap(data.body.documenti));
+    return Right(documents);
   }
 
   @override
@@ -70,4 +74,4 @@ class DocumentsManagmentRepositoryImpl implements DocumentsManagmentRepository {
     }
     return const Right(null);
   }
-} /*content dataFirma  idClinica idDocumento institute */
+}

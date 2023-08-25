@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:xmed/features/documents_managment/presentation/cubits/documents/documents_cubit.dart';
 import 'package:xmed/features/documents_managment/presentation/widgets/documents_list_tablet_page.dart';
+import 'package:xmed/features/whitelabeling/presentation/cubits/theme/theme_cubit.dart';
 
 import '../../../../config/routers/app_router.dart';
 import '../../../../config/routers/app_router.gr.dart';
@@ -15,6 +16,7 @@ class DocumentsManagmentPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(context.read<ThemeCubit>().state);
     return BlocListener<LoginCubit, LoginState>(
         listener: (context, state) {
           final loginCubitState = context.read<LoginCubit>().state;

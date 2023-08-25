@@ -32,7 +32,7 @@ class ThemeCubit extends Cubit<ThemeState> {
       print('TENTATIVO DI RECUPERO TEMA DA REMOTO');
       final Either<FailureEntity, XmedTheme> remoteThemeRetrieveAttempt =
           await themeRepository.getRemoteClinicTheme(
-              idClinica: localTheme.clinicID);
+              idClinica: int.parse(localTheme.clinicID));
 
       print('GESTISCO IL RISULTATO DEL TENTATIVO');
       remoteThemeRetrieveAttempt.fold((failure) {

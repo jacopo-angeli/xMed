@@ -15,7 +15,7 @@ import '../../../../utils/constants/strings.dart';
 class ThemeRepositoryImpl implements ThemeRepository {
   @override
   Future<Either<FailureEntity, XmedTheme>> getRemoteClinicTheme(
-      {required idClinica}) async {
+      {required int idClinica}) async {
     // DEFINIZIONE DELLA REQUEST BODY
     final requestBody = ClinicDetailsRequestDto(idClinica: idClinica);
 

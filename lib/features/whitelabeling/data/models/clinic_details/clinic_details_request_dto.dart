@@ -3,10 +3,10 @@ import 'dart:convert';
 
 class ClinicDetailsRequestDto {
   final int idClinica;
+  final int institute = 2272;
   ClinicDetailsRequestDto({
     required this.idClinica,
   });
-  final int institute = 2272;
 
   ClinicDetailsRequestDto copyWith({
     int? idClinica,

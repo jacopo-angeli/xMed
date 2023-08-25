@@ -1,18 +1,14 @@
 part of 'theme_cubit.dart';
 
-abstract class ThemeState {
-  final Theme theme;
-  ThemeState({required this.theme});
-}
+abstract class ThemeState {}
 
-class DefaultThemeState extends ThemeState {
-  DefaultThemeState() : super(theme: Theme.defaultTheme());
+class ThemeSynched extends ThemeState {
+  final XmedTheme theme;
+
+  ThemeSynched({required this.theme});
 }
 
 class ThemeSyncingState extends ThemeState {
-  ThemeSyncingState({required super.theme});
-}
-
-class CustomThemeState extends ThemeState {
-  CustomThemeState({required super.theme});
+  final XmedTheme currentTheme;
+  ThemeSyncingState({required this.currentTheme});
 }

@@ -1,51 +1,53 @@
 import 'package:bloc/bloc.dart';
+import 'package:dartz/dartz.dart';
+import 'package:xmed/core/error_handling/failures.dart';
+import 'package:xmed/features/whitelabeling/domain/repositories/theme_repository.dart';
 import '../../../domain/entities/theme.dart';
 part 'theme_state.dart';
 
 class ThemeCubit extends Cubit<ThemeState> {
-  ThemeCubit() : super(DefaultThemeState());
+  // REPOSITORY DECLARATION
+  final ThemeRepository themeRepository;
 
-  void themeSynchRequest({required Theme lastTheme}) {
-    emit(ThemeSyncingState(theme: lastTheme));
-    // Controllo se il tema nel backoffice è lo stesso tema che ho in locale
-    // Se si:
-    //  Se lastTheme == Theme.defaultTheme()
-    //    emit(DeafultThemeState());
-    //  Altrimenti
-    //    emit(CustomThemeState(lastTheme))
-    // Se no:
-    //  Se remoteTheme == Theme.defaultTheme()
-    //    Elimina tema locale
-    //    emit(DeafultThemeState());
-    //  Altrimenti
-    //    Aggiorno tema locale
-    //    emit(CustomThemeState(remoteTheme))
-    // ? TBD : Metto un flag default nel Theme?
-    // ? TBD : Salvo il tema anche se è default?
-    emit(DefaultThemeState());
-  }
+  // CONSTRUCTOR
+  ThemeCubit({required this.themeRepository})
+      : super(ThemeSyncingState(currentTheme: XmedTheme.defaultTheme()));
 
-  void appStartedEvent() {
-    // Controllo se ho il tema salvato in locale
-    // Tema salvato in locale:
-    //      emetto stato di CustomTheme(TemaTrovato)
-    // Tema non trovato:
-    emit(DefaultThemeState());
-  }
+  void synch({required XmedTheme currentTheme}) async {
+    emit(ThemeSyncingState(currentTheme: currentTheme));
+    // print('TENTATIVO DI RECUPERO DEL TEMA LOCALE')
+    final Either<FailureEntity, XmedTheme> localThemeRetrieveAttempt =
+        await themeRepository.getLocalClinicTheme();
 
-  void themeReset() {
-    //  Controllo se ho un tema il locale
-    //  Tema in locale:
-    //    sovrascrivo il tema salvato
-    //  update del tema sul backoffice
-    emit(DefaultThemeState());
-  }
+    // print('GESTIONE RISULTATO DEL TENTATIVO')
+    localThemeRetrieveAttempt.fold((failure) {
+      // print('FALLIMENTO NEL RECUPERO DEL TEMA DA LOCALE');
+      // print('SALVATAGGIO DEL TEMA DI DEFAULT IN LOCALE');
+      themeRepository.writeLocalClinicTheme(XmedTheme.defaultTheme());
+      // print('STATO CORRENTE ThemeSynched()');
+      emit(ThemeSynched(theme: XmedTheme.defaultTheme()));
+    }, (localTheme) async {
+      // print('TEMA RECUPERATO CON SUCCESSO');
 
-  void themeUpdated({required Theme newTheme}) {
-    //  Controllo se ho un tema il locale
-    //  Tema in locale:
-    //    sovrascrivo il tema salvato
-    //  update del tema sul backoffice
-    emit(CustomThemeState(theme: newTheme));
+      // print('TENTATIVO DI RECUPERO TEMA DA REMOTO');
+      final Either<FailureEntity, XmedTheme> remoteThemeRetrieveAttempt =
+          await themeRepository.getRemoteClinicTheme(
+              idClinica: localTheme.clinicID);
+
+      // print('GESTISCO IL RISULTATO DEL TENTATIVO');
+      remoteThemeRetrieveAttempt.fold((failure) {
+        // print('TENTATIVO FALLITO');
+        emit(ThemeSynched(theme: localTheme));
+      }, (remoteTheme) async {
+        // print('TENTATIVO DI SUCCESSO');
+        // print('CONFRONTO TEMA LOCALE E REMOTO');
+        if (localTheme != remoteTheme) {
+          // print('TEMA REMOTO PIù RECENTE');
+          await themeRepository.writeLocalClinicTheme(remoteTheme);
+        }
+        // print('RITONRO TEMA PIù AGGIORNATO (sempre remoto)');
+        emit(ThemeSynched(theme: remoteTheme));
+      });
+    });
   }
 }

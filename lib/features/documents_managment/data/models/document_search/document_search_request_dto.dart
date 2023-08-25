@@ -9,7 +9,7 @@ class DocumentSearchRequestDto {
   final DateTime toDate;
   final int idClinica;
   final int institute = 2272;
-  final DocumentStatus status;
+  final String status;
 
   DocumentSearchRequestDto({
     required this.fromDate,
@@ -22,7 +22,7 @@ class DocumentSearchRequestDto {
     DateTime? fromDate,
     DateTime? toDate,
     int? idClinica,
-    DocumentStatus? status,
+    String? status,
   }) {
     return DocumentSearchRequestDto(
       fromDate: fromDate ?? this.fromDate,
@@ -46,7 +46,7 @@ class DocumentSearchRequestDto {
       fromDate: DateTime.fromMillisecondsSinceEpoch(map['fromDate'] as int),
       toDate: DateTime.fromMillisecondsSinceEpoch(map['toDate'] as int),
       idClinica: map['idClinica'] as int,
-      status: map['status'] as DocumentStatus,
+      status: map['status'] as String,
     );
   }
 

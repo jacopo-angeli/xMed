@@ -48,7 +48,7 @@ class _LoginPageState extends State<LoginView> {
           final loginCubitState = context.read<LoginCubit>().state;
           if (loginCubitState is LoggedState) {
             // WHEN LOGGED NAVIGATE TO DOCUMENTS VIEW PAGE
-            appRouter.replace(const DocumentsListRoute());
+            appRouter.replace(const DocumentsManagmentRoute());
           } else if (loginCubitState is LoginErrorState) {
             showToast(backofficeConnectionError);
           }

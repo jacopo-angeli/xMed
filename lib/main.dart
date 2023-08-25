@@ -19,8 +19,9 @@ import 'features/whitelabeling/domain/entities/theme.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    statusBarColor: Colors.transparent,
-  ));
+      systemNavigationBarColor: Colors.white,
+      statusBarColor: Colors.white,
+      statusBarIconBrightness: Brightness.dark));
 
   runApp(MyApp());
 }
@@ -58,7 +59,7 @@ class _MyAppState extends State<MyApp> {
     widget.themeCubit = ThemeCubit(themeRepository: widget.themeRepository);
 
     // TRIGGER APPSTARTED EVENT (TEMA DI DEFAULT VISUALIZZATO)
-    widget.themeCubit.synch(currentTheme: Theme.defaultTheme());
+    widget.themeCubit.synch(currentTheme: XmedTheme.defaultTheme());
     // ? PROBABILEMENTE FAR TERMINARE IL CARICAMENTO INIZIALE QUI
     widget.loginCubit.appStartedEvent();
     widget.loginCubit.appStartedEvent();

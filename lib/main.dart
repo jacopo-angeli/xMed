@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:xmed/features/login/data/repositories/user_repository_impl.dart';
 import 'package:xmed/features/login/presentation/cubits/login/login_cubit.dart';
+import 'package:xmed/features/whitelabeling/data/repositories/theme_repository_impl.dart';
 import 'package:xmed/features/whitelabeling/domain/repositories/theme_repository.dart';
 import 'package:xmed/features/whitelabeling/presentation/cubits/theme/theme_cubit.dart';
 import 'package:xmed/utils/constants/strings.dart';
@@ -49,7 +50,7 @@ class _MyAppState extends State<MyApp> {
     // REPOSITORY INSTANTIALIZATION
     widget.userRepository = UserRepositoryImpl();
     widget.licenseRepository = LicenseRepositoryImpl();
-    widget.licenseRepository = LicenseRepositoryImpl();
+    widget.themeRepository = ThemeRepositoryImpl();
 
     // BLOC INITIALIZATION AND DEPENDENCY INJECTION
     widget.internetCubit = InternetCubit(connectivity: Connectivity());

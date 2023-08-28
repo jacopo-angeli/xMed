@@ -3,11 +3,13 @@ import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
 
+import '../../../../utils/converters/date.dart';
+
 class Document extends Equatable {
   final int institute = 2272;
   // INFO DOCUMENTO
-  final DateTime created;
-  final int idClinica;
+  final String? dataDocumento;
+  final String? dataFirma;
   final int idDocumento;
   final String nome;
   final String descrizione;
@@ -15,25 +17,25 @@ class Document extends Equatable {
   // TODO Aggiungere status agli enum
 
   // CONTENUTO DOCUMENTO
-  final String content;
+  final String? content;
   final List<String> markersMedico;
   final List<String> markersPaziente;
 
   const Document({
-    required this.created,
-    required this.idClinica,
+    this.dataDocumento,
+    this.dataFirma,
+    this.content,
     required this.idDocumento,
     required this.nome,
     required this.descrizione,
     required this.status,
-    required this.content,
     required this.markersMedico,
     required this.markersPaziente,
   });
 
   Document copyWith({
-    DateTime? created,
-    int? idClinica,
+    String? dataDocumento,
+    String? dataFirma,
     int? idDocumento,
     String? nome,
     String? descrizione,
@@ -43,8 +45,8 @@ class Document extends Equatable {
     List<String>? markersPaziente,
   }) {
     return Document(
-      created: created ?? this.created,
-      idClinica: idClinica ?? this.idClinica,
+      dataDocumento: dataDocumento ?? this.dataDocumento,
+      dataFirma: dataFirma ?? this.dataFirma,
       idDocumento: idDocumento ?? this.idDocumento,
       nome: nome ?? this.nome,
       descrizione: descrizione ?? this.descrizione,
@@ -57,8 +59,8 @@ class Document extends Equatable {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'created': created.millisecondsSinceEpoch,
-      'idClinica': idClinica,
+      'dataDocumento': dataDocumento,
+      'dataFirma': dataFirma,
       'idDocumento': idDocumento,
       'nome': nome,
       'descrizione': descrizione,
@@ -70,17 +72,19 @@ class Document extends Equatable {
   }
 
   factory Document.fromMap(Map<String, dynamic> map) {
+    if (map['body'] != null) map = map['body'];
     return Document(
-      created: DateTime.fromMillisecondsSinceEpoch(map['created'] as int),
-      idClinica: map['idClinica'] as int,
+      dataDocumento:
+          CWDateUtils.localDateFormatter(DateTime.parse(map['dataDocumento'])),
+      dataFirma: null,
       idDocumento: map['idDocumento'] as int,
       nome: map['nome'] as String,
       descrizione: map['descrizione'] as String,
       status: map['status'] as String,
-      content: map['content'] as String,
-      markersMedico: List<String>.from((map['markersMedico'] as List<String>)),
+      content: map['content'] == Null ? map['content'] as String : null,
+      markersMedico: List<String>.from((map['markersMedico'] as List<dynamic>)),
       markersPaziente:
-          List<String>.from((map['markersPaziente'] as List<String>)),
+          List<String>.from((map['markersPaziente'] as List<dynamic>)),
     );
   }
 
@@ -93,10 +97,10 @@ class Document extends Equatable {
   bool get stringify => true;
 
   @override
-  List<Object> get props {
+  List<Object?> get props {
     return [
-      created,
-      idClinica,
+      dataDocumento,
+      dataFirma,
       idDocumento,
       nome,
       descrizione,

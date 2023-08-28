@@ -18,7 +18,7 @@ class ClinicDetailsRequestDto {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'idClinica': idClinica,
+      'input': {'idClinica': idClinica, 'institute': institute}
     };
   }
 

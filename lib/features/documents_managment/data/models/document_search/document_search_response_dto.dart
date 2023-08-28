@@ -1,4 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import '../../../domain/entities/Document.dart';
+
 class DocumentSearchResponseDto {
   final Body body;
   DocumentSearchResponseDto({
@@ -18,7 +20,7 @@ class DocumentSearchResponseDto {
 }
 
 class Body {
-  final Map<String, dynamic> documenti;
+  final List<dynamic> documenti;
   final int idClinica;
   Body({
     required this.documenti,

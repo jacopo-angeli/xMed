@@ -62,7 +62,6 @@ class DocumentsListWidget extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.max,
                     children: [
-                      Icon(Icons.dangerous_rounded),
                       Text("La tua lista documenti sembra essere vuota")
                     ],
                   );
@@ -86,15 +85,7 @@ class DocumentsListWidget extends StatelessWidget {
                                     Builder(builder: (context) {
                                       switch (doc.status) {
                                         case 'DA_FIRMARE':
-                                          return const Icon(
-                                            Icons.edit_document,
-                                            size: 50,
-                                          );
                                         case 'FIRMATO_PAZIENTE':
-                                          return const Icon(
-                                            Icons.edit_document,
-                                            size: 50,
-                                          );
                                         case 'FIRMATO_MEDICO':
                                           return const Icon(
                                             Icons.edit_document,
@@ -113,7 +104,24 @@ class DocumentsListWidget extends StatelessWidget {
                                 title: Text(doc.nome),
                                 subtitle: Text(doc.descrizione),
                                 isThreeLine: true,
-                                trailing: Text(doc.status),
+                                trailing: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.circle,
+                                      size: 12,
+                                      color: (doc.status == "FIRMATO"
+                                          ? Colors.green
+                                          : (doc.status == "DA_FIRMARE"
+                                              ? Colors.red
+                                              : Colors.orange)),
+                                    ),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    Text(doc.status.replaceAll('_', ' ')),
+                                  ],
+                                ),
                               ),
                             ),
                           )

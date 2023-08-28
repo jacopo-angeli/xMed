@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:dartz/dartz.dart';
 import 'package:xmed/core/error_handling/failures.dart';
+import 'package:xmed/features/login/presentation/cubits/login/login_cubit.dart';
 import 'package:xmed/features/whitelabeling/domain/repositories/theme_repository.dart';
 import '../../../domain/entities/theme.dart';
 part 'theme_state.dart';
@@ -8,9 +9,10 @@ part 'theme_state.dart';
 class ThemeCubit extends Cubit<ThemeState> {
   // REPOSITORY DECLARATION
   final ThemeRepository themeRepository;
+  final LoginCubit loginCubit;
 
   // CONSTRUCTOR
-  ThemeCubit({required this.themeRepository})
+  ThemeCubit({required this.loginCubit, required this.themeRepository})
       : super(ThemeSyncingState(theme: XmedTheme.defaultTheme()));
 
   void synch({required XmedTheme theme}) async {
@@ -32,8 +34,7 @@ class ThemeCubit extends Cubit<ThemeState> {
       print('TENTATIVO DI RECUPERO TEMA DA REMOTO');
       final Either<FailureEntity, XmedTheme> remoteThemeRetrieveAttempt =
           await themeRepository.getRemoteClinicTheme(
-              idClinica: localTheme.clinicID);
-
+              idClinica: loginCubit.currentUser.idClinica);
       print('GESTISCO IL RISULTATO DEL TENTATIVO');
       remoteThemeRetrieveAttempt.fold((failure) {
         print('TENTATIVO FALLITO');

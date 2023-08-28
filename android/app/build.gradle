@@ -54,6 +54,8 @@ android {
         versionName flutterVersionName
     }
 
+
+
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.
@@ -69,7 +71,9 @@ flutter {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    
-    // //Namirial FEA GUI
-    // implementation 'com.namirial.android:namirialfeagui:5.3.4'
+    implementation "androidx.appcompat:appcompat:1.6.1"
+    implementation "com.google.android.material:material:1.9.0"
+    implementation "androidx.constraintlayout:constraintlayout:2.1.4"
+    //Namirial FEA GUI
+    implementation 'com.namirial.android:namirialfeagui:5.3.4'
 }

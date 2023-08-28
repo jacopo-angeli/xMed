@@ -22,8 +22,11 @@ class DocumentDownloadRequestDto {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'idClinica': idClinica,
-      'idDocumento': idDocumento,
+      'input': <String, dynamic>{
+        'idClinica': idClinica,
+        'idDocumento': idDocumento,
+        'institute': institute
+      }
     };
   }
 

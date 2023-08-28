@@ -64,6 +64,7 @@ class UserRepositoryImpl implements UserRepository {
       return const Left((DataParsingFailure()));
     }
 
+    // CONTROLLO PER MESSAGGI DI ERRORE
     if (response.data['output']['messages'].isNotEmpty) {
       if (response.data.output.messages[0].code == 'password' ||
           response.data.output.messages[0].code == 'username') {
@@ -71,12 +72,15 @@ class UserRepositoryImpl implements UserRepository {
       }
     }
 
+    // CREAZIONE DEL MODELLO UTENTE DAL DTO DELLA RISPOSTA
     final User user = User.fromDto(data);
 
+    // SALVATAGGIO IN LOCALE DELLE CREDENZIALI DI LOGIN PER AUTOLOGIN
     const FlutterSecureStorage()
       ..write(key: 'username', value: email)
       ..write(key: 'password', value: password);
 
+    // RITORNO UTENTE RECUPERATO
     return Right(user);
   }
 }

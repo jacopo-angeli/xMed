@@ -36,11 +36,11 @@ class DocumentSearchRequestDto {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'input': <String, dynamic>{
-        'fromDate': "2020-08-25T13:16:42.175Z",
+        'fromDate': DateFormat("yyyy-MM-ddTHH:mm:ssZ").format(fromDate),
         'idClinica': idClinica,
         'institute': institute,
         'status': status.toString(),
-        'toDate': "2023-08-25T13:16:42.175Z",
+        'toDate': DateFormat("yyyy-MM-ddTHH:mm:ssZ").format(toDate),
       }
     };
   }

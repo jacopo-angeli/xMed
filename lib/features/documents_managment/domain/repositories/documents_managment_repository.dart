@@ -8,4 +8,9 @@ abstract class DocumentsManagmentRepository {
 
   Future<Either<FailureEntity, List<Document>>> documentSearch(
       {required int idClinica});
+
+  Future<Either<FailureEntity, Document>> documentDowload(
+      {required int idDocumento,
+      required int idClinica,
+      required Document remoteDocument});
 }

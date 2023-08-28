@@ -10,6 +10,7 @@ import 'package:xmed/features/login/presentation/widgets/xmed_disbled_credential
 
 import '../../../../utils/constants/strings.dart';
 import '../../../whitelabeling/presentation/widgets/xmed_logo.dart';
+import '../widgets/xmed_logo.dart';
 import '../widgets/xmed_text_form_field.dart';
 
 @RoutePage()
@@ -41,7 +42,6 @@ class _LoginPageState extends State<LoginView> {
     // BLOC LISTENER MANAGING LOGIN EVENT
     return BlocListener<LoginCubit, LoginState>(
         listener: (context, state) {
-          print("okay");
           final loginCubitState = context.read<LoginCubit>().state;
           if (loginCubitState is LoggedState) {
             // WHEN LOGGED NAVIGATE TO DOCUMENTS VIEW PAGE
@@ -126,7 +126,7 @@ class _LoginPageState extends State<LoginView> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             // WHITE LABEL LOGO DINAMICO SULLA BASE DELLO STATO DEL THEME CUBIT
-                            const WhiteLabelLogo(),
+                            const XmedLogo(),
                             const SizedBox(height: 10),
 
                             // EMAIL CUSTOM INPUT FIELD

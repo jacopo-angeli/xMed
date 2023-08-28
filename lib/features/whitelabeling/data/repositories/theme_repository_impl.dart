@@ -28,7 +28,7 @@ class ThemeRepositoryImpl implements ThemeRepository {
 
     // TENTO IL LOGIN
     try {
-      response = await client.post(authenticationEndPoint);
+      response = await client.post(clinicDetailsEndPoint);
     } on Exception {
       return const Left((LoginFailure()));
     }
@@ -80,7 +80,6 @@ class ThemeRepositoryImpl implements ThemeRepository {
       // IL TEMA ESISTE
       // CREO IL MODELLO DA CONTENUTO DEL FILE
       final String fileContents = await file.readAsString();
-      print(fileContents);
       try {
         // TENTATIVO DI CONVERTIRE IL FILE IN MODELLO
         final XmedTheme localTheme = XmedTheme.fromJson(fileContents);

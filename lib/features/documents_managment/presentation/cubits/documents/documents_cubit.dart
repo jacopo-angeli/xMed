@@ -24,88 +24,6 @@ class DocumentsListCubit extends Cubit<DocumentsListState> {
 
   void onInit() async {
     emit(DocumentsListSynchingState(documentList: []));
-    List<Document> documentList = [
-      Document(
-          created: DateTime.now(),
-          idClinica: 1,
-          idDocumento: 1,
-          nome: 'nome',
-          descrizione: 'descrizione',
-          status: 'DA_FIRMARE',
-          content: 'content',
-          markersMedico: ['markersMedico'],
-          markersPaziente: ['markersPaziente']),
-      Document(
-          created: DateTime.now(),
-          idClinica: 1,
-          idDocumento: 1,
-          nome: 'nome1',
-          descrizione: 'descrizione1',
-          status: 'DA_FIRMARE',
-          content: 'content',
-          markersMedico: ['markersMedico'],
-          markersPaziente: ['markersPaziente']),
-      Document(
-          created: DateTime.now(),
-          idClinica: 1,
-          idDocumento: 1,
-          nome: 'nome2',
-          descrizione: 'descrizione2',
-          status: 'FIRMATO_PAZIENTE',
-          content: 'content',
-          markersMedico: ['markersMedico'],
-          markersPaziente: ['markersPaziente']),
-      Document(
-          created: DateTime.now(),
-          idClinica: 1,
-          idDocumento: 1,
-          nome: 'nome3',
-          descrizione: 'descrizione3',
-          status: 'FIRMATO_MEDICO',
-          content: 'content',
-          markersMedico: ['markersMedico'],
-          markersPaziente: ['markersPaziente']),
-      Document(
-          created: DateTime.now(),
-          idClinica: 1,
-          idDocumento: 1,
-          nome: 'nome4',
-          descrizione: 'descrizione4',
-          status: 'FIRMATO',
-          content: 'content',
-          markersMedico: ['markersMedico'],
-          markersPaziente: ['markersPaziente']),
-      Document(
-          created: DateTime.now(),
-          idClinica: 1,
-          idDocumento: 1,
-          nome: 'nome5',
-          descrizione: 'descrizione5',
-          status: 'FIRMATO_PAZIENTE',
-          content: 'content',
-          markersMedico: ['markersMedico'],
-          markersPaziente: ['markersPaziente']),
-      Document(
-          created: DateTime.now(),
-          idClinica: 1,
-          idDocumento: 1,
-          nome: 'nome6',
-          descrizione: 'descrizione6',
-          status: 'DA_FIRMARE',
-          content: 'content',
-          markersMedico: ['markersMedico'],
-          markersPaziente: ['markersPaziente']),
-      Document(
-          created: DateTime.now(),
-          idClinica: 1,
-          idDocumento: 1,
-          nome: 'nome7',
-          descrizione: 'descrizione7',
-          status: 'FIRMATO',
-          content: 'content',
-          markersMedico: ['markersMedico'],
-          markersPaziente: ['markersPaziente']),
-    ];
     // emit(DocumentsListSynchingState(documentList: documentList));
     // Funzione che viene chiamata prima di ogni modifica attiva e al login dell'utente
     // Reucupero tutti i documenti presenti in remoto e li confronto con quelli presenti in lastDocumentList
@@ -121,8 +39,9 @@ class DocumentsListCubit extends Cubit<DocumentsListState> {
         await documentsRepository.documentSearch(
             idClinica: currentUser.idClinica);
 
-    documentsListRetrieveAttempt.fold((l) {}, (r) {});
-    emit(DocumentsListFullState(documentList: documentList));
+    documentsListRetrieveAttempt.fold((l) {}, (documentList) {
+      emit(DocumentsListFullState(documentList: documentList));
+    });
   }
 
   void documentChanged(

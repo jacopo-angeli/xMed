@@ -14,14 +14,13 @@ buildscript {
 
 allprojects {
     repositories {
-        google()
         jcenter()
+        google()
         mavenCentral()
         maven {
-            // TODO Undderstand where to find credential 
           credentials {
-            username 'yourusername'
-            password 'yourpassword'
+            username 'user1-siav'
+            password 'OiH8tUR4jO'
           }
           url 'https://maven.namirial.com'
         }

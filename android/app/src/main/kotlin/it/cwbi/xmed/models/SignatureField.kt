@@ -1,4 +1,4 @@
-package com.example.xmed.models
+package it.cwbi.xmed.models
 
 import java.io.Serializable
 

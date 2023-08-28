@@ -41,8 +41,8 @@ class HttpCustomClient {
     String thumbprint = await CryptoService.generateThumbprint();
 
     client = Dio(BaseOptions(
-      connectTimeout: 60000,
-      receiveTimeout: 60000,
+      connectTimeout: 600000,
+      receiveTimeout: 600000,
       baseUrl: baseUrl,
       headers: <String, String>{
         'content-type': 'application/json',

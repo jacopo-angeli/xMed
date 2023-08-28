@@ -61,6 +61,7 @@ dependencies:
   http: ^1.1.0
   side_navigation: ^1.0.4
   settings_ui: ^2.0.2
+  intl: ^0.18.0
 
 dev_dependencies:
   flutter_test:

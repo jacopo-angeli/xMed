@@ -1,7 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-import '../../../../../utils/constants/enums/document_status.dart';
+import 'package:intl/intl.dart';
+import 'package:xmed/utils/converters/date.dart';
 
 class DocumentSearchRequestDto {
   // Mandatory
@@ -34,10 +35,13 @@ class DocumentSearchRequestDto {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'fromDate': fromDate.millisecondsSinceEpoch,
-      'toDate': toDate.millisecondsSinceEpoch,
-      'idClinica': idClinica,
-      'status': status.toString(),
+      'input': <String, dynamic>{
+        'fromDate': "2020-08-25T13:16:42.175Z",
+        'idClinica': idClinica,
+        'institute': institute,
+        'status': status.toString(),
+        'toDate': "2023-08-25T13:16:42.175Z",
+      }
     };
   }
 

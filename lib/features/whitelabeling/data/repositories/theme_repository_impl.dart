@@ -50,8 +50,10 @@ class ThemeRepositoryImpl implements ThemeRepository {
 
     // CREAZIONE DTO DELLA RISPOSTA DAL RISULTATO DELLA CHIAMATA
     // response.data è DI TIPO Map<string, dynamic>
+    print(response);
     try {
-      data = ClinicDetailsReponseDto.fromMap(response.data['output']['body']);
+      final responseBodyField = response.data['output']['body'];
+      data = ClinicDetailsReponseDto.fromMap(responseBodyField);
     } on Exception {
       return const Left((DataParsingFailure()));
     }
@@ -78,10 +80,16 @@ class ThemeRepositoryImpl implements ThemeRepository {
       // IL TEMA ESISTE
       // CREO IL MODELLO DA CONTENUTO DEL FILE
       final String fileContents = await file.readAsString();
-      final XmedTheme localTheme = XmedTheme.fromJson(fileContents);
-
-      // RITORNO TEMA
-      return Right(localTheme);
+      print(fileContents);
+      try {
+        // TENTATIVO DI CONVERTIRE IL FILE IN MODELLO
+        final XmedTheme localTheme = XmedTheme.fromJson(fileContents);
+        // RITORNO TEMA
+        return Right(localTheme);
+      } on Exception {
+        // TENTATIVO FALLITO
+        return const Left(ThemeRetrieveFailure());
+      }
     } else {
       // IL TEMA NON è PRESENTE IN LOCALE
       // CREO IL FILE CON LA CONFIGURAZIONE DI BASE E RITORNO IL TEMA DI DEFAULT

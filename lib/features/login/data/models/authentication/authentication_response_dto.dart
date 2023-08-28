@@ -12,7 +12,7 @@ class AuthenticationResponseDto {
   String get getStatus => body.status;
 
   /// Estrae il flag di licenza obbligatoria dalla risposta.
-  String get getFlagLicenzaObbligatoria => body.flagLicenzaObbligatoria;
+  int get getFlagLicenzaObbligatoria => int.parse(body.flagLicenzaObbligatoria);
 
   /// Costruttore della classe.
   AuthenticationResponseDto({

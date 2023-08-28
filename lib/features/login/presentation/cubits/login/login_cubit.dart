@@ -22,6 +22,8 @@ class LoginCubit extends Cubit<LoginState> {
   // USE CASES DECLARATION
   late final LogInUseCase loginUseCase;
   late final LogOutUseCase logOutUseCase;
+  // CURRENT USER DECLARATION PER UTILIZZO CON ALTRI CUBIT
+  late User currentUser;
 
   LoginCubit({required this.internetCubit, required this.userRepository})
       : super(const NotLoggedState()) {
@@ -83,8 +85,8 @@ class LoginCubit extends Cubit<LoginState> {
   //HANDLER RISULTATO CHIAMATA DI LOGIN
   void _loginResultHandler(
       Either<FailureEntity, User> result, String username, String password) {
-    result.fold((l) {
-      switch (l.runtimeType) {
+    result.fold((failure) {
+      switch (failure.runtimeType) {
         case (DBFailure):
         case (LoginFailure):
           emit(WrongInputState(
@@ -96,8 +98,10 @@ class LoginCubit extends Cubit<LoginState> {
         default:
           break;
       }
-    }, (r) {
-      emit(LoggedState(user: r));
+    }, (user) {
+      print('UTENTE RECUEPERATO CON SUCCESSO : $user');
+      currentUser = user;
+      emit(LoggedState(user: user));
     });
   }
 
@@ -106,7 +110,6 @@ class LoginCubit extends Cubit<LoginState> {
     // EMETTO LO STATO DI NOTLOGGED
     const storage = FlutterSecureStorage();
     await storage.delete(key: 'password');
-    print("puzzapalle");
     emit(NotLoggedState(username: await storage.read(key: 'username')));
   }
 }

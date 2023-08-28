@@ -1,14 +1,29 @@
-import 'package:bloc/bloc.dart';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:convert';
 
+import 'package:bloc/bloc.dart';
+import 'package:dartz/dartz.dart';
+
+import 'package:xmed/core/error_handling/failures.dart';
+import 'package:xmed/features/documents_managment/domain/repositories/documents_managment_repository.dart';
+
+import '../../../../login/domain/entities/user.dart';
 import '../../../domain/entities/Document.dart';
 
 part 'documents_state.dart';
 
 // Creato dopo aver effettuato il login
 class DocumentsListCubit extends Cubit<DocumentsListState> {
-  DocumentsListCubit() : super(EmptyDocumentsListState());
+  // REPOSITORY DECLARATION
+  DocumentsManagmentRepository documentsRepository;
+  // USER DECLARATION
+  User currentUser;
+  DocumentsListCubit(
+      {required this.documentsRepository, required this.currentUser})
+      : super(EmptyDocumentsListState());
 
-  void sync(List<Document> lastDocumentsList) {
+  void onInit() async {
+    emit(DocumentsListSynchingState(documentList: []));
     List<Document> documentList = [
       Document(
           created: DateTime.now(),
@@ -16,7 +31,7 @@ class DocumentsListCubit extends Cubit<DocumentsListState> {
           idDocumento: 1,
           nome: 'nome',
           descrizione: 'descrizione',
-          status: 'status',
+          status: 'DA_FIRMARE',
           content: 'content',
           markersMedico: ['markersMedico'],
           markersPaziente: ['markersPaziente']),
@@ -26,7 +41,7 @@ class DocumentsListCubit extends Cubit<DocumentsListState> {
           idDocumento: 1,
           nome: 'nome1',
           descrizione: 'descrizione1',
-          status: 'status',
+          status: 'DA_FIRMARE',
           content: 'content',
           markersMedico: ['markersMedico'],
           markersPaziente: ['markersPaziente']),
@@ -36,7 +51,7 @@ class DocumentsListCubit extends Cubit<DocumentsListState> {
           idDocumento: 1,
           nome: 'nome2',
           descrizione: 'descrizione2',
-          status: 'status',
+          status: 'FIRMATO_PAZIENTE',
           content: 'content',
           markersMedico: ['markersMedico'],
           markersPaziente: ['markersPaziente']),
@@ -46,7 +61,7 @@ class DocumentsListCubit extends Cubit<DocumentsListState> {
           idDocumento: 1,
           nome: 'nome3',
           descrizione: 'descrizione3',
-          status: 'status',
+          status: 'FIRMATO_MEDICO',
           content: 'content',
           markersMedico: ['markersMedico'],
           markersPaziente: ['markersPaziente']),
@@ -56,7 +71,7 @@ class DocumentsListCubit extends Cubit<DocumentsListState> {
           idDocumento: 1,
           nome: 'nome4',
           descrizione: 'descrizione4',
-          status: 'status',
+          status: 'FIRMATO',
           content: 'content',
           markersMedico: ['markersMedico'],
           markersPaziente: ['markersPaziente']),
@@ -66,7 +81,7 @@ class DocumentsListCubit extends Cubit<DocumentsListState> {
           idDocumento: 1,
           nome: 'nome5',
           descrizione: 'descrizione5',
-          status: 'status',
+          status: 'FIRMATO_PAZIENTE',
           content: 'content',
           markersMedico: ['markersMedico'],
           markersPaziente: ['markersPaziente']),
@@ -76,7 +91,7 @@ class DocumentsListCubit extends Cubit<DocumentsListState> {
           idDocumento: 1,
           nome: 'nome6',
           descrizione: 'descrizione6',
-          status: 'status',
+          status: 'DA_FIRMARE',
           content: 'content',
           markersMedico: ['markersMedico'],
           markersPaziente: ['markersPaziente']),
@@ -86,7 +101,7 @@ class DocumentsListCubit extends Cubit<DocumentsListState> {
           idDocumento: 1,
           nome: 'nome7',
           descrizione: 'descrizione7',
-          status: 'status',
+          status: 'FIRMATO',
           content: 'content',
           markersMedico: ['markersMedico'],
           markersPaziente: ['markersPaziente']),
@@ -100,7 +115,13 @@ class DocumentsListCubit extends Cubit<DocumentsListState> {
     // DOCUMENTI NON PRESENTI IN LOCALE MA IN REMOTO
     // * Cerco solo documenti con stato DA_FIRMARE
     //  Aggiorno la lista di documenti con i documenti presenti in remoto (con cached = false)
-    // TODO Impl con  integrazione con internet cubit
+
+    // TENTATIVO DI RECUPERO DEI FILE DAL BACKOFFICE
+    Either<FailureEntity, List<Document>> documentsListRetrieveAttempt =
+        await documentsRepository.documentSearch(
+            idClinica: currentUser.idClinica);
+
+    documentsListRetrieveAttempt.fold((l) {}, (r) {});
     emit(DocumentsListFullState(documentList: documentList));
   }
 

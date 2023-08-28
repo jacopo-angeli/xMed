@@ -12,7 +12,7 @@ class WhiteLabelLogo extends StatelessWidget {
     return BlocBuilder<ThemeCubit, ThemeState>(
       builder: (context, state) {
         // TODO Sistemare la view sulla base dello stato del tema
-        return SizedBox(width: 100, height: 100, child: FlutterLogo());
+        return const SizedBox(width: 100, height: 100, child: FlutterLogo());
       },
     );
   }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:xmed/features/documents_managment/presentation/cubits/documents/documents_cubit.dart';
 import 'package:xmed/features/login/data/repositories/user_repository_impl.dart';
 import 'package:xmed/features/login/presentation/cubits/login/login_cubit.dart';
 import 'package:xmed/features/whitelabeling/data/repositories/theme_repository_impl.dart';
@@ -60,9 +61,8 @@ class _MyAppState extends State<MyApp> {
     widget.themeCubit = ThemeCubit(themeRepository: widget.themeRepository);
 
     // TRIGGER APPSTARTED EVENT (TEMA DI DEFAULT VISUALIZZATO)
-    widget.themeCubit.synch(currentTheme: XmedTheme.defaultTheme());
+    widget.themeCubit.synch(theme: XmedTheme.defaultTheme());
     // ? PROBABILEMENTE FAR TERMINARE IL CARICAMENTO INIZIALE QUI
-    widget.loginCubit.appStartedEvent();
     widget.loginCubit.appStartedEvent();
 
     super.initState();

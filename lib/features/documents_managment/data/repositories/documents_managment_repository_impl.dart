@@ -1,14 +1,11 @@
-import 'dart:js_interop';
-
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 
 import 'package:xmed/core/error_handling/failures.dart';
-import 'package:xmed/features/documents_managment/data/models/document_download/document_download_request_dto.dart';
 import 'package:xmed/features/documents_managment/data/models/document_upload/document_upload_request_dto.dart';
 
 import 'package:xmed/features/documents_managment/domain/entities/Document.dart';
-
+import '../../../../utils/constants/strings.dart';
 import '../../../../core/network/http_custom_client.dart';
 import '../../domain/repositories/documents_managment_repository.dart';
 import '../models/document_search/document_search_request_dto.dart';
@@ -20,17 +17,19 @@ class DocumentsManagmentRepositoryImpl implements DocumentsManagmentRepository {
   Future<Either<FailureEntity, List<Document>>> documentSearch(
       {required int idClinica}) async {
     final requestBody = DocumentSearchRequestDto(
-        fromDate: DateTime.fromMillisecondsSinceEpoch(0),
+        fromDate: DateTime.fromMicrosecondsSinceEpoch(1490000000000),
         toDate: DateTime.now(),
         idClinica: idClinica,
         status: 'DA_FIRMARE');
+
+    print(requestBody);
 
     HttpCustomClient client = HttpCustomClient();
     await client.initialize(requestBody.toMap());
 
     late Response response;
     try {
-      response = await client.post('/documentSearch');
+      response = await client.post(documentoClinicaSearch);
     } on Exception {
       return const Left(ServerFailure());
     }
@@ -41,6 +40,7 @@ class DocumentsManagmentRepositoryImpl implements DocumentsManagmentRepository {
       return const Left(ServerFailure());
     }
     //CASO IN CUI DEVO COMPORRE LA LISTA DI DOCUMENTI
+    print("DOCUMENTI RECUPERATI" + data.body.documenti.toString());
 
     final List<Document> documents = List.empty();
     documents.add(Document.fromMap(data.body.documenti));

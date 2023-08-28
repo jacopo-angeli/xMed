@@ -12,9 +12,6 @@ import '../../../../utils/constants/strings.dart';
 import '../../../whitelabeling/presentation/widgets/xmed_logo.dart';
 import '../widgets/xmed_text_form_field.dart';
 
-// Prima pagina dell' applicazione
-// Tento autologin (.appStartedEvent)
-
 @RoutePage()
 class LoginView extends StatefulWidget {
   const LoginView({
@@ -48,7 +45,7 @@ class _LoginPageState extends State<LoginView> {
           final loginCubitState = context.read<LoginCubit>().state;
           if (loginCubitState is LoggedState) {
             // WHEN LOGGED NAVIGATE TO DOCUMENTS VIEW PAGE
-            appRouter.replace(const DocumentsManagmentRoute());
+            appRouter.replace(DocumentsManagmentRoute());
           } else if (loginCubitState is LoginErrorState) {
             showToast(backofficeConnectionError);
           }

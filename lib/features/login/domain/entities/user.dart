@@ -4,9 +4,9 @@ import 'package:xmed/features/login/data/models/authentication/authentication_re
 
 /// Questa classe rappresenta un utente e le sue informazioni associate.
 class User extends Equatable {
-  final int? idClinica; // ID della clinica associata all'utente
-  final String? flagLicenzaObbligatoria; // Indicatore di licenza obbligatoria
-  final String? status; // Stato dell'utente
+  final int idClinica; // ID della clinica associata all'utente
+  final int flagLicenzaObbligatoria; // Indicatore di licenza obbligatoria
+  final String status; // Stato dell'utente
 
   /// Costruttore per inizializzare un oggetto User.
   const User({
@@ -17,12 +17,12 @@ class User extends Equatable {
 
   /// Costruttore per generare un utente predefinito.
   factory User.defaultUser() =>
-      User(idClinica: null, flagLicenzaObbligatoria: null, status: null);
+      const User(idClinica: 0, flagLicenzaObbligatoria: 0, status: '');
 
   /// Metodo per creare una copia dell'utente con alcune proprietà modificate.
   User copyWith({
     int? idClinica,
-    String? flagLicenzaObbligatoria,
+    int? flagLicenzaObbligatoria,
     String? status,
   }) {
     return User(

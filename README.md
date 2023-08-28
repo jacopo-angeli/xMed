@@ -22,3 +22,13 @@ La coppia di chiavi (pubblica e privata) è generata da un algoritmo di generazi
 Quando qualcuno vuole inviare un messaggio all'utente, utilizza la chiave pubblica dell'utente per cifrare il messaggio. Solo l'utente, in possesso della corrispondente chiave privata, può decifrare il messaggio e leggerne il contenuto.
 
 In sintesi, la chiave pubblica viene utilizzata per cifrare i dati, mentre la chiave privata è utilizzata per decifrarli. La sicurezza del sistema di cifratura asimmetrica si basa sulla difficoltà di invertire il processo matematico e dedurre la chiave privata conoscendo solo la chiave pubblica. Questo rende le comunicazioni sicure e protegge i dati dagli occhi indiscreti.
+
+
+
+1- Go to flutter\bin\cache and remove a file named: flutter_tools.stamp
+
+2- Go to flutter\packages\flutter_tools\lib\src\web and open the file chrome.dart.
+
+3- Find '--disable-extensions'
+
+4- Add '--disable-web-security'

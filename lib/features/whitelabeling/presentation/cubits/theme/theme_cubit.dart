@@ -11,10 +11,10 @@ class ThemeCubit extends Cubit<ThemeState> {
 
   // CONSTRUCTOR
   ThemeCubit({required this.themeRepository})
-      : super(ThemeSyncingState(currentTheme: XmedTheme.defaultTheme()));
+      : super(ThemeSyncingState(theme: XmedTheme.defaultTheme()));
 
-  void synch({required XmedTheme currentTheme}) async {
-    emit(ThemeSyncingState(currentTheme: currentTheme));
+  void synch({required XmedTheme theme}) async {
+    emit(ThemeSyncingState(theme: theme));
     print('TENTATIVO DI RECUPERO DEL TEMA LOCALE');
     final Either<FailureEntity, XmedTheme> localThemeRetrieveAttempt =
         await themeRepository.getLocalClinicTheme();
@@ -32,7 +32,7 @@ class ThemeCubit extends Cubit<ThemeState> {
       print('TENTATIVO DI RECUPERO TEMA DA REMOTO');
       final Either<FailureEntity, XmedTheme> remoteThemeRetrieveAttempt =
           await themeRepository.getRemoteClinicTheme(
-              idClinica: int.parse(localTheme.clinicID));
+              idClinica: localTheme.clinicID);
 
       print('GESTISCO IL RISULTATO DEL TENTATIVO');
       remoteThemeRetrieveAttempt.fold((failure) {

@@ -3,8 +3,6 @@ import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
 
-import '../../../../core/utils/converters/date.dart';
-
 class Document extends Equatable {
   final int institute = 2272;
   // INFO DOCUMENTO

@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/widgets.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:xmed/core/network/http_custom_client.dart';
 import 'package:xmed/features/whitelabeling/data/models/clinic_details/clinic_details_request_dto.dart';

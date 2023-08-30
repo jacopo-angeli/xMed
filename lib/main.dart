@@ -10,7 +10,6 @@ import 'package:xmed/core/utils/constants/strings.dart';
 import 'config/routers/app_router.dart';
 import 'config/themes/app_themes.dart';
 import 'features/connection/presentation/cubits/internet/internet_cubit.dart';
-import 'features/license/data/repositories/license_repository_impl.dart';
 import 'features/whitelabeling/data/repositories/theme_repository_impl.dart';
 import 'features/whitelabeling/presentation/cubits/theme/theme_cubit.dart';
 
@@ -23,7 +22,7 @@ Future<void> main() async {
 
   // REPOSITORIES
   final userRepository = UserRepositoryImpl();
-  final licenseRepository = LicenseRepositoryImpl();
+  // final licenseRepository = LicenseRepositoryImpl();
   final themeRepository = ThemeRepositoryImpl();
 
   // BLOCS

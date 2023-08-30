@@ -4,7 +4,6 @@ import 'package:bloc/bloc.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:xmed/core/error_handling/failures.dart';
 import 'package:xmed/features/connection/presentation/cubits/internet/internet_cubit.dart';
 import 'package:xmed/features/login/domain/repositories/user_repository.dart';
@@ -64,7 +63,7 @@ class LoginCubit extends Cubit<LoginState> {
       {required String username, required String password}) async {
     emit(LoggingState(username: username, password: password));
     // TODO REFACTOR
-    final timer = Timer(Duration(seconds: 5), () {
+    Timer(const Duration(seconds: 10), () {
       emit(WrongInputState(
           emailError: "Qualcosa è andato storto. Riprova",
           passwordError: "Qualcosa è andato storto. Riprova"));

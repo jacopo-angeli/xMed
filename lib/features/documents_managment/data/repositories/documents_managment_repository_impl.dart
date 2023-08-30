@@ -1,15 +1,12 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:pdf/pdf.dart';
 
 import 'package:xmed/core/error_handling/failures.dart';
 import 'package:xmed/features/documents_managment/data/models/document_download/document_download_request_dto.dart';
-import 'package:xmed/features/documents_managment/data/models/document_upload/document_upload_request_dto.dart';
 
 import 'package:xmed/features/documents_managment/domain/entities/Document.dart';
 import '../../../../core/utils/constants/strings.dart';
@@ -18,7 +15,6 @@ import '../../domain/repositories/documents_managment_repository.dart';
 import '../models/document_download/document_download_response_dto.dart';
 import '../models/document_search/document_search_request_dto.dart';
 import '../models/document_search/document_search_response_dto.dart';
-import '../models/document_upload/document_upload_response.dart';
 
 class DocumentsManagmentRepositoryImpl implements DocumentsManagmentRepository {
   @override
@@ -69,29 +65,7 @@ class DocumentsManagmentRepositoryImpl implements DocumentsManagmentRepository {
   @override
   Future<Either<FailureEntity, void>> documentUpload(
       {required int idClinica, required Document document}) async {
-    final DocumentUploadRequestDto requestBody =
-        DocumentUploadRequestDto.fromMap(document.toMap());
-
-    // HTTP CLIENT DEFINITION
-    final client = HttpCustomClient();
-    await client.initialize(requestBody.toMap());
-
-    late Response dioResponse;
-    try {
-      dioResponse = await client.post('/documentUpload');
-    } on Exception {
-      return const Left(DocumentUploadFailure());
-    }
-    if (dioResponse.statusCode != 200) {
-      return const Left(DocumentUploadFailure());
-    }
-    late DocumentUploadResponseDto data;
-    try {
-      data = DocumentUploadResponseDto.fromMap(dioResponse.data);
-    } on Exception {
-      return Left(DocumentUploadFailure());
-    }
-    return const Right(null);
+    throw UnimplementedError();
   }
 
   @override

@@ -2,7 +2,6 @@
 import 'dart:convert';
 
 import 'package:intl/intl.dart';
-import 'package:xmed/core/utils/converters/date.dart';
 
 class DocumentSearchRequestDto {
   // Mandatory

@@ -35,13 +35,26 @@ class _DocumentsListMobileLayoutState extends State<DocumentsListMobileLayout> {
       child: Scaffold(
         floatingActionButton: BlocBuilder<ThemeCubit, ThemeState>(
           builder: (themeCubitContext, themeCubitState) {
-            return FloatingActionButton(
-              backgroundColor: ColorsConverter.toDartColorWidget(
-                  themeCubitState.currentTheme!.colorAccent),
-              child: Icon(Icons.refresh),
-              onPressed: () {
-                debugPrint("DEBUGGG");
-                context.read<DocumentsListCubit>().sync();
+            return BlocBuilder<DocumentsListCubit, DocumentsListState>(
+              builder: (context, state) {
+                if (state is DocumentsSynchingState) {
+                  return FloatingActionButton(
+                    backgroundColor: ColorsConverter.toDartColorWidget(
+                        themeCubitState.currentTheme!.colorAccent),
+                    onPressed: null,
+                    child: const CircularProgressIndicator(),
+                  );
+                } else {
+                  return FloatingActionButton(
+                    backgroundColor: ColorsConverter.toDartColorWidget(
+                        themeCubitState.currentTheme!.colorAccent),
+                    child: const Icon(Icons.refresh),
+                    onPressed: () {
+                      debugPrint("DEBUGGG");
+                      context.read<DocumentsListCubit>().sync();
+                    },
+                  );
+                }
               },
             );
           },

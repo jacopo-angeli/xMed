@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:path_provider/path_provider.dart';
 import '../../../../core/error_handling/failures.dart';
 import 'package:xmed/core/network/http_custom_client.dart';
@@ -115,7 +116,7 @@ class LicenseRepositoryImpl implements LicenseRepository {
             .asUint8List(license.offsetInBytes, license.lengthInBytes),
       );
     } catch (e) {
-      print('Debug license file not found');
+      debugPrint('Debug license file not found');
       // Errore durante il recupero del file, file non presente
       return const Left(LicenseRetrieveFailure());
     }

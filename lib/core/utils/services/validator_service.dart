@@ -1,4 +1,4 @@
-import 'package:xmed/utils/constants/regular_expressions.dart';
+import 'package:xmed/core/utils/constants/regular_expressions.dart';
 
 class ValidatorService {
   static emailValidation({required String email}) {

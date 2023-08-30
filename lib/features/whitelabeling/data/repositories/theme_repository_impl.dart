@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/widgets.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:xmed/core/network/http_custom_client.dart';
 import 'package:xmed/features/whitelabeling/data/models/clinic_details/clinic_details_request_dto.dart';
@@ -10,7 +11,7 @@ import 'package:xmed/features/whitelabeling/domain/entities/theme.dart';
 import 'package:xmed/features/whitelabeling/domain/repositories/theme_repository.dart';
 
 import '../../../../core/error_handling/failures.dart';
-import '../../../../utils/constants/strings.dart';
+import '../../../../core/utils/constants/strings.dart';
 
 class ThemeRepositoryImpl implements ThemeRepository {
   @override
@@ -50,7 +51,6 @@ class ThemeRepositoryImpl implements ThemeRepository {
 
     // CREAZIONE DTO DELLA RISPOSTA DAL RISULTATO DELLA CHIAMATA
     // response.data è DI TIPO Map<string, dynamic>
-    print(response);
     try {
       final responseBodyField = response.data['output']['body'];
       data = ClinicDetailsReponseDto.fromMap(responseBodyField);
@@ -76,7 +76,7 @@ class ThemeRepositoryImpl implements ThemeRepository {
     final File file = await _getLocalThemeFile();
 
     // CONTROLLO SE IL RECUPERO è ANDATO A BUON FINE
-    if (await file.exists()) {
+    if (file.existsSync()) {
       // IL TEMA ESISTE
       // CREO IL MODELLO DA CONTENUTO DEL FILE
       final String fileContents = await file.readAsString();
@@ -90,10 +90,6 @@ class ThemeRepositoryImpl implements ThemeRepository {
         return const Left(ThemeRetrieveFailure());
       }
     } else {
-      // IL TEMA NON è PRESENTE IN LOCALE
-      // CREO IL FILE CON LA CONFIGURAZIONE DI BASE E RITORNO IL TEMA DI DEFAULT
-      writeLocalClinicTheme(XmedTheme.defaultTheme());
-
       // RITORNO IL TEMA DI DEFAULT
       return const Left(ThemeRetrieveFailure());
     }
@@ -104,7 +100,7 @@ class ThemeRepositoryImpl implements ThemeRepository {
     final Directory documentsDirectory =
         await getApplicationDocumentsDirectory();
     final String path = documentsDirectory.path;
-    File file = File('$path/counter.txt');
+    File file = File('$path/theme.json');
     return file;
   }
 

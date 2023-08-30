@@ -3,7 +3,7 @@ import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
 
-import '../../../../utils/converters/date.dart';
+import '../../../../core/utils/converters/date.dart';
 
 class Document extends Equatable {
   final int institute = 2272;
@@ -74,8 +74,7 @@ class Document extends Equatable {
   factory Document.fromMap(Map<String, dynamic> map) {
     if (map['body'] != null) map = map['body'];
     return Document(
-      dataDocumento:
-          CWDateUtils.localDateFormatter(DateTime.parse(map['dataDocumento'])),
+      dataDocumento: map['dataDocumento'] as String,
       dataFirma: null,
       idDocumento: map['idDocumento'] as int,
       nome: map['nome'] as String,

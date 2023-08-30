@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 
-import '../../../../../utils/global_data_models/common/message.dart';
+import '../../../../../core/utils/global_data_models/common/message.dart';
 
 class LicenseDownloadResponseDto {
   final LicenseDownloadResponseBody output;

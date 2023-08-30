@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:xmed/utils/constants/enums/connection_types.dart';
+import 'package:xmed/core/utils/constants/enums/connection_types.dart';
 
 part 'internet_state.dart';
 

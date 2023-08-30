@@ -1,12 +1,9 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'dart:convert';
-
 import 'package:bloc/bloc.dart';
 import 'package:dartz/dartz.dart';
-
-import 'package:xmed/core/error_handling/failures.dart';
+import 'package:flutter/widgets.dart';
 import 'package:xmed/features/documents_managment/domain/repositories/documents_managment_repository.dart';
 
+import '../../../../../core/error_handling/failures.dart';
 import '../../../../login/domain/entities/user.dart';
 import '../../../domain/entities/Document.dart';
 
@@ -20,52 +17,128 @@ class DocumentsListCubit extends Cubit<DocumentsListState> {
   User currentUser;
   DocumentsListCubit(
       {required this.documentsRepository, required this.currentUser})
-      : super(EmptyDocumentsListState());
+      : super(DocumentsSynchingState(
+            documentsList: {},
+            currentOperation: "Sincronizzazione dei documenti in corso..."));
 
-  void onInit() async {
-    emit(DocumentsListSynchingState(documentList: []));
-    // emit(DocumentsListSynchingState(documentList: documentList));
-    // Funzione che viene chiamata prima di ogni modifica attiva e al login dell'utente
-    // Reucupero tutti i documenti presenti in remoto e li confronto con quelli presenti in lastDocumentList
-    // DOCUMENTI ANNULLATI (Trovo dei documenti con status ANNULLATO nella backoffice e con status diverso in locale)
-    //  Elimino il documento in locale (se è presente)
-    //  Elimino il documento dalla nuova lista di documenti
-    // DOCUMENTI NON PRESENTI IN LOCALE MA IN REMOTO
-    // * Cerco solo documenti con stato DA_FIRMARE
-    //  Aggiorno la lista di documenti con i documenti presenti in remoto (con cached = false)
+  void sync() async {
+    emit(DocumentsSynchingState(
+        currentOperation: "Recupero i documenti dal dispositivo",
+        documentsList: state.documentsList));
 
-    // TENTATIVO DI RECUPERO DEI FILE DAL BACKOFFICE
-    Either<FailureEntity, List<Document>> documentsListRetrieveAttempt =
-        await documentsRepository.documentSearch(
+    // ELIMINO TUTTI I DOCUMENTI CHE SONO PRESENTI NEL DISPOSITIVO
+    // MA CHE NON SONO DELLA CLINICA DELL'UTENTE CORRENTE
+    documentsRepository.clearDevice(idClinica: currentUser.idClinica);
+
+    await Future.delayed(Duration(seconds: 1));
+
+    // RECUPERO TUTTI I DOCUMENTI PRESENTI IN LOCALE
+    Either<FailureEntity, Map<int, Document>> localDocumentsRetrieveAttempt =
+        await documentsRepository.getLocalDocuments(
             idClinica: currentUser.idClinica);
 
-    documentsListRetrieveAttempt.fold((l) {}, (documentList) {
-      emit(DocumentsListFullState(documentList: documentList));
+    // TODO : TABLET PASSA A SECONDA CLINICA
+
+    // GESTIONE DEL RISULTATO
+    localDocumentsRetrieveAttempt.fold((failure) {
+      // NESSUN DOCUMENTO RECUPERATO
+      debugPrint("ERRORE NEL RECUPERO DEI FILE LOCALI");
+      // NOTIFICARE L'UTENTE
+      emit(CompleteFailureState(
+          error: 'Fail completo nel recupero dei file locali',
+          documentsList: {}));
+    }, (localDocumentsMap) async {
+      debugPrint(
+          "RECUPERATI ${localDocumentsMap.length} DOCUMENTI DAL DISPOSITIVO");
+      emit(DocumentsSynchingState(
+          currentOperation:
+              "Recuperati ${localDocumentsMap.length} documenti dal dispositivo...",
+          documentsList: state.documentsList));
+      debugPrint("RECUPERO I DOCUMENTI DA REMOTO");
+      emit(DocumentsSynchingState(
+          currentOperation: "Sincronizzazione con il server",
+          documentsList: state.documentsList));
+
+      // RECUPERO DOCUMENTI DA REMOTO
+      Either<FailureEntity, Map<int, Document>> remoteDocumentsRetrieveAttempt =
+          await documentsRepository.getRemoteDocuments(
+              idClinica: currentUser.idClinica);
+
+      // GESTIONE DEL RISULTATO DELLA CHIAMATA
+      remoteDocumentsRetrieveAttempt.fold((failure) {
+        debugPrint("ERRORE NEL RECUPERO DEI DOCUMENTI REMOTI");
+        // TODO
+        // Quando non posso scaricare i documenti da remoto? => quando non sono connesso ad internet, ma in tal caso non va male anche la login?
+        // Se errore dovuto ad internet cubit devo handlare l'evento in maniera separata
+        // Se errore dovuto a problemi di backend devo bestemmiare anche più forte
+      }, (remoteDocumentsMap) async {
+        debugPrint(
+            "RECUPERATI ${remoteDocumentsMap.length} DOCUMENTI DAL SERVER");
+        emit(DocumentsSynchingState(
+            currentOperation:
+                "Recuperati ${remoteDocumentsMap.length} documenti dal server. Sincronizzazione con documenti locali.",
+            documentsList: state.documentsList));
+
+        // CONFRONTO DOCUMENTI REMOTI CON DOCUMENTI LOCALI
+        // POSSIBILITà:
+        // DOCUMENTO PRESENTE SOLO IN REMOTO => SCARICO IL DOCUMENTO
+        // DOCUMENTO PRESENTE SOLO IN LOCALE (GIà FIRMATO DA ALTRI) => ELIMINAZIONE DEL DOCUMENTO DA DISPOSITIVO + VALUTARE SE NOTIFICARE L'OPERATORE
+
+        // CONSIDERANDO CHE IL DOCUMENTO NON PUò SUBIRE MODIFICHE, PER MODIFICARNE UNO
+        // OCCORRE CARICARNE UNA NUOVA VERSIONE MODIFICATA QUINDI AVREI UN DOCUMENTO
+        // NUOVO DA SCARICARE E UN DOCUMENTO IN LOCALE DA ELIMINARE
+
+        for (final remoteDoc in remoteDocumentsMap.entries) {
+          final Document remoteDocModel = remoteDoc.value;
+
+          if (localDocumentsMap[remoteDocModel.idDocumento] == null) {
+            // DOCUMENTO PRESENTE SOLO IN REMOTO
+            // DOWNLOAD DEL DOCUMENTO
+            debugPrint("DOCUMENTO PRESENTE SOLO IN REMOTO");
+            await documentsRepository.documentDowload(
+                idDocumento: remoteDocModel.idDocumento,
+                idClinica: currentUser.idClinica,
+                remoteDocument: remoteDocModel);
+          }
+        }
+
+        for (final localDoc in localDocumentsMap.entries) {
+          final Document localDocModel = localDoc.value;
+
+          if (remoteDocumentsMap[localDocModel.idDocumento] == null) {
+            // DOCUMENTO PRESENTE SOLO IN LOCALE
+            // ELIMINAZIONE DEL DOCUMENTO
+            debugPrint("DOCUMENTO PRESENTE SOLO IN LOCALE");
+            Either<FailureEntity, void> documentDeleteAttempt =
+                await documentsRepository.documentDelete(
+                    idDocumento: localDocModel.idDocumento,
+                    idClinica: currentUser.idClinica);
+
+            documentDeleteAttempt.fold((l) => null, (r) => null);
+          }
+        }
+
+        // SINCRONIZZAZIONE AVVENUTA CORRETAMENTE
+        debugPrint("SINCRONIZZAZIONE AVVENUTA CON SUCCESSO");
+
+        // RECUPERO TUTTI I DOCUMENTI PRESENTI IN LOCALE AGGIORNATI
+        Either<FailureEntity, Map<int, Document>>
+            updatedlocalDocumentsRetrieveAttempt = await documentsRepository
+                .getLocalDocuments(idClinica: currentUser.idClinica);
+
+        updatedlocalDocumentsRetrieveAttempt.fold((failure) {
+          // ! ERRORE GRAVE
+          debugPrint("ERRORE NEL RECUPERO DEI FILE");
+        }, (localDocumentsMap) {
+          emit(DocumentsSynchState(documentsList: localDocumentsMap));
+        });
+      });
     });
   }
 
-  void documentChanged(
-      List<Document> lastDocumentsList, Document documentChanged) {
-    // Chiamata quando l'utente effettua una modifica ATTIVA alla lista di documenti
-    //
-    // Aggiorno lastDocumentsList con le modifiche apportate
-    // Aggiorno il backoffice
-    // Possibili modifiche
-    //  DOWNLOAD DEL DOCUMENTO
-    //    lo noto se il documento ha ora cached = true
-    //    salvataggio del documento in locale
-    //    aggiornamento della corrente lista di documenti
-    //  FIRMA DEL DOCUMENTO
-    //    FIRMA DEL MEDICO
-    //      Content modificato e status passa a FIRMATO_MEDICO O FIRMATO
-    //    FIRMA DEL PAZIENTE
-    //      Content modificato e status passa a FIRMATO_PAZIENTE O FIRMATO
-    //  UPLOAD DEL DOCUMENTO
-    //    da cached a !cached
-    //    tento di caricare il documento in remoto,
-    //    se tutto va a buon fine lo elimino dal locale
-    // TODO Impl
-    List<Document> updatedDocumentsList = lastDocumentsList;
-    emit(DocumentsListFullState(documentList: updatedDocumentsList));
+  void clearCache({required int idClinica}) async {
+    emit(DocumentsSynchingState(
+        currentOperation: 'Pulizia della cache', documentsList: {}));
+    await documentsRepository.clearCache(idClinica: idClinica);
   }
 }

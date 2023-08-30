@@ -45,3 +45,7 @@ class LicenseDownloadFailure extends FailureEntity {
 class LoginFailure extends FailureEntity {
   const LoginFailure();
 }
+
+class DocumentDownloadFailure extends FailureEntity {}
+
+class DocumentsDirectoryNotFound extends FailureEntity {}

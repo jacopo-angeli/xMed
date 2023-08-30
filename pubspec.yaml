@@ -38,6 +38,7 @@ dependencies:
   side_navigation: ^1.0.4
   settings_ui: ^2.0.2
   intl: ^0.18.0
+  pdf: ^3.10.4
 
 dev_dependencies:
   flutter_test:

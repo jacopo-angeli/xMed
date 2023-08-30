@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:dartz/dartz.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:xmed/core/error_handling/failures.dart';
@@ -7,9 +10,9 @@ import 'package:xmed/features/connection/presentation/cubits/internet/internet_c
 import 'package:xmed/features/login/domain/repositories/user_repository.dart';
 import 'package:xmed/features/login/domain/usecases/login.dart';
 import 'package:xmed/features/login/domain/usecases/logout.dart';
-import 'package:xmed/utils/services/validator_service.dart';
+import 'package:xmed/core/utils/services/validator_service.dart';
 
-import '../../../../../utils/constants/strings.dart';
+import '../../../../../core/utils/constants/strings.dart';
 import '../../../domain/entities/user.dart';
 
 part 'login_state.dart';
@@ -31,7 +34,7 @@ class LoginCubit extends Cubit<LoginState> {
     logOutUseCase = LogOutUseCase(userRepository: userRepository);
   }
 
-  void appStartedEvent() async {
+  Future<void> appStartedEvent() async {
     emit(const LoggingState());
     // RECUPERO username E password DAL SECURE STORAGE
     const storage = FlutterSecureStorage();
@@ -60,6 +63,12 @@ class LoginCubit extends Cubit<LoginState> {
   void logInRequest(
       {required String username, required String password}) async {
     emit(LoggingState(username: username, password: password));
+    // TODO REFACTOR
+    final timer = Timer(Duration(seconds: 5), () {
+      emit(WrongInputState(
+          emailError: "Qualcosa è andato storto. Riprova",
+          passwordError: "Qualcosa è andato storto. Riprova"));
+    });
     // SANITY CHECK DI username E password
     final emailError = ValidatorService.emailValidation(email: username)
         ? ""
@@ -99,7 +108,7 @@ class LoginCubit extends Cubit<LoginState> {
           break;
       }
     }, (user) {
-      print('UTENTE RECUEPERATO CON SUCCESSO : $user');
+      debugPrint('UTENTE RECUEPERATO CON SUCCESSO : $user');
       currentUser = user;
       emit(LoggedState(user: user));
     });

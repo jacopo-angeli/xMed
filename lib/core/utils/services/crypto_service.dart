@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:crypto/crypto.dart' as hash;
-import 'package:xmed/utils/services/certficate_service.dart';
+import 'package:xmed/core/utils/services/certficate_service.dart';
 
 class CryptoService {
   /// Genera un thumbprint (impronta digitale) di un certificato.

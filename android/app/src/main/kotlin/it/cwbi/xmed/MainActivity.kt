@@ -34,7 +34,7 @@ class MainActivity: FlutterActivity() {
         PDFUtils.activateSDK("", "", "");
 
         // istanzializzazione dei channels
-        // setupChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, SETUP_CHANNEL)
+        setupChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, SETUP_CHANNEL)
         viewerChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, VIEWER_CHANNEL)
         licenseChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, LICENSE_CHANNEL)
 

@@ -7,10 +7,11 @@ import 'package:xmed/config/routers/app_router.dart';
 import 'package:xmed/config/routers/app_router.gr.dart';
 import 'package:xmed/features/login/presentation/cubits/login/login_cubit.dart';
 import 'package:xmed/features/login/presentation/widgets/xmed_disbled_credential_button.dart';
+import 'package:xmed/features/whitelabeling/presentation/widgets/whitelable_logo.dart';
+import 'package:xmed/core/utils/converters/colors_converter.dart';
 
-import '../../../../utils/constants/strings.dart';
-import '../../../whitelabeling/presentation/widgets/xmed_logo.dart';
-import '../widgets/xmed_logo.dart';
+import '../../../../core/utils/constants/strings.dart';
+import '../../../whitelabeling/presentation/cubits/theme/theme_cubit.dart';
 import '../widgets/xmed_text_form_field.dart';
 
 @RoutePage()
@@ -51,6 +52,54 @@ class _LoginPageState extends State<LoginView> {
           }
         },
         child: Scaffold(
+          bottomNavigationBar: BlocBuilder<ThemeCubit, ThemeState>(
+            builder: (context, state) {
+              return Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('colorPrimary : '),
+                    SizedBox(
+                      height: 30,
+                      width: 30,
+                      child: DecoratedBox(
+                          decoration: BoxDecoration(
+                              border: Border.all(color: Colors.black),
+                              color: ColorsConverter.toDartColorWidget(
+                                  state.currentTheme!.colorPrimary))),
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text('colorBackground : '),
+                    SizedBox(
+                      height: 30,
+                      width: 30,
+                      child: DecoratedBox(
+                          decoration: BoxDecoration(
+                              border: Border.all(color: Colors.black),
+                              color: ColorsConverter.toDartColorWidget(
+                                  state.currentTheme!.colorBackground))),
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text('colorAccent : '),
+                    SizedBox(
+                      height: 30,
+                      width: 30,
+                      child: DecoratedBox(
+                          decoration: BoxDecoration(
+                              border: Border.all(color: Colors.black),
+                              color: ColorsConverter.toDartColorWidget(
+                                  state.currentTheme!.colorAccent))),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
           body: Container(
             decoration: const BoxDecoration(color: Colors.white),
             child: Row(
@@ -126,7 +175,10 @@ class _LoginPageState extends State<LoginView> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             // WHITE LABEL LOGO DINAMICO SULLA BASE DELLO STATO DEL THEME CUBIT
-                            const XmedLogo(),
+                            const WhiteLabelLogo(
+                              customHeight: 200,
+                              customWidth: 200,
+                            ),
                             const SizedBox(height: 10),
 
                             // EMAIL CUSTOM INPUT FIELD
@@ -181,7 +233,7 @@ class _LoginPageState extends State<LoginView> {
                                         ));
                                 }
                               });
-                            })
+                            }),
                           ],
                         ),
                       ),

@@ -7,7 +7,7 @@ import 'package:xmed/features/login/domain/entities/user.dart';
 import 'package:xmed/features/login/domain/repositories/user_repository.dart';
 
 import '../../../../core/error_handling/failures.dart';
-import '../../../../utils/constants/strings.dart';
+import '../../../../core/utils/constants/strings.dart';
 import '../models/authentication/authentication_response_dto.dart';
 
 class UserRepositoryImpl implements UserRepository {

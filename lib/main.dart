@@ -6,6 +6,7 @@ import 'package:oktoast/oktoast.dart';
 import 'package:xmed/features/login/data/repositories/user_repository_impl.dart';
 import 'package:xmed/features/login/presentation/cubits/login/login_cubit.dart';
 import 'package:xmed/core/utils/constants/strings.dart';
+import 'package:xmed/features/whitelabeling/domain/entities/theme.dart';
 
 import 'config/routers/app_router.dart';
 import 'config/themes/app_themes.dart';
@@ -30,8 +31,11 @@ Future<void> main() async {
       InternetCubit(connectivity: Connectivity());
   final LoginCubit loginCubit =
       LoginCubit(internetCubit: internetCubit, userRepository: userRepository);
-  final ThemeCubit themeCubit =
-      ThemeCubit(themeRepository: themeRepository, loginCubit: loginCubit);
+  final XmedTheme xmedDefaultTheme = await XmedTheme.getDefaultTheme();
+  final ThemeCubit themeCubit = ThemeCubit(
+      defaultTheme: xmedDefaultTheme,
+      themeRepository: themeRepository,
+      loginCubit: loginCubit);
 
   // TRIGGER APPSTARTED EVENT (VISUALIZZATO TEMA DI DEFAULT)
   await themeCubit.appStartedEvent();

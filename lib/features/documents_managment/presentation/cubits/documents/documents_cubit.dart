@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:dartz/dartz.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:xmed/features/documents_managment/domain/repositories/documents_managment_repository.dart';
 
@@ -11,6 +12,8 @@ part 'documents_state.dart';
 
 // Creato dopo aver effettuato il login
 class DocumentsListCubit extends Cubit<DocumentsListState> {
+  // METHOD CHANNEL PER GESTIONE RITORNO WIZARD DI FIRMA
+  static const _viewerChannel = MethodChannel('cwbi/viewer');
   // REPOSITORY DECLARATION
   DocumentsManagmentRepository documentsRepository;
   // USER DECLARATION
@@ -19,9 +22,57 @@ class DocumentsListCubit extends Cubit<DocumentsListState> {
       {required this.documentsRepository, required this.currentUser})
       : super(DocumentsSynchingState(
             documentsList: {},
-            currentOperation: "Sincronizzazione dei documenti in corso..."));
+            currentOperation: "Sincronizzazione dei documenti in corso...")) {
+    /// QUESTA FUNZIONE VIENE CHIAMATA AL TERMINE DEL WIZARD DI FIRMA
+    /// GESTISCE IL SUO RISULTATO CHE VIENE GESTITO SOLO QUANDO
+    /// EQUIVALE A SIGNED O A INTERMEDIATE. IN ENTRAMBI I CASI VIENE
+    /// AGGIORNATO IL CAMPO DATI status DEL FILE. MODIFICA CHE VIENE
+    /// RIFLESSA AUTOMATICAMENTE NELLA VISTA.
+    _viewerChannel.setMethodCallHandler((call) async {
+      if (call.method == 'completeWizard') {
+        // RECUPERO DEI PARAMETRI DELLA RICHIESTA
+        final String status = call.arguments['status'];
+        final String callBackOption = call.arguments['callBackOption'];
+        final String idDocumento = call.arguments['idDocumento'];
 
-  void sync() async {
+        debugPrint(
+            "STATUS = $status, CALLBACKOPTION = $callBackOption, IDDOCUMENTO = $idDocumento");
+
+        if (status == 'SIGNED') {
+          debugPrint("DOCUMENTO TOTALMENTE FIRMATO");
+          debugPrint("AGGIORNAMENTO DEL SUO STATO");
+          documentsRepository.setDocumentStatus(
+              idDocumento: idDocumento,
+              idClinica: currentUser.idClinica,
+              status: "FIRMATO");
+          sync();
+        } else {
+          // save intermediate document
+          if (status == 'INTERMEDIATE') {
+            debugPrint("DOCUMENTO PARZIALMENTE FIRMATO");
+            if (call.arguments['callBackOption'] == 'MEDICO') {
+              debugPrint("FIRMATO DA MEDICO");
+              documentsRepository.setDocumentStatus(
+                  idDocumento: idDocumento,
+                  idClinica: currentUser.idClinica,
+                  status: "FIRMATO_MEDICO");
+              sync();
+            }
+            if (callBackOption == 'PAZIENTE') {
+              debugPrint("FIRMATO DA PAZIENTE");
+              documentsRepository.setDocumentStatus(
+                  idDocumento: idDocumento,
+                  idClinica: currentUser.idClinica,
+                  status: "FIRMATO_PAZIENTE");
+              sync();
+            }
+          }
+        }
+      }
+    });
+  }
+
+  Future<void> sync() async {
     emit(DocumentsSynchingState(
         currentOperation: "Recupero i documenti dal dispositivo",
         documentsList: state.documentsList));
@@ -136,9 +187,23 @@ class DocumentsListCubit extends Cubit<DocumentsListState> {
     });
   }
 
-  void clearCache({required int idClinica}) async {
+  void clearCache({required String idClinica}) async {
+    // CLEAR DELLA CACHE LOCALE DEI DOCUMENTI
+    if (state is DocumentsSynchState) {
+      emit(DocumentsSynchingState(
+          currentOperation: 'Pulizia della cache', documentsList: {}));
+      await documentsRepository.clearCache(idClinica: idClinica);
+      emit(DocumentsSynchState(documentsList: {}));
+    }
+  }
+
+  Future<void> documentUpload({required String idDocumento}) async {
     emit(DocumentsSynchingState(
-        currentOperation: 'Pulizia della cache', documentsList: {}));
-    await documentsRepository.clearCache(idClinica: idClinica);
+        currentOperation: 'Upload del documento',
+        documentsList: state.documentsList));
+    await documentsRepository.documentUpload(
+        idClinica: currentUser.idClinica, idDocumento: int.parse(idDocumento));
+    //await documentsRepository.documentDelete(idDocumento: int.parse(idDocumento), idClinica: currentUser.idClinica);
+    emit(DocumentsSynchState(documentsList: state.documentsList));
   }
 }

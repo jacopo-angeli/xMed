@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:xmed/core/error_handling/failures.dart';
 import 'package:xmed/features/login/presentation/cubits/login/login_cubit.dart';
 import 'package:xmed/features/whitelabeling/domain/repositories/theme_repository.dart';
@@ -15,9 +16,15 @@ class ThemeCubit extends Cubit<ThemeState> {
   final ThemeRepository themeRepository;
   final LoginCubit loginCubit;
 
+  // CONST FIELDS
+  final XmedTheme defaultTheme;
+
   // CONSTRUCTOR
-  ThemeCubit({required this.loginCubit, required this.themeRepository})
-      : super(const AppStartedState());
+  ThemeCubit(
+      {required this.defaultTheme,
+      required this.loginCubit,
+      required this.themeRepository})
+      : super(ThemeSynchingState(currentTheme: defaultTheme));
 
   Future<void> appStartedEvent() async {
     // AppStartedState
@@ -29,7 +36,7 @@ class ThemeCubit extends Cubit<ThemeState> {
     final Either<FailureEntity, XmedTheme> localThemeRetrieveAttempt =
         await themeRepository.getLocalClinicTheme();
 
-    localThemeRetrieveAttempt.fold((failure) async {
+    await localThemeRetrieveAttempt.fold((failure) async {
       debugPrint('FALLIMENTO NEL RECUPERO DEL TEMA DA LOCALE');
       debugPrint('SALVATAGGIO DEL TEMA DI DEFAULT IN LOCALE');
       final defaultTheme = await XmedTheme.getDefaultTheme();

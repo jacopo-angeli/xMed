@@ -1,10 +1,22 @@
 import 'package:flutter/material.dart';
-
+import 'package:xmed/features/documents_managment/domain/repositories/namirial_documents_repository.dart';
+import '../../../login/domain/entities/user.dart';
+import '../../domain/repositories/documents_managment_repository.dart';
 import '../widgets/documents_list_widget.dart';
 import '../widgets/settings_widget.dart';
 
 class DocumentsListTabletLayout extends StatefulWidget {
-  const DocumentsListTabletLayout({super.key});
+  final NamirialSDKDocumentsRepository namirialSDKDocumentsRepository;
+  final DocumentsManagmentRepository documentsManagmentRepository;
+  final User currentUser;
+
+  List<Widget> views = [];
+
+  DocumentsListTabletLayout(
+      {super.key,
+      required this.namirialSDKDocumentsRepository,
+      required this.documentsManagmentRepository,
+      required this.currentUser});
 
   @override
   State<DocumentsListTabletLayout> createState() =>
@@ -14,10 +26,22 @@ class DocumentsListTabletLayout extends StatefulWidget {
 int selectedIndex = 0;
 
 class _DocumentsListTabletLayoutState extends State<DocumentsListTabletLayout> {
-  List<Widget> views = [
-    const DocumentsListWidget(),
-    const SettingsWidget(),
-  ];
+  @override
+  void initState() {
+    widget.views.add(
+      DocumentsListWidget(
+        namirialSDKDocumentsRepository: widget.namirialSDKDocumentsRepository,
+        documentsManagmentRepository: widget.documentsManagmentRepository,
+        currentUser: widget.currentUser,
+      ),
+    );
+    widget.views.add(
+      const SettingsWidget(),
+    );
+
+    super.initState();
+  }
+
   void _onItemTapped(int index) async {
     await Future.delayed(const Duration(milliseconds: 50));
     setState(() {
@@ -62,7 +86,7 @@ class _DocumentsListTabletLayoutState extends State<DocumentsListTabletLayout> {
             ),
             const VerticalDivider(thickness: 1, width: 1),
             // This is the main content.
-            Expanded(child: views[_selectedIndex]),
+            Expanded(child: widget.views[_selectedIndex]),
           ],
         ),
       ),

@@ -20,6 +20,7 @@ class XmedCustomViewer : PDFViewerActivity() {
     private var signatureFields: ArrayList<SignatureField>? = null
 
     private var partialSigning: Boolean = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
@@ -33,15 +34,11 @@ class XmedCustomViewer : PDFViewerActivity() {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        // Rende i signature field d'uscita serializzabili
         outState.putSerializable(KEY_SIGNATURE_FIELDS, signatureFields)
         super.onSaveInstanceState(outState)
     }
 
     override fun startAction() {
-        // Prima di avviare il wizard salvo i campi firma passati all'avvio dell' attività
-        // per tracciarne il loro stato e valutare al termine dell' attività se si sia
-        // conclusa con successo  meno
         signatureFields?.let {
             var signatureFields = arrayOfNulls<String>(it.size)
             val signatureFieldsIncludeBiometricData = BooleanArray(it.size)
@@ -60,7 +57,6 @@ class XmedCustomViewer : PDFViewerActivity() {
     }
 
     override fun getPdfMenuToolsVisibility(): PdfMenuToolsVisibility? {
-        // Personalizzazione menù laterale sinistro
         val section = PdfMenuToolsVisibility()
         section.document.signInformative = false
         section.document.viewInformative = false
@@ -70,8 +66,6 @@ class XmedCustomViewer : PDFViewerActivity() {
         return section
     }
 
-
-    // Personalizzazione : tap nel field consentito o meno
     override fun getSignatureFieldEnabled(field: PDFViewerFragment.SignatureField?): Boolean {
         field?.let { field ->
             signatureFields?.let { signatureFields ->
@@ -83,9 +77,6 @@ class XmedCustomViewer : PDFViewerActivity() {
         return super.getSignatureFieldEnabled(field)
     }
 
-
-    // define is Start Action is terminated and if the End Acton FAB must be show
-    // Termino l'activity solo quando tutti i campi firma sono pieni
     override fun isActionTerminated(): Boolean {
         signatureFields?.let { signatureFields ->
             for (signatureField in signatureFields) {
@@ -104,14 +95,13 @@ class XmedCustomViewer : PDFViewerActivity() {
 
         signatureFields?.let { signatureFields ->
             val missingSignatures = ArrayList<String>();
-            // Recupero i campi firma non valorizzati
             for (signatureField in signatureFields) {
                 if (signatureField.required && signedSignatureFields?.find { it.name == signatureField.id } == null) {
+                    //logInternal("Campo non trovato $signatureField")
                     missingSignatures.add(signatureField.id);
                 }
             }
 
-            // ? L'attività finisce solo quando tutti i campi firma sono stati valorizzati
             if (missingSignatures.size > 0) {
                 intent.putExtra("missingSignatures", missingSignatures.size.toString())
             } else if (missingSignatures.size == 0 && emptySignatureFields!!.size > 0 && partialSigning) {
@@ -119,13 +109,10 @@ class XmedCustomViewer : PDFViewerActivity() {
                 super.finish()
             }
 
-            // Almeno un campo firma vuoto => Attività cancellata
-            // Campi firma tutti valorizzati => Attività terminata con successo
             if (intent.hasExtra("missingSignatures")) setResult(Activity.RESULT_CANCELED, intent)
             else setResult(Activity.RESULT_OK, intent)
 
         } ?: if (emptySignatureFields!!.size > 0) {
-            // Campi firma vuoti da valorizzare
             intent.putExtra("emptySignatures", emptySignatureFields!!.size)
             setResult(Activity.RESULT_CANCELED, intent)
         }

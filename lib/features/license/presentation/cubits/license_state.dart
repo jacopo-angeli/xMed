@@ -2,11 +2,17 @@ part of 'license_cubit.dart';
 
 abstract class LicenseState {}
 
-class UnlicensedState extends LicenseState {}
+class LicenseSynching extends LicenseState {}
 
-class LicenseSyncingState extends LicenseState {}
+class LicenseErrorState extends LicenseState {
+  final String errorMessage;
 
-class LicensedState extends LicenseState {
+  LicenseErrorState({required this.errorMessage});
+}
+
+class LicenseNotNecessary extends LicenseState {}
+
+class LicenseInfoReady extends LicenseState {
   final License license;
-  LicensedState({required this.license});
+  LicenseInfoReady({required this.license});
 }

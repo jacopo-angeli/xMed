@@ -1,7 +1,6 @@
 import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:xmed/config/routers/app_router.dart';
 import 'package:xmed/config/routers/app_router.gr.dart';
@@ -67,7 +66,7 @@ class _LoginPageState extends State<LoginView> {
                           decoration: BoxDecoration(
                               border: Border.all(color: Colors.black),
                               color: ColorsConverter.toDartColorWidget(
-                                  state.currentTheme!.colorPrimary))),
+                                  state.currentTheme.colorPrimary))),
                     ),
                     SizedBox(
                       width: 5,
@@ -80,7 +79,7 @@ class _LoginPageState extends State<LoginView> {
                           decoration: BoxDecoration(
                               border: Border.all(color: Colors.black),
                               color: ColorsConverter.toDartColorWidget(
-                                  state.currentTheme!.colorBackground))),
+                                  state.currentTheme.colorBackground))),
                     ),
                     SizedBox(
                       width: 5,
@@ -93,7 +92,7 @@ class _LoginPageState extends State<LoginView> {
                           decoration: BoxDecoration(
                               border: Border.all(color: Colors.black),
                               color: ColorsConverter.toDartColorWidget(
-                                  state.currentTheme!.colorAccent))),
+                                  state.currentTheme.colorAccent))),
                     ),
                   ],
                 ),
@@ -198,39 +197,51 @@ class _LoginPageState extends State<LoginView> {
 
                                 // GESTIONE STATO DEL CUBIT
                                 switch (state.runtimeType) {
-                                  // LOGGING STATE
-                                  case LoggingState:
-                                    return const CircularProgressIndicator();
-
-                                  // DISABLED CREDENTIAL STATE
-                                  case DisabledCredentialState:
-                                    return const XmedDisabledCredentialButton();
-
                                   // NOTLOGGEDSTATE
                                   // WRONGINPUTSTATE
+                                  case LoggingState:
                                   default:
-                                    return ElevatedButton(
-                                        onPressed: () {
-                                          // TRIGGER EVENTO LOGIN
-                                          loginCubit.logInRequest(
-                                              username:
-                                                  emailFormField.getContent(),
-                                              password: passwordFormField
-                                                  .getContent());
-                                        },
-                                        style: const ButtonStyle(
-                                            padding: MaterialStatePropertyAll(
-                                                EdgeInsets.only(
-                                                    left: 30,
-                                                    right: 30,
-                                                    top: 20,
-                                                    bottom: 20))),
-                                        child: Text(
-                                          "ACCEDI",
-                                          style: GoogleFonts.chewy(
-                                              textStyle: const TextStyle(
-                                                  fontSize: 30)),
-                                        ));
+                                    return BlocBuilder<ThemeCubit, ThemeState>(
+                                      builder: (themeContext, themeState) {
+                                        return ElevatedButton(
+                                          onPressed: state is LoggingState
+                                              ? null
+                                              : () {
+                                                  // TRIGGER EVENTO LOGIN
+                                                  loginCubit.logInRequest(
+                                                      username: emailFormField
+                                                          .getContent(),
+                                                      password:
+                                                          passwordFormField
+                                                              .getContent());
+                                                },
+                                          style: ButtonStyle(
+                                              backgroundColor:
+                                                  MaterialStatePropertyAll(
+                                                      ColorsConverter
+                                                          .toDartColorWidget(
+                                                              themeState
+                                                                  .currentTheme
+                                                                  .colorPrimary)),
+                                              padding:
+                                                  const MaterialStatePropertyAll(
+                                                      EdgeInsets.only(
+                                                          left: 30,
+                                                          right: 30,
+                                                          top: 20,
+                                                          bottom: 20))),
+                                          child: state is LoggingState
+                                              ? const CircularProgressIndicator(
+                                                  strokeWidth: 1,
+                                                  color: Colors.black,
+                                                )
+                                              : const Text("ACCEDI",
+                                                  style: TextStyle(
+                                                      fontSize: 30,
+                                                      fontFamily: "Serif")),
+                                        );
+                                      },
+                                    );
                                 }
                               });
                             }),

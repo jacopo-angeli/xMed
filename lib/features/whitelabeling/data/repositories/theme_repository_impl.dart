@@ -15,7 +15,7 @@ import '../../../../core/utils/constants/strings.dart';
 class ThemeRepositoryImpl implements ThemeRepository {
   @override
   Future<Either<FailureEntity, XmedTheme>> getRemoteClinicTheme(
-      {required int idClinica}) async {
+      {required String idClinica}) async {
     // DEFINIZIONE DELLA REQUEST BODY
     final requestBody = ClinicDetailsRequestDto(idClinica: idClinica);
 
@@ -106,6 +106,6 @@ class ThemeRepositoryImpl implements ThemeRepository {
   @override
   Future<void> writeLocalClinicTheme(XmedTheme tema) async {
     final File file = await _getLocalThemeFile();
-    file.writeAsString(tema.toJson());
+    await file.writeAsString(tema.toJson());
   }
 }

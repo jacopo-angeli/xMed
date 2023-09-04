@@ -73,7 +73,7 @@ class UserRepositoryImpl implements UserRepository {
     }
 
     // CREAZIONE DEL MODELLO UTENTE DAL DTO DELLA RISPOSTA
-    final User user = User.fromDto(data);
+    final User user = User.fromDto(data, email);
 
     // SALVATAGGIO IN LOCALE DELLE CREDENZIALI DI LOGIN PER AUTOLOGIN
     const FlutterSecureStorage()

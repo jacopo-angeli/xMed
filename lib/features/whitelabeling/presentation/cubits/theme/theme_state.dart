@@ -3,14 +3,10 @@ part of 'theme_cubit.dart';
 
 @immutable
 abstract class ThemeState {
-  final XmedTheme? currentTheme;
+  final XmedTheme currentTheme;
   const ThemeState({
-    this.currentTheme,
+    required this.currentTheme,
   });
-}
-
-class AppStartedState extends ThemeState {
-  const AppStartedState();
 }
 
 class ThemeSynchedState extends ThemeState {

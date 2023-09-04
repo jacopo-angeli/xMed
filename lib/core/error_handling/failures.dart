@@ -22,6 +22,7 @@ class DBFailure extends FailureEntity {
   const DBFailure();
 }
 
+// Licenses
 class LicenseActivationFailure extends FailureEntity {
   const LicenseActivationFailure();
 }
@@ -42,8 +43,32 @@ class LicenseDownloadFailure extends FailureEntity {
   const LicenseDownloadFailure();
 }
 
+class LicenseExpired extends FailureEntity {
+  const LicenseExpired();
+}
+
+class GenericFailureLicenseRequired extends FailureEntity {
+  const GenericFailureLicenseRequired();
+}
+
+class InvalidCertificateFailure extends FailureEntity {
+  const InvalidCertificateFailure();
+}
+
+class MissingLocalLicense extends FailureEntity {
+  const MissingLocalLicense();
+}
+
+class WrongParamFailure extends FailureEntity {
+  const WrongParamFailure();
+}
+
 class LoginFailure extends FailureEntity {
   const LoginFailure();
+}
+
+class FailedSigningAttempt extends FailureEntity {
+  const FailedSigningAttempt();
 }
 
 class DocumentDownloadFailure extends FailureEntity {}

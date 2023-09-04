@@ -1,14 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:xmed/features/documents_managment/domain/repositories/namirial_documents_repository.dart';
 import 'package:xmed/features/documents_managment/presentation/cubits/documents/documents_cubit.dart';
 import 'package:xmed/core/utils/converters/colors_converter.dart';
+import 'package:xmed/features/license/domain/repositories/namirial_sdk_repository.dart';
 
+import '../../../login/domain/entities/user.dart';
 import '../../../whitelabeling/presentation/cubits/theme/theme_cubit.dart';
+import '../../domain/repositories/documents_managment_repository.dart';
 import '../widgets/documents_list_widget.dart';
 import '../widgets/settings_widget.dart';
 
 class DocumentsListMobileLayout extends StatefulWidget {
-  const DocumentsListMobileLayout({super.key});
+  final NamirialSDKDocumentsRepository namirialSDKDocumentsRepository;
+  final DocumentsManagmentRepository documentsManagmentRepository;
+  final User currentUser;
+
+  DocumentsListMobileLayout(
+      {super.key,
+      required this.namirialSDKDocumentsRepository,
+      required this.documentsManagmentRepository,
+      required this.currentUser});
 
   @override
   State<DocumentsListMobileLayout> createState() =>
@@ -16,10 +28,19 @@ class DocumentsListMobileLayout extends StatefulWidget {
 }
 
 class _DocumentsListMobileLayoutState extends State<DocumentsListMobileLayout> {
-  List<Widget> views = [
-    const DocumentsListWidget(),
-    const SettingsWidget(),
-  ];
+  List<Widget> views = [];
+  @override
+  void initState() {
+    super.initState();
+    views = [
+      DocumentsListWidget(
+        namirialSDKDocumentsRepository: widget.namirialSDKDocumentsRepository,
+        documentsManagmentRepository: widget.documentsManagmentRepository,
+        currentUser: widget.currentUser,
+      ),
+      const SettingsWidget(),
+    ];
+  }
 
   int _selectedIndex = 0;
   void _onItemTapped(int index) async {
@@ -33,32 +54,6 @@ class _DocumentsListMobileLayoutState extends State<DocumentsListMobileLayout> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        floatingActionButton: BlocBuilder<ThemeCubit, ThemeState>(
-          builder: (themeCubitContext, themeCubitState) {
-            return BlocBuilder<DocumentsListCubit, DocumentsListState>(
-              builder: (context, state) {
-                if (state is DocumentsSynchingState) {
-                  return FloatingActionButton(
-                    backgroundColor: ColorsConverter.toDartColorWidget(
-                        themeCubitState.currentTheme!.colorAccent),
-                    onPressed: null,
-                    child: const CircularProgressIndicator(),
-                  );
-                } else {
-                  return FloatingActionButton(
-                    backgroundColor: ColorsConverter.toDartColorWidget(
-                        themeCubitState.currentTheme!.colorAccent),
-                    child: const Icon(Icons.refresh),
-                    onPressed: () {
-                      debugPrint("DEBUGGG");
-                      context.read<DocumentsListCubit>().sync();
-                    },
-                  );
-                }
-              },
-            );
-          },
-        ),
         backgroundColor: Colors.white,
         bottomNavigationBar: BottomNavigationBar(
           items: const [

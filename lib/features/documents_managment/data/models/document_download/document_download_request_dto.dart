@@ -2,7 +2,7 @@
 import 'dart:convert';
 
 class DocumentDownloadRequestDto {
-  final int idClinica;
+  final String idClinica;
   final int idDocumento;
   DocumentDownloadRequestDto({
     required this.idClinica,
@@ -11,7 +11,7 @@ class DocumentDownloadRequestDto {
   final int institute = 2272;
 
   DocumentDownloadRequestDto copyWith({
-    int? idClinica,
+    String? idClinica,
     int? idDocumento,
   }) {
     return DocumentDownloadRequestDto(
@@ -32,7 +32,7 @@ class DocumentDownloadRequestDto {
 
   factory DocumentDownloadRequestDto.fromMap(Map<String, dynamic> map) {
     return DocumentDownloadRequestDto(
-      idClinica: map['idClinica'] as int,
+      idClinica: map['idClinica'] as String,
       idDocumento: map['idDocumento'] as int,
     );
   }

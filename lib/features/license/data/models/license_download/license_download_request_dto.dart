@@ -2,14 +2,14 @@
 import 'dart:convert';
 
 class LicenseDownloadRequestDto {
-  final int idClinica;
+  final String idClinica;
   final int institute = 2272;
   LicenseDownloadRequestDto({
     required this.idClinica,
   });
 
   LicenseDownloadRequestDto copyWith({
-    int? idClinica,
+    String? idClinica,
   }) {
     return LicenseDownloadRequestDto(
       idClinica: idClinica ?? this.idClinica,
@@ -19,7 +19,8 @@ class LicenseDownloadRequestDto {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'input': <String, dynamic>{
-        'idClinica': idClinica,
+        'idClinica': int.parse(idClinica),
+        'institute': institute
       }
     };
   }
@@ -27,7 +28,7 @@ class LicenseDownloadRequestDto {
   // TODO
   factory LicenseDownloadRequestDto.fromMap(Map<String, dynamic> map) {
     return LicenseDownloadRequestDto(
-      idClinica: map['input']['idClinica'] as int,
+      idClinica: map['input']['idClinica'] as String,
     );
   }
 

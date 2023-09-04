@@ -6,7 +6,7 @@ class AuthenticationResponseDto {
   final Body body; // Contenuto della risposta
 
   /// Estrae l'ID della clinica dalla risposta.
-  int get getIdClinica => body.idClinica;
+  String get getIdClinica => body.idClinica;
 
   /// Estrae lo stato dalla risposta.
   String get getStatus => body.status;
@@ -68,7 +68,7 @@ class AuthenticationResponseDto {
 /// Classe per rappresentare il corpo (body) di una risposta di autenticazione.
 class Body {
   final String flagLicenzaObbligatoria; // Flag di licenza obbligatoria
-  final int idClinica; // ID della clinica
+  final String idClinica; // ID della clinica
   final String status; // Stato
 
   /// Costruttore della classe.
@@ -81,7 +81,7 @@ class Body {
   /// Metodo per creare una copia dell'oggetto con alcuni valori modificati.
   Body copyWith({
     String? flagLicenzaObbligatoria,
-    int? idClinica,
+    String? idClinica,
     String? status,
   }) {
     return Body(
@@ -105,7 +105,7 @@ class Body {
   factory Body.fromMap(Map<String, dynamic> map) {
     return Body(
       flagLicenzaObbligatoria: map['flagLicenzaObbligatoria'],
-      idClinica: map['idClinica'],
+      idClinica: (map['idClinica'] as int).toString(),
       status: map['status'],
     );
   }

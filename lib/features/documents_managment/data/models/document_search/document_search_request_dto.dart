@@ -7,7 +7,7 @@ class DocumentSearchRequestDto {
   // Mandatory
   final DateTime fromDate;
   final DateTime toDate;
-  final int idClinica;
+  final String idClinica;
   final int institute = 2272;
   final String status;
 
@@ -21,7 +21,7 @@ class DocumentSearchRequestDto {
   DocumentSearchRequestDto copyWith({
     DateTime? fromDate,
     DateTime? toDate,
-    int? idClinica,
+    String? idClinica,
     String? status,
   }) {
     return DocumentSearchRequestDto(
@@ -48,7 +48,7 @@ class DocumentSearchRequestDto {
     return DocumentSearchRequestDto(
       fromDate: DateTime.fromMillisecondsSinceEpoch(map['fromDate'] as int),
       toDate: DateTime.fromMillisecondsSinceEpoch(map['toDate'] as int),
-      idClinica: map['idClinica'] as int,
+      idClinica: map['idClinica'] as String,
       status: map['status'] as String,
     );
   }

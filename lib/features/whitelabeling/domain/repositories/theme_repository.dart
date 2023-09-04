@@ -5,7 +5,7 @@ import 'package:xmed/features/whitelabeling/domain/entities/theme.dart';
 abstract class ThemeRepository {
   /// TODO Descrizione
   Future<Either<FailureEntity, XmedTheme>> getRemoteClinicTheme(
-      {required int idClinica});
+      {required String idClinica});
 
   /// TODO Descrizione
   Future<Either<FailureEntity, XmedTheme>> getLocalClinicTheme();

@@ -3,22 +3,33 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:xmed/features/documents_managment/data/repositories/documents_managment_repository_impl.dart';
 import 'package:xmed/features/documents_managment/domain/repositories/documents_managment_repository.dart';
+import 'package:xmed/features/documents_managment/domain/repositories/namirial_documents_repository.dart';
 import 'package:xmed/features/documents_managment/presentation/cubits/documents/documents_cubit.dart';
 import 'package:xmed/features/documents_managment/presentation/widgets/documents_list_tablet_page.dart';
+import 'package:xmed/features/license/data/repositories/license_repository_impl.dart';
+import 'package:xmed/features/license/data/repositories/namirial_sdk_repository_impl.dart';
+import 'package:xmed/features/license/domain/repositories/license_repository.dart';
+import 'package:xmed/features/license/domain/repositories/namirial_sdk_repository.dart';
+import 'package:xmed/features/license/presentation/cubits/license_cubit.dart';
 import 'package:xmed/features/whitelabeling/presentation/cubits/theme/theme_cubit.dart';
 
 import '../../../../config/routers/app_router.dart';
 import '../../../../config/routers/app_router.gr.dart';
 import '../../../login/presentation/cubits/login/login_cubit.dart';
+import '../../data/repositories/namirial_documentation_repository_impl.dart';
 import '../widgets/documents_list_mobile_page.dart';
 
 @RoutePage()
 class DocumentsManagmentPage extends StatefulWidget {
   // REPOSITORY DECLARATION
   late final DocumentsManagmentRepository documentsRepository;
+  late final LicenseRepository licenseRepository;
+  late final NamirialSDKLicenseRepository namirialSKDLicenseRepository;
+  late final NamirialSDKDocumentsRepository namirialSDKDocumentsRepository;
 
   // CUBITS DECLARATION
   late final DocumentsListCubit documentsCubit;
+  late final LicenseCubit licenseCubit;
 
   DocumentsManagmentPage({super.key});
 
@@ -32,16 +43,26 @@ class _DocumentsManagmentPageState extends State<DocumentsManagmentPage> {
     super.initState();
     // REPOSITORY INITIALIZATION
     widget.documentsRepository = DocumentsManagmentRepositoryImpl();
+    widget.licenseRepository = LicenseRepositoryImpl();
+    widget.namirialSKDLicenseRepository = NamirialSDKLicenseRepositoryImpl();
+    widget.namirialSDKDocumentsRepository =
+        NamirialSDKDocumentsRepositoryImpl();
 
     // CUBITS INITIALIZATION
     widget.documentsCubit = DocumentsListCubit(
         documentsRepository: widget.documentsRepository,
         currentUser: context.read<LoginCubit>().currentUser);
+    widget.licenseCubit = LicenseCubit(
+        licenseRepository: widget.licenseRepository,
+        currentUser: context.read<LoginCubit>().currentUser,
+        namirialRepository: widget.namirialSKDLicenseRepository);
 
-    // SINCRONIZZAZIONE DEL TEMA
+    // INIT FUNCTIONS
     context
         .read<ThemeCubit>()
-        .synch(currentTheme: context.read<ThemeCubit>().state.currentTheme!);
+        .synch(currentTheme: context.read<ThemeCubit>().state.currentTheme);
+    widget.licenseCubit.setup();
+    widget.documentsCubit.sync();
   }
 
   @override
@@ -54,15 +75,32 @@ class _DocumentsManagmentPageState extends State<DocumentsManagmentPage> {
             appRouter.replace(const LoginView());
           }
         },
-        child: BlocProvider(
-          create: (context) => widget.documentsCubit..sync(),
+        child: MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (context) => widget.documentsCubit,
+            ),
+            BlocProvider(
+              create: (context) => widget.licenseCubit,
+            ),
+          ],
           child: BlocBuilder<ThemeCubit, ThemeState>(
             builder: (context, state) {
               return LayoutBuilder(builder: (builder, constraints) {
                 if (constraints.maxWidth > 1024) {
-                  return const DocumentsListTabletLayout();
+                  return DocumentsListTabletLayout(
+                    namirialSDKDocumentsRepository:
+                        widget.namirialSDKDocumentsRepository,
+                    documentsManagmentRepository: widget.documentsRepository,
+                    currentUser: context.read<LoginCubit>().currentUser,
+                  );
                 } else {
-                  return const DocumentsListMobileLayout();
+                  return DocumentsListMobileLayout(
+                    namirialSDKDocumentsRepository:
+                        widget.namirialSDKDocumentsRepository,
+                    documentsManagmentRepository: widget.documentsRepository,
+                    currentUser: context.read<LoginCubit>().currentUser,
+                  );
                 }
               });
             },

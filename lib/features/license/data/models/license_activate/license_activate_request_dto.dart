@@ -2,35 +2,38 @@
 import 'dart:convert';
 
 class LicenseActivateRequestDto {
-  final int idClinica;
-  final int promoCode;
+  final String idClinica;
+  final String idPromoCode;
   LicenseActivateRequestDto({
     required this.idClinica,
-    required this.promoCode,
+    required this.idPromoCode,
   });
   final int institute = 2272;
 
   LicenseActivateRequestDto copyWith({
-    int? idClinica,
-    int? promoCode,
+    String? idClinica,
+    String? idPromoCode,
   }) {
     return LicenseActivateRequestDto(
       idClinica: idClinica ?? this.idClinica,
-      promoCode: promoCode ?? this.promoCode,
+      idPromoCode: idPromoCode ?? this.idPromoCode,
     );
   }
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'idClinica': idClinica,
-      'promoCode': promoCode,
+      'input': <String, dynamic>{
+        'idClinica': idClinica,
+        'idPromoCode': idPromoCode,
+        'institute': institute
+      }
     };
   }
 
   factory LicenseActivateRequestDto.fromMap(Map<String, dynamic> map) {
     return LicenseActivateRequestDto(
-      idClinica: map['idClinica'] as int,
-      promoCode: map['promoCode'] as int,
+      idClinica: map['idClinica'] as String,
+      idPromoCode: map['idPromoCode'] as String,
     );
   }
 
@@ -42,15 +45,15 @@ class LicenseActivateRequestDto {
 
   @override
   String toString() =>
-      'LicenseActivateRequestDto(idClinica: $idClinica, promoCode: $promoCode)';
+      'LicenseActivateRequestDto(idClinica: $idClinica, idPromoCode: $idPromoCode)';
 
   @override
   bool operator ==(covariant LicenseActivateRequestDto other) {
     if (identical(this, other)) return true;
 
-    return other.idClinica == idClinica && other.promoCode == promoCode;
+    return other.idClinica == idClinica && other.idPromoCode == idPromoCode;
   }
 
   @override
-  int get hashCode => idClinica.hashCode ^ promoCode.hashCode;
+  int get hashCode => idClinica.hashCode ^ idPromoCode.hashCode;
 }

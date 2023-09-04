@@ -17,50 +17,41 @@ const val SETUP_CHANNEL = "cwbi/setup"
 const val VIEWER_CHANNEL = "cwbi/viewer"
 const val LICENSE_CHANNEL = "cwbi/license"
 
-// ? Forniti da Namirial ???
+// CALL BACK CODE PER IL RITONRO DEGLI INTENT
+const val SIGN_PDF_REQUEST: Int = 102
 const val PREVIEW_REQUEST_CODE: Int = 103
-const val SIGN_PDF_REQUEST: Int = 103
-const val STATUS_INTERMEDIATE: Int = 103
+const val STATUS_INTERMEDIATE: Int = 200
 
 class MainActivity: FlutterActivity() {
-    // Dichiarazione dei channels utilizzati
-    private lateinit var setupChannel : MethodChannel
-    private lateinit var viewerChannel : MethodChannel
-    private lateinit var licenseChannel : MethodChannel
+    private lateinit var setupChannel: MethodChannel
+    private lateinit var viewerChannel: MethodChannel
+    private lateinit var licenseChannel: MethodChannel
+
+    private lateinit var callBackOption: String
+    private lateinit var idDocumento: String
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
-        PDFUtils.activateSDK("", "", "");
+        PDFUtils.activateSDK("", "", ""); // TODO: inserire dati licenza SDK
 
-        // istanzializzazione dei channels
-        setupChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, SETUP_CHANNEL)
-        viewerChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, VIEWER_CHANNEL)
-        licenseChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, LICENSE_CHANNEL)
+        setupChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, SETUP_CHANNEL);
+        viewerChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, VIEWER_CHANNEL);
+        licenseChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, LICENSE_CHANNEL);
 
-        // setup channel implementation
-        // ? Quando viene chiamato
         setupChannel.setMethodCallHandler { call, result ->
-
-            // metodo activateSDK per attivazione dell'SDK
-            if(call.method == "activateSDK"){
-
-                // recupero dei parametri della chiamata
+            if (call.method == "activateSDK") {
                 val arguments = call.arguments() as HashMap<String, String>?
+
                 val company = arguments?.get("company") as String
                 val mail = arguments?.get("mail") as String
                 val serial = arguments?.get("serial") as String
+                val activation = PDFUtils.activateSDK(company, mail, serial);
 
-                // Attivazione SDK
-                val activation = PDFUtils.activateSDK(company, mail, serial)
-
-                // Return del risultato
                 result.success(activation)
             }
         }
 
-
-        // viewer channel implementation
         viewerChannel.setMethodCallHandler { call, result ->
             if (call.method == "startWizard") {
                 val arguments = call.arguments() as HashMap<String, Object>?
@@ -68,13 +59,14 @@ class MainActivity: FlutterActivity() {
                 val filePath = arguments?.get("pdfFile") as String
                 val signatureFields = arguments?.get("signatureFields") as List<String>
                 val partialSigning = arguments?.get("partialSigning") as Boolean
+                callBackOption = arguments?.get("callBackOption") as String
+                idDocumento = arguments?.get("idDocumento") as String
 
                 // startWizard(filePath, signatureFields);
                 startPreview(filePath, signatureFields.toTypedArray(), partialSigning);
             }
         }
 
-        // license channel implementation
         licenseChannel.setMethodCallHandler { call, result ->
             if (call.method == "requireLicense") {
                 val arguments = call.arguments() as HashMap<String, String>?
@@ -90,20 +82,26 @@ class MainActivity: FlutterActivity() {
                 getLicenseData()
             }
         }
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
+        println("request code : " + requestCode + " (SIGN_PDF_REQUEST = )" + SIGN_PDF_REQUEST + ", PERVIEW_REQUEST_CODE = " + PREVIEW_REQUEST_CODE + ")")
         if (requestCode == SIGN_PDF_REQUEST || requestCode == PREVIEW_REQUEST_CODE) {
             val _data = LinkedHashMap<String, String?>()
 
             val pdfPath: String? = data?.getStringExtra("pdfPath")
             _data["pdfPath"] = pdfPath
+            
+            println("resultCode" + resultCode)
 
             when (resultCode) {
                 RESULT_OK -> {
+                    println("RESULT_OK")
                     _data["status"] = "SIGNED"
+                    _data["idDocumento"] = idDocumento
+                    _data["callBackOption"] = callBackOption
                 }
                 STATUS_INTERMEDIATE -> {
                     val emptySignatures: String? = data?.getStringExtra("emptySignatures")
@@ -112,6 +110,9 @@ class MainActivity: FlutterActivity() {
                     _data["status"] = "INTERMEDIATE"
                     _data["emptySignatures"] = emptySignatures
                     _data["missingSignatures"] = missingSignatures
+                    _data["callBackOption"] = callBackOption
+                    _data["idDocumento"] = idDocumento
+
                 }
                 else -> {
                     val emptySignatures: String? = data?.getStringExtra("emptySignatures")
@@ -122,14 +123,11 @@ class MainActivity: FlutterActivity() {
                     _data["missingSignatures"] = missingSignatures
                 }
             }
-
-            // Invoco il metodo completeWizard di Flutter con tutti i dati recuperati durante l' attività
             viewerChannel.invokeMethod("completeWizard", _data)
         }
     }
 
-    // Recupera i dati della licenza usando i channel di flutter
-    private fun getLicenseData(){
+    private fun getLicenseData() {
         val license = FeaLicense.getInstance()
 
         license.getLicenseData { ld ->
@@ -137,70 +135,66 @@ class MainActivity: FlutterActivity() {
         }
     }
 
-    // Avvia la preview con i campi di firma selezionati
-    private fun startPreview(filename: String, inputSignatureFieldsList: Array<String>, partialSigning: Boolean){
-        // Da doc.namirial.com
-        val intent = Intent(activity, XmedCustomViewer::class.java)
+    /**
+     * Start preview with selected signature fields
+     */
+    private fun startPreview(
+        filename: String,
+        signatureFields: Array<String>,
+        partialSigning: Boolean,
+    ) {
+        val intent = Intent(this@MainActivity, XmedCustomViewer::class.java)
         intent.putExtra(PDFViewerActivity.KEY_PDF, filename)
 
-        // Aggiunta dei signature fields
-        if(inputSignatureFieldsList.isNotEmpty()){
-            // Creazione della ista di Signature Fields da passare al wizard di namirial
-            val __outputSignatureFieldsList = ArrayList<SignatureField>()
-
-            // Valorizzazione della lista di Signature Fields
-            for(inputSignatureField in inputSignatureFieldsList){
-                var _outputSignatureField : SignatureField =  SignatureField()
-                _outputSignatureField.id = inputSignatureField
-                _outputSignatureField.required = true
-                __outputSignatureFieldsList.add(_outputSignatureField)
+        if (signatureFields.isNotEmpty()) {
+            val _signatureFields = ArrayList<SignatureField>()
+            for (signatureField in signatureFields) {
+                var _signatureField = SignatureField()
+                _signatureField.id = signatureField
+                _signatureField.required = true
+                _signatureFields.add(_signatureField)
             }
+            intent.putExtra(XmedCustomViewer.KEY_SIGNATURE_FIELDS, _signatureFields)
+            intent.putExtra(XmedCustomViewer.PARTIAL_SIGNING, partialSigning)
         }
-
-        // Avvio attività di firma(preview)
         startActivityForResult(intent, PREVIEW_REQUEST_CODE)
     }
 
-    // Avvia il wizard di firma con i campi firma passati per parametri
-    private fun startWizard(filename: String, signatureFields: List<String>){
-        // Creazioene del wizard di firma
-        val wizard : Wizard = Wizard()
-
-        // Configurazione del wizard
+    /**
+     * Start wizard with selected signature fields
+     */
+    private fun startWizard(fileName: String, signatureFields: List<String>, callBackOption: String) {
+        val wizard = Wizard()
         wizard.wizardConfiguration = Wizard.WizardConfiguration()
+        val wizardPdf: Wizard.WizardPDF = Wizard.WizardPDF(fileName, "")
 
-        // Creazione del wizard specifico per file pdf
-        val wizardPDF : WizardPDF = Wizard.WizardPDF(filename, "")
-
-        // Settings per i campi firma
-
-        if(signatureFields == null){
-            // Nessun campo firma
-            wizardPDF.isHandleSignatureFields = true
-            wizardPDF.isIncludeBiometricData = true
-        }else{
-            // Aggiungo i campi firma al wizardPdf
+        if (signatureFields == null) {
+            wizardPdf.isHandleSignatureFields = true
+            wizardPdf.isIncludeBiometricData = true
+        } else {
             signatureFields!!.forEach { signatureField ->
-                wizardPDF.addSignatureField(
-                        Wizard.WizardSignatureField(signatureField,
-                                true,
-                                true)) }
+                wizardPdf.addSignatureField(
+                    Wizard.WizardSignatureField(
+                        signatureField,
+                        true,
+                        true
+                    )
+                )
+            }
         }
-
-        // Aggiunta del wizard specifico al wizard padre
-        wizard.addWizardPDF(wizardPDF)
-
-        // Avvio del programma
+        wizard.addWizardPDF(wizardPdf)
         wizard.startWizard(this@MainActivity, SIGN_PDF_REQUEST)
     }
 
-    // Funzione per richiedere la licenza
+    /**
+     * Require license for user and license file
+     */
     private fun requireLicense(
-            username : String,
-            mailAddress : String,
-            licenseFile :String,
-            result: MethodChannel.Result
-    ){
+        username: String,
+        mailAddress: String,
+        licenseFile: String,
+        result: MethodChannel.Result
+    ) {
         val license = FeaLicense.getInstance()
         val licenseData = RequireLicenseData()
         licenseData.userName = username
@@ -255,6 +249,4 @@ class MainActivity: FlutterActivity() {
             //licenseChannel.invokeMethod("requiredLicense", "invalid certificate");
         }
     }
-
-
 }

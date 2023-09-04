@@ -16,23 +16,13 @@ class WhiteLabelLogo extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ThemeCubit, ThemeState>(
       builder: (context, state) {
-        switch (state.runtimeType) {
-          case ThemeSynchedState:
-          case ThemeSynchingState:
-            return SizedBox(
-                width: customWidth,
-                height: customHeight,
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: ImageConverter.b64toWidget(state.currentTheme!.logo),
-                ));
-          case AppStartedState:
-          default:
-            return SizedBox(
-                width: customWidth,
-                height: customHeight,
-                child: Image.asset('assets/logo.png'));
-        }
+        return SizedBox(
+            width: customWidth,
+            height: customHeight,
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: ImageConverter.b64toWidget(state.currentTheme.logo),
+            ));
       },
     );
   }

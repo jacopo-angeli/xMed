@@ -7,7 +7,7 @@ class LicenseDownloadUseCase {
   final LicenseRepository licenseRepository;
   LicenseDownloadUseCase({required this.licenseRepository});
   Future<Either<FailureEntity, License>> execute(
-      {required String idClinica, required String institute}) async {
+      {required String idClinica}) async {
     return await licenseRepository.licenseDownload(idClinica: idClinica);
   }
 }

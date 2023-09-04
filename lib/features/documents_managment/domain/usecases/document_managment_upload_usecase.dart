@@ -11,8 +11,8 @@ class DocumentManagmentUploadUseCase {
     required this.documentRepository,
   });
   Future<Either<FailureEntity, void>> execute(
-      {required int idClinica, required Document document}) async {
+      {required String idClinica, required int idDocumento}) async {
     return await documentRepository.documentUpload(
-        idClinica: idClinica, document: document);
+        idClinica: idClinica, idDocumento: idDocumento);
   }
 }

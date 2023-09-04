@@ -5,6 +5,7 @@ import 'package:xmed/core/utils/converters/colors_converter.dart';
 import 'package:xmed/features/documents_managment/presentation/cubits/documents/documents_cubit.dart';
 import 'package:xmed/features/login/presentation/cubits/login/login_cubit.dart';
 
+import '../../../license/presentation/cubits/license_cubit.dart';
 import '../../../whitelabeling/presentation/cubits/theme/theme_cubit.dart';
 
 class SettingsWidget extends StatelessWidget {
@@ -21,21 +22,21 @@ class SettingsWidget extends StatelessWidget {
             SettingsTile.navigation(
               title: BlocBuilder<ThemeCubit, ThemeState>(
                 builder: (context, state) {
-                  return Text(state.currentTheme!.nome);
+                  return Text(state.currentTheme.nome);
                 },
               ),
             ),
             SettingsTile.navigation(
               title: BlocBuilder<ThemeCubit, ThemeState>(
                 builder: (context, state) {
-                  return Text(state.currentTheme!.descrizione);
+                  return Text(state.currentTheme.descrizione);
                 },
               ),
             ),
             SettingsTile.navigation(
               title: BlocBuilder<ThemeCubit, ThemeState>(
                 builder: (context, state) {
-                  return Text(state.currentTheme!.status);
+                  return Text(state.currentTheme.status);
                 },
               ),
             ),
@@ -52,7 +53,7 @@ class SettingsWidget extends StatelessWidget {
                         return Icon(
                           Icons.circle,
                           color: ColorsConverter.toDartColorWidget(
-                              state.currentTheme!.colorPrimary),
+                              state.currentTheme.colorPrimary),
                         );
                       },
                     ),
@@ -63,7 +64,7 @@ class SettingsWidget extends StatelessWidget {
                         return Icon(
                           Icons.circle,
                           color: ColorsConverter.toDartColorWidget(
-                              state.currentTheme!.colorBackground),
+                              state.currentTheme.colorBackground),
                         );
                       },
                     ),
@@ -74,7 +75,7 @@ class SettingsWidget extends StatelessWidget {
                         return Icon(
                           Icons.circle,
                           color: ColorsConverter.toDartColorWidget(
-                              state.currentTheme!.colorAccent),
+                              state.currentTheme.colorAccent),
                         );
                       },
                     ),
@@ -88,7 +89,7 @@ class SettingsWidget extends StatelessWidget {
                           onPressed: () {
                             context
                                 .read<ThemeCubit>()
-                                .synch(currentTheme: state.currentTheme!);
+                                .synch(currentTheme: state.currentTheme);
                           },
                         );
                       },
@@ -116,12 +117,64 @@ class SettingsWidget extends StatelessWidget {
             tiles: [
               SettingsTile.navigation(
                 title: const Text("Pulisci la cache"),
-                trailing: IconButton(
-                  icon: Icon(Icons.clear_all),
-                  onPressed: () {
-                    context.read<DocumentsListCubit>().clearCache(
-                        idClinica:
-                            context.read<LoginCubit>().currentUser.idClinica);
+                trailing: BlocBuilder<DocumentsListCubit, DocumentsListState>(
+                  builder: (context, state) {
+                    if (state is DocumentsSynchState &&
+                        state.documentsList.isEmpty) {
+                      return const IconButton(
+                          icon: Icon(Icons.done), onPressed: null);
+                    } else if (state is DocumentsSynchingState) {
+                      return const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 1,
+                          ));
+                    } else {
+                      return IconButton(
+                        icon: const Icon(Icons.delete),
+                        onPressed: () {
+                          context.read<DocumentsListCubit>().clearCache(
+                              idClinica: context
+                                  .read<LoginCubit>()
+                                  .currentUser
+                                  .idClinica);
+                        },
+                      );
+                    }
+                  },
+                ),
+              )
+            ],
+          ),
+          SettingsSection(
+            title: const Text("Licenza"),
+            tiles: [
+              SettingsTile.navigation(
+                title: const Text("Stato della licenza"),
+                value: BlocBuilder<LicenseCubit, LicenseState>(
+                  builder: (context, state) {
+                    if (state is LicenseInfoReady) {
+                      return const Text("Licenza valida");
+                    } else if (state is LicenseNotNecessary) {
+                      return const Text("Non necessaria");
+                    } else {
+                      return Text(state.runtimeType.toString());
+                    }
+                  },
+                ),
+              ),
+              SettingsTile.navigation(
+                title: const Text("Codice di attivazione"),
+                value: BlocBuilder<LicenseCubit, LicenseState>(
+                  builder: (context, state) {
+                    if (state is LicenseInfoReady) {
+                      return Text(state.license.promoCode);
+                    } else if (state is LicenseNotNecessary) {
+                      return const Text("-");
+                    } else {
+                      return Text(state.runtimeType.toString());
+                    }
                   },
                 ),
               )

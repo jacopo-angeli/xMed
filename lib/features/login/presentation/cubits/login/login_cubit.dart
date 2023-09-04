@@ -63,11 +63,6 @@ class LoginCubit extends Cubit<LoginState> {
       {required String username, required String password}) async {
     emit(LoggingState(username: username, password: password));
     // TODO REFACTOR
-    Timer(const Duration(seconds: 10), () {
-      emit(WrongInputState(
-          emailError: "Qualcosa è andato storto. Riprova",
-          passwordError: "Qualcosa è andato storto. Riprova"));
-    });
     // SANITY CHECK DI username E password
     final emailError = ValidatorService.emailValidation(email: username)
         ? ""
@@ -109,7 +104,16 @@ class LoginCubit extends Cubit<LoginState> {
     }, (user) {
       debugPrint('UTENTE RECUEPERATO CON SUCCESSO : $user');
       currentUser = user;
-      emit(LoggedState(user: user));
+      currentUser.copyWith(username: username);
+      if (currentUser.status == "DISABLED") {
+        emit(WrongInputState(
+            username: username,
+            password: password,
+            emailError: disabledCredentialErrorMessage,
+            passwordError: disabledCredentialErrorMessage));
+      } else {
+        emit(LoggedState(user: user));
+      }
     });
   }
 

@@ -1,12 +1,18 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:pdf/pdf.dart';
 
 import 'package:xmed/core/error_handling/failures.dart';
+import 'package:xmed/core/utils/converters/date.dart';
 import 'package:xmed/features/documents_managment/data/models/document_download/document_download_request_dto.dart';
+import 'package:xmed/features/documents_managment/data/models/document_upload/document_upload_request_dto.dart';
+import 'package:xmed/features/documents_managment/data/models/document_upload/document_upload_response.dart';
 
 import 'package:xmed/features/documents_managment/domain/entities/Document.dart';
 import '../../../../core/utils/constants/strings.dart';
@@ -19,7 +25,7 @@ import '../models/document_search/document_search_response_dto.dart';
 class DocumentsManagmentRepositoryImpl implements DocumentsManagmentRepository {
   @override
   Future<Either<FailureEntity, Map<int, Document>>> getRemoteDocuments(
-      {required int idClinica}) async {
+      {required String idClinica}) async {
     // DEFINIZIONE DEL CORPO DELLA RICHISTA
     final requestBody = DocumentSearchRequestDto(
         fromDate: DateTime.fromMicrosecondsSinceEpoch(1490000000000),
@@ -64,14 +70,50 @@ class DocumentsManagmentRepositoryImpl implements DocumentsManagmentRepository {
 
   @override
   Future<Either<FailureEntity, void>> documentUpload(
-      {required int idClinica, required Document document}) async {
-    throw UnimplementedError();
+      {required String idClinica, required int idDocumento}) async {
+    //FUNZIONE CHE RETRIVA I DATI DEL DOCUMENTO IN BASE64
+    String document = await retriveDocumentFromIDs(
+        idClinica: idClinica, idDocumento: idDocumento);
+
+    //DEFINIZIONE REQUEST BODY
+
+    final DocumentUploadRequestDto requestBody = DocumentUploadRequestDto(
+        content: document,
+        dataFirma: CWDateUtils.localDateFormatter(DateTime.now()),
+        idClinica: int.parse(idClinica),
+        idDocumento: idDocumento);
+    //DICHIARAZIONE E INIZIALIZZAZIONE DEL CLIENT
+    HttpCustomClient client = HttpCustomClient();
+    await client.initialize(requestBody.toMap());
+    //DICHIARAZIONE DELLA RESPONSE
+    late Response response;
+    //TENTO DI CARICARE IL DOCUMENTO
+    try {
+      response = await client.post(documentoClinicaUploadEndPoint);
+    } on Exception {
+      return const Left(DocumentUploadFailure());
+    }
+    if (response.statusCode != 200) {
+      return const Left((DocumentUploadFailure()));
+    }
+    //STATUS CODE == 200
+    //DICHIARO DTO RESPONSE
+    late DocumentUploadResponseDto data;
+    try {
+      data = DocumentUploadResponseDto.fromMap(response.data);
+    } on Exception {
+      return const Left(DataParsingFailure());
+    }
+
+    // OPERAZIONE ANDATA A BUON FINE
+    // documentDelete(idDocumento: idDocumento, idClinica: idClinica);
+    return const Right(null);
   }
 
   @override
   Future<Either<FailureEntity, void>> documentDowload(
       {required int idDocumento,
-      required int idClinica,
+      required String idClinica,
       required Document remoteDocument}) async {
     // DEFINIZIONE REQUEST BODY
     final DocumentDownloadRequestDto requestBody = DocumentDownloadRequestDto(
@@ -133,7 +175,7 @@ class DocumentsManagmentRepositoryImpl implements DocumentsManagmentRepository {
 
   @override
   Future<Either<FailureEntity, Map<int, Document>>> getLocalDocuments(
-      {required int idClinica}) async {
+      {required String idClinica}) async {
     // Get the application documents directory.
     final clinicDirectoryPath =
         "${(await getApplicationDocumentsDirectory()).path}/clinics/$idClinica";
@@ -179,14 +221,14 @@ class DocumentsManagmentRepositoryImpl implements DocumentsManagmentRepository {
 
   @override
   Future<Either<FailureEntity, void>> documentDelete(
-      {required int idDocumento, required int idClinica}) async {
+      {required int idDocumento, required String idClinica}) async {
     final Directory documentsDirectory =
         await getApplicationDocumentsDirectory();
 
     try {
       // Create a `File` object for the document.
-      final file =
-          File('${documentsDirectory.path}/${idClinica}/${idDocumento}.json');
+      final file = File(
+          '${documentsDirectory.path}/clinics/${idClinica}/${idDocumento}.json');
 
       // Delete the document.
       file.delete();
@@ -198,38 +240,42 @@ class DocumentsManagmentRepositoryImpl implements DocumentsManagmentRepository {
   }
 
   Future<void> saveRemoteFileInAppplicationDirectory(
-      Document document, int idClinica) async {
-    // Get the path to the parent folder of the file you want to create.
-    String parentFolderPath =
-        '${(await getApplicationDocumentsDirectory()).path}/clinics/$idClinica';
+      Document document, String idClinica) async {
+    // CONVERTO IL FILE DA BASE64 A "PDF"
+    List<int> pdfDataBytes = base64Decode(document.content!);
 
-    // Create the parent folder if it doesn't exist.
-    Directory parentFolder = Directory(parentFolderPath);
-    if (!parentFolder.existsSync()) {
-      parentFolder.createSync(recursive: true);
+    String appDataPath = (await getApplicationDocumentsDirectory()).path;
+    String fileName = document.idDocumento.toString();
+    String folderName = idClinica;
+    String folderPath = '$appDataPath/clinics/$folderName';
+
+    // Create the folder if it doesn't exist.
+    Directory folderDirectory = Directory(folderPath);
+    if (!folderDirectory.existsSync()) {
+      folderDirectory.createSync(recursive: true);
     }
 
-    // Get the path to the file you want to create.
-    String filePath = '$parentFolderPath/${document.idDocumento}.json';
+    // Save the PDF file.
+    File pdfFile = File('$folderPath/$fileName.pdf');
+    pdfFile.writeAsBytesSync(pdfDataBytes);
 
-    // Create a `File` object for the file.
-    File file = File(filePath);
-
-    file.writeAsStringSync(document.toJson());
+    // SALVO I DATI DEL FILE
+    File jsonFile = File('$folderPath/$fileName.json');
+    jsonFile.writeAsStringSync(document.toJson());
   }
 
   @override
   Future<Either<FailureEntity, void>> clearCache(
-      {required int idClinica}) async {
+      {required String idClinica}) async {
     // Get the path to the parent folder of the sub folders you want to clear.
-    String parentFolderPath =
+    String currentClinicFolderPath =
         '${(await getApplicationDocumentsDirectory()).path}/clinics/$idClinica';
 
     // Create a `Directory` object for the parent folder.
-    Directory parentFolder = Directory(parentFolderPath);
+    Directory currentClinicFolder = Directory(currentClinicFolderPath);
 
     // Iterate over the contents of the parent folder.
-    parentFolder.listSync().forEach((fileOrFolder) {
+    currentClinicFolder.listSync().forEach((fileOrFolder) {
       // Check if the file or folder is a file.
       if (fileOrFolder is File) {
         // Delete the file.
@@ -239,7 +285,7 @@ class DocumentsManagmentRepositoryImpl implements DocumentsManagmentRepository {
         _deleteDirectoryRecursively(fileOrFolder);
       }
     });
-
+    debugPrint("TEST");
     return const Right(null);
   }
 
@@ -261,7 +307,7 @@ class DocumentsManagmentRepositoryImpl implements DocumentsManagmentRepository {
   }
 
   @override
-  Future<void> clearDevice({required int idClinica}) async {
+  Future<void> clearDevice({required String idClinica}) async {
     // Get the path to the parent folder of the sub folders you want to clear.
     String applicationDocumentsFolderPath =
         "${(await getApplicationDocumentsDirectory()).path}/clinics";
@@ -285,5 +331,73 @@ class DocumentsManagmentRepositoryImpl implements DocumentsManagmentRepository {
         }
       }
     });
+  }
+
+  @override
+  Future<String> getFilePath(
+      {required String idDocumento, required String idClinica}) async {
+    // RECUPERO CARTELLA DI APP DATA
+    final Directory appDataDirectory = await getApplicationDocumentsDirectory();
+    final String appDataPath = appDataDirectory.path;
+
+    final Directory clinicRepository =
+        Directory('$appDataPath/clinics/$idClinica');
+    // SE LA CARTELLA license NON ESISTE LA CREO
+    if (!clinicRepository.existsSync()) {
+      clinicRepository.createSync(recursive: true);
+    }
+    final String clinicDirectoryPath = clinicRepository.path;
+
+    // RITONRO PATH DEL FILE
+    return "$clinicDirectoryPath/$idDocumento.pdf";
+  }
+
+  @override
+  Future<void> setDocumentStatus(
+      {required String idDocumento,
+      required String idClinica,
+      required String status}) async {
+    // RECUPERO CARTELLA DI APP DATA
+    final Directory appDataDirectory = await getApplicationDocumentsDirectory();
+    final String appDataPath = appDataDirectory.path;
+
+    final Directory clinicRepository =
+        Directory('$appDataPath/clinics/$idClinica');
+    // SE LA CARTELLA license NON ESISTE LA CREO
+    if (!clinicRepository.existsSync()) {
+      clinicRepository.createSync(recursive: true);
+    }
+    final String clinicDirectoryPath = clinicRepository.path;
+
+    final File oldFile = File("$clinicDirectoryPath/$idDocumento.json");
+
+    Document oldDocumentState = Document.fromJson(oldFile.readAsStringSync());
+    Document newDocumentState = oldDocumentState.copyWith(status: status);
+
+    // REWRITE FILE WITH NEW STATE
+    oldFile.writeAsStringSync(newDocumentState.toJson());
+  }
+
+  @override
+  Future<String> retriveDocumentFromIDs(
+      {required String idClinica, required int idDocumento}) async {
+    //CREO I PARAMETRI RETRIVARE IL FILE
+    String appDataPath = (await getApplicationDocumentsDirectory()).path;
+    String fileName = idDocumento.toString();
+    String folderName = idClinica;
+    String folderPath = '$appDataPath/clinics/$folderName';
+
+    // Create the folder if it doesn't exist.
+    Directory folderDirectory = Directory(folderPath);
+    if (!folderDirectory.existsSync()) {
+      folderDirectory.createSync(recursive: true);
+    }
+
+    // Save the Base64 file.
+    List<int> fileBytesContent = List.empty();
+    fileBytesContent = File('$folderPath/$fileName.pdf').readAsBytesSync();
+    String base64File = base64Encode(fileBytesContent);
+    print("puzzadiEccezione" + base64File);
+    return base64File;
   }
 }

@@ -4,52 +4,43 @@ import 'dart:convert';
 import 'package:equatable/equatable.dart';
 
 class License extends Equatable {
-  final int idClinica;
-  final int IdPromoCode;
-  final Map<String, dynamic> NamirialLicense;
-  final String content;
-  final String status;
+  final String promoCode;
+  final String cert;
+  final String? status;
   const License({
-    required this.idClinica,
-    required this.IdPromoCode,
-    required this.NamirialLicense,
-    required this.content,
-    required this.status,
+    required this.promoCode,
+    required this.cert,
+    this.status,
   });
+
+  factory License.defaultLicense() =>
+      const License(promoCode: '', cert: '', status: 'INVALID');
+
   License copyWith({
-    int? idClinica,
-    int? IdPromoCode,
-    Map<String, dynamic>? NamirialLicense,
-    String? content,
+    String? promoCode,
+    String? cert,
     String? status,
   }) {
     return License(
-      idClinica: idClinica ?? this.idClinica,
-      IdPromoCode: IdPromoCode ?? this.IdPromoCode,
-      NamirialLicense: NamirialLicense ?? this.NamirialLicense,
-      content: content ?? this.content,
+      promoCode: promoCode ?? this.promoCode,
+      cert: cert ?? this.cert,
       status: status ?? this.status,
     );
   }
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'idClinica': idClinica,
-      'IdPromoCode': IdPromoCode,
-      'NamirialLicense': NamirialLicense,
-      'content': content,
+      'promoCode': promoCode,
+      'cert': cert,
       'status': status,
     };
   }
 
   factory License.fromMap(Map<String, dynamic> map) {
     return License(
-      idClinica: map['idClinica'] as int,
-      IdPromoCode: map['IdPromoCode'] as int,
-      NamirialLicense: Map<String, dynamic>.from(
-          (map['NamirialLicense'] as Map<String, dynamic>)),
-      content: map['content'] as String,
-      status: map['status'] as String,
+      promoCode: map['promoCode'] as String,
+      cert: map['cert'] as String,
+      status: map['status'] != null ? map['status'] as String : null,
     );
   }
 
@@ -62,13 +53,5 @@ class License extends Equatable {
   bool get stringify => true;
 
   @override
-  List<Object> get props {
-    return [
-      idClinica,
-      IdPromoCode,
-      NamirialLicense,
-      content,
-      status,
-    ];
-  }
+  List<Object?> get props => [promoCode, cert, status];
 }

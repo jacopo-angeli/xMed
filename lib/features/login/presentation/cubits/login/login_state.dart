@@ -26,15 +26,11 @@ class WrongInputState extends LoginState {
   final String emailError;
   final String passwordError;
 
-  WrongInputState(
+  const WrongInputState(
       {required this.emailError,
       required this.passwordError,
       super.username,
       super.password});
-}
-
-class DisabledCredentialState extends LoginState {
-  const DisabledCredentialState({super.username, super.password});
 }
 
 class LoginErrorState extends LoginState {

@@ -10,9 +10,9 @@ class LicenseActivateUseCase {
 
   Future<Either<FailureEntity, void>> execute({
     required String idClinica,
-    required String idPromoCode,
+    required License licenzaNonAttiva,
   }) async {
     return await licenseRepository.licenseActivate(
-        idClinica: idClinica, idPromoCode: idPromoCode);
+        idClinica: idClinica, licenzaNonAttiva: licenzaNonAttiva);
   }
 }

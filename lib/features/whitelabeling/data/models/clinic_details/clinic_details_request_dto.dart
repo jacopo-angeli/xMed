@@ -2,14 +2,14 @@
 import 'dart:convert';
 
 class ClinicDetailsRequestDto {
-  final int idClinica;
+  final String idClinica;
   final int institute = 2272;
   ClinicDetailsRequestDto({
     required this.idClinica,
   });
 
   ClinicDetailsRequestDto copyWith({
-    int? idClinica,
+    String? idClinica,
   }) {
     return ClinicDetailsRequestDto(
       idClinica: idClinica ?? this.idClinica,
@@ -24,7 +24,7 @@ class ClinicDetailsRequestDto {
 
   factory ClinicDetailsRequestDto.fromMap(Map<String, dynamic> map) {
     return ClinicDetailsRequestDto(
-      idClinica: map['idClinica'] as int,
+      idClinica: map['idClinica'] as String,
     );
   }
 

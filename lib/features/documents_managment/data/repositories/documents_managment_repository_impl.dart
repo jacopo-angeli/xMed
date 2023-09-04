@@ -106,7 +106,6 @@ class DocumentsManagmentRepositoryImpl implements DocumentsManagmentRepository {
     }
 
     // OPERAZIONE ANDATA A BUON FINE
-    // documentDelete(idDocumento: idDocumento, idClinica: idClinica);
     return const Right(null);
   }
 

@@ -74,7 +74,7 @@ class DocumentsListWidget extends StatelessWidget {
                 )
               ],
             ),
-            Padding(padding: EdgeInsets.only(bottom: 50)),
+            const Padding(padding: EdgeInsets.only(bottom: 50)),
             BlocBuilder<DocumentsListCubit, DocumentsListState>(
               builder: (context, state) {
                 if (state is DocumentsSynchState &&
@@ -107,7 +107,7 @@ class DocumentsListWidget extends StatelessWidget {
                           value: null,
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
                       Text(state.currentOperation)
@@ -206,7 +206,7 @@ class DocumentsListWidget extends StatelessWidget {
                                     key: Key(doc.value.idDocumento.toString()),
                                     startActionPane: ActionPane(
                                       // A motion is a widget used to control how the pane animates.
-                                      motion: ScrollMotion(),
+                                      motion: const ScrollMotion(),
 
                                       // All actions are defined in the children parameter.
                                       children: [

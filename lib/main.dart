@@ -52,6 +52,8 @@ class MyApp extends StatefulWidget {
   final InternetCubit internetCubit;
   final LoginCubit loginCubit;
   final ThemeCubit themeCubit;
+  // Costruzione della applicazione
+
   const MyApp(
       {super.key,
       required this.internetCubit,

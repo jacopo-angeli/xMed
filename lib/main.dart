@@ -54,7 +54,8 @@ class MyApp extends StatefulWidget {
   final ThemeCubit themeCubit;
   // Costruzione della applicazione
 
-  const MyApp(
+   // ignore: prefer_const_constructors_in_immutables
+   MyApp( 
       {super.key,
       required this.internetCubit,
       required this.loginCubit,

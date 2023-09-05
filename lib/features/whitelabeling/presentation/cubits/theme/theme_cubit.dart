@@ -4,8 +4,8 @@ import 'package:bloc/bloc.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:xmed/core/error_handling/failures.dart';
+import 'package:xmed/features/connection/presentation/cubits/internet/internet_cubit.dart';
 import 'package:xmed/features/login/presentation/cubits/login/login_cubit.dart';
 import 'package:xmed/features/whitelabeling/domain/repositories/theme_repository.dart';
 import '../../../domain/entities/theme.dart';
@@ -31,11 +31,9 @@ class ThemeCubit extends Cubit<ThemeState> {
     // Ricerco tema locale
     // Se lo trovo lo ritorno
     // Se non lo trovo lo creo con tema di default e dopo lo ritorno
-
     debugPrint('TENTATIVO DI RECUPERO DEL TEMA LOCALE');
     final Either<FailureEntity, XmedTheme> localThemeRetrieveAttempt =
         await themeRepository.getLocalClinicTheme();
-
     await localThemeRetrieveAttempt.fold((failure) async {
       debugPrint('FALLIMENTO NEL RECUPERO DEL TEMA DA LOCALE');
       debugPrint('SALVATAGGIO DEL TEMA DI DEFAULT IN LOCALE');
@@ -47,6 +45,7 @@ class ThemeCubit extends Cubit<ThemeState> {
       debugPrint('TEMA RECUPERATO CON SUCCESSO');
       emit(ThemeSynchedState(currentTheme: localTheme));
     });
+    
   }
 
   Future<void> synch({required XmedTheme currentTheme}) async {
@@ -63,8 +62,9 @@ class ThemeCubit extends Cubit<ThemeState> {
     localThemeRetrieveAttempt.fold((failure) async {
       debugPrint('TEMA LOCALE NON PRESENTE (TECNINCAMENTE IMPOSSIBILE)');
       debugPrint('SALVATAGGIO DEL TEMA DI DEFAULT IN LOCALE');
-      final defaultTheme = await XmedTheme.getDefaultTheme();
-      themeRepository.writeLocalClinicTheme(defaultTheme);
+      //SE NON CE CONNESSIONE CARICO IL TEMA DI DEAFAULT
+      if(loginCubit.internetCubit.connectivity is InternetDisconnectedState) {final defaultTheme = await XmedTheme.getDefaultTheme(); themeRepository.writeLocalClinicTheme(defaultTheme);}
+      
       debugPrint('TEMA LOCALE SALVATO CORRETTAMENTE');
       emit(ThemeSynchedState(currentTheme: defaultTheme));
     }, (localTheme) async {

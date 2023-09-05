@@ -33,7 +33,7 @@ class DocumentsManagmentPage extends StatefulWidget {
   late final InternetCubit internetCubit;
   late final LicenseCubit licenseCubit;
        // ignore: prefer_const_constructors_in_immutables
-       DocumentsManagmentPage({super.key}); //! Modificare sto const che si rimette in automatico idem in Main line 55
+       DocumentsManagmentPage({super.key});
 
   @override
   State<DocumentsManagmentPage> createState() => _DocumentsManagmentPageState();

@@ -203,7 +203,6 @@ class DocumentsListCubit extends Cubit<DocumentsListState> {
         documentsList: state.documentsList));
     await documentsRepository.documentUpload(
         idClinica: currentUser.idClinica, idDocumento: int.parse(idDocumento));
-    //await documentsRepository.documentDelete(idDocumento: int.parse(idDocumento), idClinica: currentUser.idClinica);
     emit(DocumentsSynchState(documentsList: state.documentsList));
   }
 }

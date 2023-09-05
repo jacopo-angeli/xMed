@@ -34,16 +34,59 @@ class LoginCubit extends Cubit<LoginState> {
   }
 
   Future<void> appStartedEvent() async {
-    emit(const LoggingState());
-    // RECUPERO username E password DAL SECURE STORAGE
-    const storage = FlutterSecureStorage();
-    Map<String, String> secureStorageContent = await storage.readAll();
-    final String? password = secureStorageContent['password'];
-    final String? username = secureStorageContent['username'];
+    if (internetCubit.connectivity is InternetDisconnectedState) {
+      emit(const WrongInputState(
+          emailError: '',
+          passwordError: 'Controlla lo stato della tua connessione'));
+    } else {
+      emit(const LoggingState());
+      // RECUPERO username E password DAL SECURE STORAGE
+      const storage = FlutterSecureStorage();
+      Map<String, String> secureStorageContent = await storage.readAll();
+      final String? password = secureStorageContent['password'];
+      final String? username = secureStorageContent['username'];
 
-    // AUTOLOGIN
-    if (password != null) {
-      if (username != null) {
+      // AUTOLOGIN
+      if (password != null) {
+        if (username != null) {
+          // TENTATIVO DI LOGIN
+          Either<FailureEntity, User> result =
+              await loginUseCase.execute(email: username, password: password);
+
+          // GESTIONE DEL RISULTATO
+          _loginResultHandler(result, username, password);
+        }
+      } else {
+        // NOTLOGGED STATE CON CAMPO USERNAME, SE UN UTENTE EFFETTUA
+        // IL LOGOUT IL CAMPO PASSWORD VIENE ELIMINATO DAL SECURE STORAGE
+        // OBBLIGANDO L'UTENTE A REINSERIRLA
+        emit(NotLoggedState(username: username));
+      }
+    }
+  }
+
+  void logInRequest(
+      {required String username, required String password}) async {
+    if (internetCubit.connectivity is InternetDisconnectedState) {
+      emit(const WrongInputState(
+          emailError: '',
+          passwordError: 'Controlla lo stato della tua connessione'));
+    } else {
+      emit(LoggingState(username: username, password: password));
+      // TODO REFACTOR
+      // SANITY CHECK DI username E password
+      final emailError = ValidatorService.emailValidation(email: username)
+          ? ""
+          : wrongEmailInput;
+      final String passwordError = password.isEmpty ? emptyFieldError : "";
+      if (emailError.isNotEmpty || passwordError.isNotEmpty) {
+        // ALMENO username O password CONTENGONO UN ERRORE
+        emit(WrongInputState(
+            username: username,
+            password: password,
+            emailError: emailError,
+            passwordError: passwordError));
+      } else {
         // TENTATIVO DI LOGIN
         Either<FailureEntity, User> result =
             await loginUseCase.execute(email: username, password: password);
@@ -51,37 +94,6 @@ class LoginCubit extends Cubit<LoginState> {
         // GESTIONE DEL RISULTATO
         _loginResultHandler(result, username, password);
       }
-    } else {
-      // NOTLOGGED STATE CON CAMPO USERNAME, SE UN UTENTE EFFETTUA
-      // IL LOGOUT IL CAMPO PASSWORD VIENE ELIMINATO DAL SECURE STORAGE
-      // OBBLIGANDO L'UTENTE A REINSERIRLA
-      emit(NotLoggedState(username: username));
-    }
-  }
-
-  void logInRequest(
-      {required String username, required String password}) async {
-    emit(LoggingState(username: username, password: password));
-    // TODO REFACTOR
-    // SANITY CHECK DI username E password
-    final emailError = ValidatorService.emailValidation(email: username)
-        ? ""
-        : wrongEmailInput;
-    final String passwordError = password.isEmpty ? emptyFieldError : "";
-    if (emailError.isNotEmpty || passwordError.isNotEmpty) {
-      // ALMENO username O password CONTENGONO UN ERRORE
-      emit(WrongInputState(
-          username: username,
-          password: password,
-          emailError: emailError,
-          passwordError: passwordError));
-    } else {
-      // TENTATIVO DI LOGIN
-      Either<FailureEntity, User> result =
-          await loginUseCase.execute(email: username, password: password);
-
-      // GESTIONE DEL RISULTATO
-      _loginResultHandler(result, username, password);
     }
   }
 
@@ -118,10 +130,16 @@ class LoginCubit extends Cubit<LoginState> {
   }
 
   void logOutRequest() async {
-    // ELIMINO DAL SECURE STORAGE password
-    // EMETTO LO STATO DI NOTLOGGED
-    const storage = FlutterSecureStorage();
-    await storage.delete(key: 'password');
-    emit(NotLoggedState(username: await storage.read(key: 'username')));
+    if (internetCubit.connectivity is InternetDisconnectedState) {
+      emit(const WrongInputState(
+          emailError: '',
+          passwordError: 'Controlla lo stato della tua connessione'));
+    } else {
+      // ELIMINO DAL SECURE STORAGE password
+      // EMETTO LO STATO DI NOTLOGGED
+      const storage = FlutterSecureStorage();
+      await storage.delete(key: 'password');
+      emit(NotLoggedState(username: await storage.read(key: 'username')));
+    }
   }
 }

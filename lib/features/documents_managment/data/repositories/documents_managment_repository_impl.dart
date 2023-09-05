@@ -6,13 +6,10 @@ import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:pdf/pdf.dart';
 
 import 'package:xmed/core/error_handling/failures.dart';
-import 'package:xmed/core/utils/converters/date.dart';
 import 'package:xmed/features/documents_managment/data/models/document_download/document_download_request_dto.dart';
 import 'package:xmed/features/documents_managment/data/models/document_upload/document_upload_request_dto.dart';
-import 'package:xmed/features/documents_managment/data/models/document_upload/document_upload_response.dart';
 
 import 'package:xmed/features/documents_managment/domain/entities/Document.dart';
 import '../../../../core/utils/constants/strings.dart';
@@ -79,7 +76,9 @@ class DocumentsManagmentRepositoryImpl implements DocumentsManagmentRepository {
 
     final DocumentUploadRequestDto requestBody = DocumentUploadRequestDto(
         content: document,
-        dataFirma: CWDateUtils.localDateFormatter(DateTime.now()),
+        dataFirma: DateFormat("yyyy-MM-ddTHH:mm:ssZ")
+            .format(DateTime.now())
+            .toString(),
         idClinica: int.parse(idClinica),
         idDocumento: idDocumento);
     //DICHIARAZIONE E INIZIALIZZAZIONE DEL CLIENT
@@ -97,13 +96,6 @@ class DocumentsManagmentRepositoryImpl implements DocumentsManagmentRepository {
       return const Left((DocumentUploadFailure()));
     }
     //STATUS CODE == 200
-    //DICHIARO DTO RESPONSE
-    late DocumentUploadResponseDto data;
-    try {
-      data = DocumentUploadResponseDto.fromMap(response.data);
-    } on Exception {
-      return const Left(DataParsingFailure());
-    }
 
     // OPERAZIONE ANDATA A BUON FINE
     return const Right(null);
@@ -396,7 +388,6 @@ class DocumentsManagmentRepositoryImpl implements DocumentsManagmentRepository {
     List<int> fileBytesContent = List.empty();
     fileBytesContent = File('$folderPath/$fileName.pdf').readAsBytesSync();
     String base64File = base64Encode(fileBytesContent);
-    print("puzzadiEccezione" + base64File);
     return base64File;
   }
 }

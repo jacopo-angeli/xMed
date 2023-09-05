@@ -30,10 +30,13 @@ class DocumentUploadRequestDto {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'content': content,
-      'dataFirma': dataFirma,
-      'idClinica': idClinica,
-      'idDocumento': idDocumento,
+      "input": <String, dynamic>{
+        'content': content,
+        'dataFirma': dataFirma,
+        'idClinica': idClinica,
+        'idDocumento': idDocumento,
+        'institute': institute,
+      }
     };
   }
 

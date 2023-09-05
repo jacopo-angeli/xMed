@@ -9,7 +9,7 @@ const String clinicDetailsEndPoint = "/clinicaDetails";
 const String authenticationEndPoint = "/loginVerify";
 const String documentoClinicaSearchEndPoint = '/documentoClinicaSearch';
 const String documentoClinicaDownloadEndPoint = '/documentoClinicaDownload';
-const String documentoClinicaUploadEndPoint = 'documentoClinicaUpload';
+const String documentoClinicaUploadEndPoint = '/documentoClinicaUpload';
 const String licenseActivateEndPoint = '/licenzaActivate';
 const String licenseDownloadEndPoint = '/licenzaDownload';
 

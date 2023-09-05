@@ -3,7 +3,7 @@ import 'dart:convert';
 
 class DocumentUploadRequestDto {
   final String? content;
-  final DateTime? dataFirma;
+  final String? dataFirma;
   final int? idClinica;
   final int? idDocumento;
   DocumentUploadRequestDto({
@@ -16,7 +16,7 @@ class DocumentUploadRequestDto {
 
   DocumentUploadRequestDto copyWith({
     String? content,
-    DateTime? dataFirma,
+    String? dataFirma,
     int? idClinica,
     int? idDocumento,
   }) {
@@ -30,19 +30,20 @@ class DocumentUploadRequestDto {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'content': content,
-      'dataFirma': dataFirma?.millisecondsSinceEpoch,
-      'idClinica': idClinica,
-      'idDocumento': idDocumento,
+      "input": <String, dynamic>{
+        'content': content,
+        'dataFirma': dataFirma,
+        'idClinica': idClinica,
+        'idDocumento': idDocumento,
+        'institute': institute,
+      }
     };
   }
 
   factory DocumentUploadRequestDto.fromMap(Map<String, dynamic> map) {
     return DocumentUploadRequestDto(
       content: map['content'] != null ? map['content'] as String : null,
-      dataFirma: map['dataFirma'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['dataFirma'] as int)
-          : null,
+      dataFirma: map['dataFirma'] != null ? map['dataFirma'] as String : null,
       idClinica: map['idClinica'] != null ? map['idClinica'] as int : null,
       idDocumento:
           map['idDocumento'] != null ? map['idDocumento'] as int : null,

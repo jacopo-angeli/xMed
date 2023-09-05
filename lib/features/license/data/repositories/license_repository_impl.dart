@@ -1,126 +1,169 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:xmed/features/license/data/models/license_activate/license_activate_request_dto.dart';
 import '../../../../core/error_handling/failures.dart';
 import 'package:xmed/core/network/http_custom_client.dart';
 import 'package:xmed/features/license/data/models/license_download/license_download_request_dto.dart';
 import 'package:xmed/features/license/domain/entities/license.dart';
 import 'package:xmed/features/license/domain/repositories/license_repository.dart';
 
+import '../../../../core/utils/constants/strings.dart';
 import '../models/license_activate/license_activate_response_dto.dart';
 import '../models/license_download/license_download_response_dto.dart';
 
+/// L'api di download ritorna un promoCode che deve essere
+/// 'attivato' in seguito all' attivazione da parte dell'SDK
+/// di namirial, mediante l'utilizzo dell'api di attivazione
+
 class LicenseRepositoryImpl implements LicenseRepository {
   @override
-  Future<Either<FailureEntity, void>> licenseActivate(
-      {required String idClinica, required String idPromoCode}) async {
-    final requestBody = LicenseDownloadRequestDto.fromMap(<String, dynamic>{
-      idClinica: idClinica,
-      idPromoCode: idPromoCode,
-    });
+  Future<Either<FailureEntity, License>> licenseDownload(
+      {required String idClinica}) async {
+    // CREAZIONE CORPO DELLA RICHIESTA
+    final requestBody = LicenseDownloadRequestDto(idClinica: idClinica);
 
-    // HTTP CLIENT DEFINITION
+    // DICHIARAZIONE E INIZIALIZZAZIONE CUSTOM CLIENT
     final client = HttpCustomClient();
     await client.initialize(requestBody.toMap());
 
-    // POST REQUEST PERFORM
-    late Response dioResponse;
-    try {
-      dioResponse = await client.post('/licenzaActivate');
-    } on Exception {
-      return const Left(LicenseActivationFailure());
-    }
+    // DEFINIZIONE VARIABILE RISPOSTA DA (package:Dio)
+    late Response response;
 
-    // ANY STATUS CODE != 200 RETURNS A FAILURE
-    if (dioResponse.statusCode != 200) {
+    // TENTO LA RICHIESTA AL BACKOFFICE
+    try {
+      response = await client.post(licenseDownloadEndPoint);
+    } on Exception {
+      // QUALCOSA è ANDATO STORTO
       return const Left(ServerFailure());
     }
 
-    // CREATING A RESPONSE DTO FROM DIO RESPONSE TYPE
-    late LicenseActivateResponseDto responseDto;
+    // COSTRUISCO OGGETTO DTO DALLA RISPOSTA
+    late LicenseDownloadResponseDto data;
     try {
-      responseDto = LicenseActivateResponseDto.fromJson(dioResponse.data);
+      data =
+          LicenseDownloadResponseDto.fromMap(response.data['output']['body']);
+      debugPrint(data.content);
     } on Exception {
-      return const Left((DataParsingFailure()));
+      // QUALCOSA è ANDATO STORTO
+      return const Left(ServerFailure());
     }
+
+    // COSTRUZIONE MODELLO DALLA RISPOSTA
+    // COSTRUISCE UNA LICENZA CON promoCode, cert
+    // E status = DA_ATTIVARE
+    final namirialLicense =
+        json.decode(utf8.decode(base64.decode(data.content)));
+    final License license = License(
+        cert: namirialLicense['cert'],
+        promoCode: namirialLicense['promoCode'],
+        status: "DA_ATTIVARE");
+
+    return Right(license);
+  }
+
+  @override
+  Future<void> persistLicense(License license) async {
+    // RECUPERO CARTELLA DI APP DATA
+    final Directory appDataDirectory = await getApplicationDocumentsDirectory();
+    final String appDataPath = appDataDirectory.path;
+
+    final Directory licenseDirectory = Directory('$appDataPath/license');
+    // SE LA CARTELLA license NON ESISTE LA CREO
+    if (!licenseDirectory.existsSync()) {
+      licenseDirectory.createSync(recursive: true);
+    }
+    final String licenseDirectoryPath = licenseDirectory.path;
+
+    // SALVO IL FILE PER SDK
+    final file = File("$licenseDirectoryPath/license.afgclic");
+    file.writeAsStringSync(
+        '{"promoCode": ${license.promoCode}, "cert": ${license.cert}}');
+  }
+
+  @override
+  Future<Either<FailureEntity, void>> licenseActivate(
+      {required String idClinica, required License licenzaNonAttiva}) async {
+    // CREAZIONE CORPO DELLA RICHIESTA
+    final requestBody = LicenseActivateRequestDto(
+        idClinica: idClinica, idPromoCode: licenzaNonAttiva.promoCode);
+
+    // DICHIARAZIONE E INIZIALIZZAZIONE CUSTOM CLIENT
+    final client = HttpCustomClient();
+    await client.initialize(requestBody.toMap());
+
+    // DEFINIZIONE VARIABILE RISPOSTA DA (package:Dio)
+    late Response response;
+
+    // TENTO LA RICHIESTA AL BACKOFFICE
+    try {
+      response = await client.post(licenseActivateEndPoint);
+    } on Exception {
+      // QUALCOSA è ANDATO STORTO
+      return const Left(ServerFailure());
+    }
+
+    // COSTRUISCO OGGETTO DTO DALLA RISPOSTA
+    late LicenseActivateResponseDto data;
+    try {
+      data =
+          LicenseActivateResponseDto.fromMap(response.data['output']['body']);
+    } on Exception {
+      // QUALCOSA è ANDATO STORTO
+      return const Left(ServerFailure());
+    }
+
+    //GESTIONE MESSAGGI DI ERRORE
+    // if (data.messages.isNotEmpty) {
+    //   return const Left(ValidationFailure());
+    // }
 
     return const Right(null);
   }
 
-  // Download di una licenza da attivare
   @override
-  Future<Either<FailureEntity, License>> licenseDownload(
-      {required String idClinica}) async {
-    final requestBody = LicenseDownloadRequestDto.fromMap(<String, dynamic>{
-      idClinica: idClinica,
-    });
+  Future<Either<FailureEntity, License>> getLocalLicense() async {
+    // RECUPERO LA DIRECTORY APP DATA
+    final Directory appData = await getApplicationDocumentsDirectory();
+    final String appDataPath = appData.path;
 
-    // HTTP CLIENT DEFINITION
-    final client = HttpCustomClient();
-    await client.initialize(requestBody.toMap());
+    // COSTRUISCO IL PATH DEL FILE DELLA LICENZA
+    final String licenseFilePath = "$appDataPath/license/license.afgclic";
 
-    // POST REQUEST PERFORM
-    late Response response;
-    try {
-      response = await client.post('/licenzaDownload');
-    } on Exception {
-      return const Left((LicenseDownloadFailure()));
+    // RECUPERO IL FILE
+    File file = File(licenseFilePath);
+
+    if (file.existsSync()) {
+      // FILE TROVATO
+      debugPrint("FILE TROVATO");
+      try {
+        return Right(License.fromJson(file.readAsStringSync()));
+      } on Exception {
+        return const Left(DataParsingFailure());
+      }
+    } else {
+      return const Left(MissingLocalLicense());
     }
-
-    // ANY STATUS CODE != 200 RETURNS A FAILURE
-    if (response.statusCode != 200) {
-      return const Left((LicenseRetrieveFailure()));
-    }
-
-    // CREATING A RESPONSE DTO FROM DIO RESPONSE TYPE
-    late LicenseDownloadResponseDto data;
-    try {
-      data = LicenseDownloadResponseDto.fromJson(response.data);
-    } on Exception {
-      return const Left((DataParsingFailure()));
-    }
-
-    // if (data.output.messages.isEmpty) {
-    //   return const Left(LicenseSaveFailure());
-    // }
-    // final License license = License.fromMap(data.toMap());
-    // const FlutterSecureStorage().write(key: 'idClinica', value: idClinica);
-    return const Right(License(
-        idClinica: 1,
-        IdPromoCode: 1,
-        NamirialLicense: {'NamirialLicense': 'NamirialLicense'},
-        content: 'content',
-        status: 'content'));
   }
 
-  // La funzione controlla se \e presente nel dispositivo una licenza
-  // Se la licenza viene trovata allora viene ritornata
-  // Se il recupero della licenza non va a buon fine viene ritornato una FailureEntity dedicata
-  // Se la licenza non viene trovata allora viene ritornata una FailureEntity dedicata
   @override
-  Future<Either<FailureEntity, String>> retrieveLicense() async {
-    // Recupero il path della cartella documents dove viene salvata la licenza
-    final Directory appData = await getApplicationDocumentsDirectory();
+  Future<String> getLocalLicenseFilePath() async {
+    // RECUPERO CARTELLA DI APP DATA
+    final Directory appDataDirectory = await getApplicationDocumentsDirectory();
+    final String appDataPath = appDataDirectory.path;
 
-    // Cerco il file nella cartella assets di flutter
-    late File file;
-    try {
-      // Carico il file dalla cartella assets
-      final license = await rootBundle.load('assets/license.afgclic');
-      file = await File('${appData.path}/license.afgclic').writeAsBytes(
-        license.buffer
-            .asUint8List(license.offsetInBytes, license.lengthInBytes),
-      );
-    } catch (e) {
-      print('Debug license file not found');
-      // Errore durante il recupero del file, file non presente
-      return const Left(LicenseRetrieveFailure());
+    final Directory licenseDirectory = Directory('$appDataPath/license');
+    // SE LA CARTELLA license NON ESISTE LA CREO
+    if (!licenseDirectory.existsSync()) {
+      licenseDirectory.createSync(recursive: true);
     }
+    final String licenseDirectoryPath = licenseDirectory.path;
 
-    // ? File trovato ???
-    return Right(file.path);
+    // RITONRO PATH DEL FILE
+    return "$licenseDirectoryPath/license.afgclic";
   }
 }

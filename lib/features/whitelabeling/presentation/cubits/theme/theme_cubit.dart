@@ -1,51 +1,90 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
+import 'package:dartz/dartz.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:xmed/core/error_handling/failures.dart';
+import 'package:xmed/features/login/presentation/cubits/login/login_cubit.dart';
+import 'package:xmed/features/whitelabeling/domain/repositories/theme_repository.dart';
 import '../../../domain/entities/theme.dart';
 part 'theme_state.dart';
 
 class ThemeCubit extends Cubit<ThemeState> {
-  ThemeCubit() : super(DefaultThemeState());
+  // REPOSITORY DECLARATION
+  final ThemeRepository themeRepository;
+  final LoginCubit loginCubit;
 
-  void themeSynchRequest({required Theme lastTheme}) {
-    emit(ThemeSyncingState(theme: lastTheme));
-    // Controllo se il tema nel backoffice è lo stesso tema che ho in locale
-    // Se si:
-    //  Se lastTheme == Theme.defaultTheme()
-    //    emit(DeafultThemeState());
-    //  Altrimenti
-    //    emit(CustomThemeState(lastTheme))
-    // Se no:
-    //  Se remoteTheme == Theme.defaultTheme()
-    //    Elimina tema locale
-    //    emit(DeafultThemeState());
-    //  Altrimenti
-    //    Aggiorno tema locale
-    //    emit(CustomThemeState(remoteTheme))
-    // ? TBD : Metto un flag default nel Theme?
-    // ? TBD : Salvo il tema anche se è default?
-    emit(DefaultThemeState());
+  // CONST FIELDS
+  final XmedTheme defaultTheme;
+
+  // CONSTRUCTOR
+  ThemeCubit(
+      {required this.defaultTheme,
+      required this.loginCubit,
+      required this.themeRepository})
+      : super(ThemeSynchingState(currentTheme: defaultTheme));
+
+  Future<void> appStartedEvent() async {
+    // AppStartedState
+    // Ricerco tema locale
+    // Se lo trovo lo ritorno
+    // Se non lo trovo lo creo con tema di default e dopo lo ritorno
+
+    debugPrint('TENTATIVO DI RECUPERO DEL TEMA LOCALE');
+    final Either<FailureEntity, XmedTheme> localThemeRetrieveAttempt =
+        await themeRepository.getLocalClinicTheme();
+
+    await localThemeRetrieveAttempt.fold((failure) async {
+      debugPrint('FALLIMENTO NEL RECUPERO DEL TEMA DA LOCALE');
+      debugPrint('SALVATAGGIO DEL TEMA DI DEFAULT IN LOCALE');
+      final defaultTheme = await XmedTheme.getDefaultTheme();
+      await themeRepository.writeLocalClinicTheme(defaultTheme);
+      debugPrint('TEMA SALVATO IN LOCALE');
+      emit(ThemeSynchedState(currentTheme: defaultTheme));
+    }, (localTheme) async {
+      debugPrint('TEMA RECUPERATO CON SUCCESSO');
+      emit(ThemeSynchedState(currentTheme: localTheme));
+    });
   }
 
-  void appStartedEvent() {
-    // Controllo se ho il tema salvato in locale
-    // Tema salvato in locale:
-    //      emetto stato di CustomTheme(TemaTrovato)
-    // Tema non trovato:
-    emit(DefaultThemeState());
-  }
+  Future<void> synch({required XmedTheme currentTheme}) async {
+    // SINCRONIZZA IL TEMA DELL'APP RECUPERANDO IL TEMA REMOTO
+    // E CONFRONTANDOLO CON IL LOCALE SE I DUE TEMI NON
+    // SONO CONGRUENTI ALLORA SOVRASCRIVE IL TEMA LOCALE
+    // CON QUELLO REMOTO (SEMPRE AGGIORNATO) E LO RITORNA
 
-  void themeReset() {
-    //  Controllo se ho un tema il locale
-    //  Tema in locale:
-    //    sovrascrivo il tema salvato
-    //  update del tema sul backoffice
-    emit(DefaultThemeState());
-  }
+    emit(ThemeSynchingState(currentTheme: currentTheme));
+    debugPrint('TENTATIVO DI RECUPERO DEL TEMA LOCALE');
+    final Either<FailureEntity, XmedTheme> localThemeRetrieveAttempt =
+        await themeRepository.getLocalClinicTheme();
 
-  void themeUpdated({required Theme newTheme}) {
-    //  Controllo se ho un tema il locale
-    //  Tema in locale:
-    //    sovrascrivo il tema salvato
-    //  update del tema sul backoffice
-    emit(CustomThemeState(theme: newTheme));
+    localThemeRetrieveAttempt.fold((failure) async {
+      debugPrint('TEMA LOCALE NON PRESENTE (TECNINCAMENTE IMPOSSIBILE)');
+      debugPrint('SALVATAGGIO DEL TEMA DI DEFAULT IN LOCALE');
+      final defaultTheme = await XmedTheme.getDefaultTheme();
+      themeRepository.writeLocalClinicTheme(defaultTheme);
+      debugPrint('TEMA LOCALE SALVATO CORRETTAMENTE');
+      emit(ThemeSynchedState(currentTheme: defaultTheme));
+    }, (localTheme) async {
+      debugPrint('TEMA RECUPERATO CON SUCCESSO');
+
+      debugPrint('TENTATIVO DI RECUPERO TEMA DA REMOTO');
+      final Either<FailureEntity, XmedTheme> remoteThemeRetrieveAttempt =
+          await themeRepository.getRemoteClinicTheme(
+              idClinica: loginCubit.currentUser.idClinica);
+
+      // GESTIONE DEL RISULTATO
+      remoteThemeRetrieveAttempt.fold((failure) {
+        debugPrint('ERRORE NELL RECUPERO DEL TEMA REMOTO');
+        // TODO : Valutare se informare o meno l'operatore della clinica
+        emit(ThemeSynchedState(currentTheme: localTheme));
+      }, (remoteTheme) async {
+        debugPrint('TEMA LOCALE SOVRASCRITTO');
+        await themeRepository.writeLocalClinicTheme(remoteTheme);
+        emit(ThemeSynchedState(currentTheme: remoteTheme));
+      });
+    });
   }
 }

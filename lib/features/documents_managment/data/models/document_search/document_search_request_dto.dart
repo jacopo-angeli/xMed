@@ -1,15 +1,15 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-import '../../../../../utils/constants/enums/document_status.dart';
+import 'package:intl/intl.dart';
 
 class DocumentSearchRequestDto {
   // Mandatory
   final DateTime fromDate;
   final DateTime toDate;
-  final int idClinica;
+  final String idClinica;
   final int institute = 2272;
-  final DocumentStatus status;
+  final String status;
 
   DocumentSearchRequestDto({
     required this.fromDate,
@@ -21,8 +21,8 @@ class DocumentSearchRequestDto {
   DocumentSearchRequestDto copyWith({
     DateTime? fromDate,
     DateTime? toDate,
-    int? idClinica,
-    DocumentStatus? status,
+    String? idClinica,
+    String? status,
   }) {
     return DocumentSearchRequestDto(
       fromDate: fromDate ?? this.fromDate,
@@ -34,10 +34,13 @@ class DocumentSearchRequestDto {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'fromDate': fromDate.millisecondsSinceEpoch,
-      'toDate': toDate.millisecondsSinceEpoch,
-      'idClinica': idClinica,
-      'status': status.toString(),
+      'input': <String, dynamic>{
+        'fromDate': DateFormat("yyyy-MM-ddTHH:mm:ssZ").format(fromDate),
+        'idClinica': idClinica,
+        'institute': institute,
+        'status': status.toString(),
+        'toDate': DateFormat("yyyy-MM-ddTHH:mm:ssZ").format(toDate),
+      }
     };
   }
 
@@ -45,8 +48,8 @@ class DocumentSearchRequestDto {
     return DocumentSearchRequestDto(
       fromDate: DateTime.fromMillisecondsSinceEpoch(map['fromDate'] as int),
       toDate: DateTime.fromMillisecondsSinceEpoch(map['toDate'] as int),
-      idClinica: map['idClinica'] as int,
-      status: map['status'] as DocumentStatus,
+      idClinica: map['idClinica'] as String,
+      status: map['status'] as String,
     );
   }
 

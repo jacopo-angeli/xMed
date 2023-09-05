@@ -1,64 +1,50 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'dart:convert';
-
 import 'package:equatable/equatable.dart';
 
-import '../../../../utils/constants/enums/credential_status.dart';
+import 'package:xmed/features/login/data/models/authentication/authentication_response_dto.dart';
 
+/// Questa classe rappresenta un utente e le sue informazioni associate.
 class User extends Equatable {
-  final String? username;
-  final bool? flagLicenzaObbligatoria;
-  final CredentialStatus? status;
-  const User({
-    this.username,
-    this.flagLicenzaObbligatoria,
-    this.status,
-  });
+  final String idClinica; // ID della clinica associata all'utente
+  final int flagLicenzaObbligatoria; // Indicatore di licenza obbligatoria
+  final String status; // Stato dell'utente
+  final String username;
 
-  factory User.defaultUser() => const User();
+  /// Costruttore per inizializzare un oggetto User.
+  const User(
+      {required this.idClinica,
+      required this.flagLicenzaObbligatoria,
+      required this.status,
+      required this.username});
 
-  bool get isEmpty => this == User.defaultUser();
-  bool get isNotEmpty => this != User.defaultUser();
+  /// Costruttore per generare un utente predefinito.
+  factory User.defaultUser() => const User(
+      idClinica: '', flagLicenzaObbligatoria: 0, status: '', username: '');
 
-  bool get isActive => status == CredentialStatus.ACTIVATED;
-
-  User copyWith({
-    String? username,
-    bool? flagLicenzaObbligatoria,
-    CredentialStatus? status,
-  }) {
+  /// Metodo per creare una copia dell'utente con alcune proprietà modificate.
+  User copyWith(
+      {String? idClinica,
+      int? flagLicenzaObbligatoria,
+      String? status,
+      String? username}) {
     return User(
-      username: username ?? this.username,
-      flagLicenzaObbligatoria:
-          flagLicenzaObbligatoria ?? this.flagLicenzaObbligatoria,
-      status: status ?? this.status,
-    );
+        idClinica: idClinica ?? this.idClinica,
+        flagLicenzaObbligatoria:
+            flagLicenzaObbligatoria ?? this.flagLicenzaObbligatoria,
+        status: status ?? this.status,
+        username: username ?? this.username);
   }
 
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'username': username,
-      'flagLicenzaObbligatoria': flagLicenzaObbligatoria,
-      'status': status,
-    };
-  }
-
-  factory User.fromMap(Map<String, dynamic> map) {
+  /// Costruttore per creare un oggetto User da un oggetto AuthenticationResponseDto.
+  factory User.fromDto(AuthenticationResponseDto dto, String username) {
     return User(
-      username: map['username'] as String,
-      flagLicenzaObbligatoria: map['flagLicenzaObbligatoria'] as bool,
-      status: map['status'] as CredentialStatus,
-    );
+        idClinica: dto.getIdClinica,
+        flagLicenzaObbligatoria: dto.getFlagLicenzaObbligatoria,
+        status: dto.getStatus,
+        username: username);
   }
 
-  String toJson() => json.encode(toMap());
-
-  factory User.fromJson(String source) =>
-      User.fromMap(json.decode(source) as Map<String, dynamic>);
-
+  /// Override del metodo per determinare le proprietà dell'oggetto da considerare per l'uguaglianza.
   @override
-  bool get stringify => true;
-
-  @override
-  List<Object?> get props => [username, flagLicenzaObbligatoria, status];
+  List<Object?> get props =>
+      [idClinica, flagLicenzaObbligatoria, status, username];
 }

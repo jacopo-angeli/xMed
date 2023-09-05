@@ -1,18 +1,18 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 part of 'theme_cubit.dart';
 
+@immutable
 abstract class ThemeState {
-  final Theme theme;
-  ThemeState({required this.theme});
+  final XmedTheme currentTheme;
+  const ThemeState({
+    required this.currentTheme,
+  });
 }
 
-class DefaultThemeState extends ThemeState {
-  DefaultThemeState() : super(theme: Theme.defaultTheme());
+class ThemeSynchedState extends ThemeState {
+  const ThemeSynchedState({required super.currentTheme});
 }
 
-class ThemeSyncingState extends ThemeState {
-  ThemeSyncingState({required super.theme});
-}
-
-class CustomThemeState extends ThemeState {
-  CustomThemeState({required super.theme});
+class ThemeSynchingState extends ThemeState {
+  const ThemeSynchingState({required super.currentTheme});
 }

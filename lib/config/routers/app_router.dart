@@ -1,5 +1,4 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:xmed/features/documents_managment/presentation/pages/documents_list_page.dart';
 
 import 'app_router.gr.dart';
 
@@ -7,16 +6,12 @@ import 'app_router.gr.dart';
 @AutoRouterConfig() // Utilizzo di AutoRoute.
 class AppRouter extends $AppRouter {
   @override
-  RouteType get defaultRouteType => const RouteType.custom(
-        transitionsBuilder: TransitionsBuilders.zoomIn,
-        durationInMilliseconds: 400,
-        reverseDurationInMilliseconds: 200,
-      );
+  RouteType get defaultRouteType => const RouteType.cupertino();
 
   @override
   List<AutoRoute> get routes => [
         AutoRoute(page: LoginView.page, initial: true),
-        AutoRoute(page: DocumentsListRoute.page),
+        AutoRoute(page: DocumentsManagmentRoute.page),
       ];
 }
 

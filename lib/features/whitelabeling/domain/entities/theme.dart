@@ -2,63 +2,57 @@
 import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
+import 'package:flutter/services.dart';
 
-class Theme extends Equatable {
+class XmedTheme extends Equatable {
+  // "clinicaID": "string",
+  //     "colorAccent": "string",
+  //     "colorBackground": "string",
+  //     "colorPrimary": "string",
+  //     "descrizione": "string",
+  //     "logo": "string",
+  //     "nome": "string",
+  //     "status": "string"
   final String status;
-  final String clinicID;
-  final String name;
-  final String description;
-  final String logoContentType;
-  final String logoContent;
-  final String logoSize;
+  final String? clinicaID;
+  final String nome;
+  final String descrizione;
+  final String logo;
   final String colorPrimary;
   final String colorAccent;
   final String colorBackground;
-  const Theme({
+  const XmedTheme({
     required this.status,
-    required this.clinicID,
-    required this.name,
-    required this.description,
-    required this.logoContentType,
-    required this.logoContent,
-    required this.logoSize,
+    required this.clinicaID,
+    required this.nome,
+    required this.descrizione,
+    required this.logo,
     required this.colorPrimary,
     required this.colorAccent,
     required this.colorBackground,
   });
 
-  factory Theme.defaultTheme() => const Theme(
-      status: "status",
-      clinicID: "clinicID",
-      name: "name",
-      description: "description",
-      logoContentType: "logoContentType",
-      logoContent: "logoContent",
-      logoSize: "logoSize",
-      colorPrimary: "colorPrimary",
-      colorAccent: "colorAccent",
-      colorBackground: "colorBackground");
+  static Future<XmedTheme> getDefaultTheme() async => XmedTheme.fromJson(
+      await rootBundle.loadString('assets/defaultTheme.json'));
 
-  Theme copyWith({
+  XmedTheme copyWith({
     String? status,
-    String? clinicID,
-    String? name,
-    String? description,
+    String? clinicaID,
+    String? nome,
+    String? descrizione,
     String? logoContentType,
-    String? logoContent,
+    String? logo,
     String? logoSize,
     String? colorPrimary,
     String? colorAccent,
     String? colorBackground,
   }) {
-    return Theme(
+    return XmedTheme(
       status: status ?? this.status,
-      clinicID: clinicID ?? this.clinicID,
-      name: name ?? this.name,
-      description: description ?? this.description,
-      logoContentType: logoContentType ?? this.logoContentType,
-      logoContent: logoContent ?? this.logoContent,
-      logoSize: logoSize ?? this.logoSize,
+      clinicaID: clinicaID ?? this.clinicaID,
+      nome: nome ?? this.nome,
+      descrizione: descrizione ?? this.descrizione,
+      logo: logo ?? this.logo,
       colorPrimary: colorPrimary ?? this.colorPrimary,
       colorAccent: colorAccent ?? this.colorAccent,
       colorBackground: colorBackground ?? this.colorBackground,
@@ -68,51 +62,45 @@ class Theme extends Equatable {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'status': status,
-      'clinicID': clinicID,
-      'name': name,
-      'description': description,
-      'logoContentType': logoContentType,
-      'logoContent': logoContent,
-      'logoSize': logoSize,
+      'clinicaID': clinicaID,
+      'nome': nome,
+      'descrizione': descrizione,
+      'logo': logo,
       'colorPrimary': colorPrimary,
       'colorAccent': colorAccent,
       'colorBackground': colorBackground,
     };
   }
 
-  factory Theme.fromMap(Map<String, dynamic> map) {
-    return Theme(
+  factory XmedTheme.fromMap(Map<String, dynamic> map) {
+    return XmedTheme(
       status: map['status'] as String,
-      clinicID: map['clinicID'] as String,
-      name: map['name'] as String,
-      description: map['description'] as String,
-      logoContentType: map['logoContentType'] as String,
-      logoContent: map['logoContent'] as String,
-      logoSize: map['logoSize'] as String,
+      logo: map['logo'] as String,
       colorPrimary: map['colorPrimary'] as String,
       colorAccent: map['colorAccent'] as String,
       colorBackground: map['colorBackground'] as String,
+      clinicaID: map['clinicaID'] as String,
+      nome: map['nome'] as String,
+      descrizione: map['descrizione'] as String,
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory Theme.fromJson(String source) =>
-      Theme.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory XmedTheme.fromJson(String source) =>
+      XmedTheme.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   bool get stringify => true;
 
   @override
-  List<Object> get props {
+  List<Object?> get props {
     return [
       status,
-      clinicID,
-      name,
-      description,
-      logoContentType,
-      logoContent,
-      logoSize,
+      clinicaID,
+      nome,
+      descrizione,
+      logo,
       colorPrimary,
       colorAccent,
       colorBackground,

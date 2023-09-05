@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:dio_logging_interceptor/dio_logging_interceptor.dart';
-import 'package:xmed/utils/services/crypto_service.dart';
-import 'package:xmed/utils/services/signature_service.dart';
+import 'package:xmed/core/utils/services/crypto_service.dart';
+import 'package:xmed/core/utils/services/signature_service.dart';
 
-import '../../utils/constants/strings.dart';
+import '../utils/constants/strings.dart';
 
 /// Utilizzo
 /// client = HttpCustomClient()..initialize(Map<string, dynamic> mapRequestBody);\
@@ -41,8 +41,8 @@ class HttpCustomClient {
     String thumbprint = await CryptoService.generateThumbprint();
 
     client = Dio(BaseOptions(
-      connectTimeout: 60000,
-      receiveTimeout: 60000,
+      connectTimeout: 600000,
+      receiveTimeout: 600000,
       baseUrl: baseUrl,
       headers: <String, String>{
         'content-type': 'application/json',
@@ -54,7 +54,7 @@ class HttpCustomClient {
     ));
 
     // Include interceptor per debugging.
-    client.interceptors.add(DioLoggingInterceptor(level: Level.body));
+    // client.interceptors.add(DioLoggingInterceptor(level: Level.body));
   }
 
   /// Perform POST request and then autodispose

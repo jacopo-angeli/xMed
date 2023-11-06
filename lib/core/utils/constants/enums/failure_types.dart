@@ -1,0 +1,1 @@
+enum FailureTypes { CLINIC_API_FAIL, EMPTY_FIELD, FORMAT_ERROR }

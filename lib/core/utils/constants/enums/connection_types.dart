@@ -1,0 +1,4 @@
+enum ConnectionTypes {
+  MOBILE,
+  WIFI,
+}

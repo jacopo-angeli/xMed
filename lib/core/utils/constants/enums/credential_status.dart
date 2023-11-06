@@ -1,0 +1,1 @@
+enum CredentialStatus { ACTIVATED, DISABLED }

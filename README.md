@@ -1,56 +1,7 @@
-## Freezed
+# xMed
+## Abstract
+Durante il percorso di stage ho lavorato alla creazione di un’applicazione destinata a cliniche mediche private e focalizzata sulla raccolta del consenso informato. Il suo scopo è permettere al personale di porgere al paziente un tablet, con il quale quest’ultimo possa consultare il documento relativo all’operazione che si presta a subire, e firmarlo per acconsentire al trattamento.
 
-Automatically:
+L’intero processo prende il nome di acquisizione del consenso informato, che è un documento di valore legale che tutela gli attori coinvolti, pazienti e medici, da errori o incomprensioni che possono risultare in seguito a operazioni medico chirurgiche. Il procedimento rappresenta quindi uno dei passi fondamentali del percorso terapeutico di un paziente. Esso produce però uno o più documenti cartacei che possono comportare, per cliniche specializzate in interventi chirurgici, un costo non indifferente se considerate le attività di stoccaggio, archiviazione e ricerca. Sempre più cliniche mediche valutano quindi la digitalizzazione dell’intera procedura tentate dalla riduzione dei costi di gestione, fino anche a un decimo.
 
-- Provide the == operator to compare objects by value.
-- Provide copy method with modified fields, also known as copyWith.
-- Provide toJson and fromJson method (Map<String, dynamic>).
-
-## Funzionamento algoritmo chiave asimmetrica
-
-Le chiavi pubbliche e private di un utente in un sistema di cifratura asimmetrica (come RSA) sono strettamente correlate e formano una coppia matematica. Queste chiavi sono generate insieme in modo tale da creare una relazione univoca tra di loro.
-
-Nel caso di RSA, una coppia di chiavi è generata utilizzando un processo matematico basato sulla teoria dei numeri. Vediamo come sono correlate le chiavi pubbliche e private di un utente:
-
-1. Chiave pubblica:
-   La chiave pubblica è utilizzata per crittografare i dati e può essere distribuita liberamente a chiunque desideri inviare messaggi all'utente proprietario della coppia di chiavi. La chiave pubblica è tipicamente rappresentata da un numero intero lungo e complesso. Può essere usata solo per cifrare i dati e non per decifrarli.
-
-2. Chiave privata:
-   La chiave privata è segreta e nota solo all'utente proprietario della coppia di chiavi. È utilizzata per decifrare i dati cifrati con la corrispondente chiave pubblica. Anche se le chiavi pubblica e privata sono correlate, il processo matematico utilizzato per generare la chiave privata dalla chiave pubblica è estremamente difficile da invertire. Questo rende praticamente impossibile dedurre la chiave privata conoscendo solo la chiave pubblica.
-
-3. Generazione delle chiavi:
-   La coppia di chiavi (pubblica e privata) è generata da un algoritmo di generazione delle chiavi. Durante il processo di generazione, vengono eseguiti calcoli matematici avanzati, inclusi grandi numeri primi, che creano la relazione tra le due chiavi. Questo processo matematico è fondamentale per il funzionamento della cifratura asimmetrica.
-
-4. Utilizzo:
-   Quando qualcuno vuole inviare un messaggio all'utente, utilizza la chiave pubblica dell'utente per cifrare il messaggio. Solo l'utente, in possesso della corrispondente chiave privata, può decifrare il messaggio e leggerne il contenuto.
-
-In sintesi, la chiave pubblica viene utilizzata per cifrare i dati, mentre la chiave privata è utilizzata per decifrarli. La sicurezza del sistema di cifratura asimmetrica si basa sulla difficoltà di invertire il processo matematico e dedurre la chiave privata conoscendo solo la chiave pubblica. Questo rende le comunicazioni sicure e protegge i dati dagli occhi indiscreti.
-
-1- Go to flutter\bin\cache and remove a file named: flutter_tools.stamp
-
-2- Go to flutter\packages\flutter_tools\lib\src\web and open the file chrome.dart.
-
-3- Find '--disable-extensions'
-
-4- Add '--disable-web-security'
-
-FLOW:
-
-- App start => Check for saved credentials:
-
-  - found => AutoLogin :
-    - success => Go to LoggedIn
-    - fail => Wait for login
-  - notfound => Wait for login
-
-- LoggedIn => Retrieve local clinica theme :
-
-  - found => Retrieve remote clinca theme:
-    - success => Merge local and remote themes => Navigate to documentsListView
-    - fail => Navigate to documentsListView with local theme
-  - notFound => Write default theme in local => Retrieve remote theme:
-    - success => Merge local and remote themes => Navigate to documentsListView
-    - fail => Navigate to documentsListView with local theme
-
-- LoggedIn => Retrieve remote documents:
--
+Essendo il documento di natura legale è sottoposto a una normativa, per essere considerato valido nella sua versione digitale, necessita di una Firma Elettronica Avanzata. Durante lo sviluppo ho utilizzato la tecnologia della Firma Grafometrica, che associa alla rappresentazione grafica del tratto, informazioni biometriche volte a identificare univocamente la firma alla persona.

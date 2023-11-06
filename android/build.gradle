@@ -13,8 +13,16 @@ buildscript {
 
 allprojects {
     repositories {
+        jcenter()
         google()
         mavenCentral()
+        maven {
+          credentials {
+            username 'user1-siav'
+            password 'OiH8tUR4jO'
+          }
+          url 'https://maven.namirial.com'
+        }
     }
 }
 
